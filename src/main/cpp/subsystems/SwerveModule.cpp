@@ -24,6 +24,9 @@ SwerveModule::SwerveModule(int driveMotorChannel,
     m_driveMotor.SetSmartCurrentLimit(ModuleConstants::kMotorCurrentLimit);
     m_turningMotor.SetSmartCurrentLimit(ModuleConstants::kMotorCurrentLimit);
 
+    m_driveMotor.SetIdleMode(CANSparkMax::IdleMode::kBrake);
+    m_turningMotor.SetIdleMode(CANSparkMax::IdleMode::kBrake);
+
     // Set up GetVelocity() to return meters per sec instead of RPM
     m_driveEncoder.SetVelocityConversionFactor(wpi::numbers::pi * ModuleConstants::kWheelDiameterMeters / (ModuleConstants::kDriveGearRatio * 60.0));
     m_turnRelativeEncoder.SetPositionConversionFactor(2 * wpi::numbers::pi / ModuleConstants::kTurnMotorRevsPerWheelRev);
@@ -40,9 +43,9 @@ SwerveModule::SwerveModule(int driveMotorChannel,
 
 SwerveModuleState SwerveModule::GetState()
 {
-    // return {meters_per_second_t{m_driveEncoder.GetVelocity()}, Rotation2d(radian_t(CalcAbsoluteAngle()))};
-    double angle = m_turnRelativeEncoder.GetPosition();
-    return {meters_per_second_t{m_driveEncoder.GetVelocity()}, frc::Rotation2d(radian_t(angle))};
+    return {meters_per_second_t{m_driveEncoder.GetVelocity()}, Rotation2d(radian_t(CalcAbsoluteAngle()))};
+    // double angle = m_turnRelativeEncoder.GetPosition();
+    // return {meters_per_second_t{m_driveEncoder.GetVelocity()}, frc::Rotation2d(radian_t(angle))};
 }
 
 void SwerveModule::Periodic()

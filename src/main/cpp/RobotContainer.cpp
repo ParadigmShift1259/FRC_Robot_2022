@@ -44,7 +44,8 @@ void RobotContainer::SetDefaultCommands()
             }
 
             auto rotInput = Util::Deadzone(m_primaryController.GetRightX() * -1.0, OIConstants::kDeadzoneRot);
-
+            xInput = sin(wpi::numbers::pi / 2 * pow(sin(xInput * wpi::numbers::pi / 2), 2)) * (signbit(xInput) ? -1 : 1);
+            yInput = sin(wpi::numbers::pi / 2 * pow(sin(yInput * wpi::numbers::pi / 2), 2)) * (signbit(yInput) ? -1 : 1);
             m_drive.Drive(units::meters_per_second_t(xInput * AutoConstants::kMaxSpeed),
                             units::meters_per_second_t(yInput * AutoConstants::kMaxSpeed),
                             units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
@@ -100,7 +101,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                 // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler, &m_vision, &m_turretready, &m_firing, &m_finished, 2.0),
                 frc2::ParallelRaceGroup(
                     // CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed),
-                    std::move(GetSwerveCommand(left3, sizeof(left3) / sizeof(left3[0]), true))
+                    std::move(GetSwerveCommand(testPath, sizeof(testPath) / sizeof(testPath[0]), true))
                 ),
                 frc2::InstantCommand(
                     [this]() {
