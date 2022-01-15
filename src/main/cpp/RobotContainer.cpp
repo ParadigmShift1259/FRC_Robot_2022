@@ -60,7 +60,10 @@ void RobotContainer::ConfigureButtonBindings()
     // Triggers field relative driving
     frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kLeftBumper).WhenPressed(
         frc2::InstantCommand(    
-            [this] { m_fieldRelative = true; },
+            [this] 
+            {
+                m_fieldRelative = true; 
+                },
             {}
         )
     );

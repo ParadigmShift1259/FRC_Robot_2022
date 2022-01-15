@@ -7,10 +7,6 @@
 
 #include "subsystems/SwerveModule.h"
 
-// Removes deprecated warning for CANEncoder and SparkMaxPIDController
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-
 SwerveModule::SwerveModule(int driveMotorChannel, 
                            int turningMotorChannel,
                            const int turningEncoderPort,
@@ -21,8 +17,8 @@ SwerveModule::SwerveModule(int driveMotorChannel,
     , m_name(name)
     , m_driveMotor(driveMotorChannel, CANSparkMax::MotorType::kBrushless)
     , m_turningMotor(turningMotorChannel, CANSparkMax::MotorType::kBrushless)
-    , m_drivePIDLoader("SM", kDriveAdjust, kDriveP, kDriveI, kDriveD, 0, 0, kDriveFF, 0, 0)
-    , m_turnPIDLoader("SM", kTurnAdjust, kTurnP, kTurnI, kTurnD, kTurnIZ, kTurnIA)
+    , m_drivePIDLoader("SM", kDriveAdjust, kDriveP, kDriveI, kDriveD, 0, 0, kDriveFF, 1.0, 0.0)
+    , m_turnPIDLoader("SMT", kTurnAdjust, kTurnP, kTurnI, kTurnD, kTurnIZ, kTurnIA)
     , m_turningEncoder(turningEncoderPort)
 {
     m_driveMotor.SetSmartCurrentLimit(ModuleConstants::kMotorCurrentLimit);
@@ -42,11 +38,11 @@ SwerveModule::SwerveModule(int driveMotorChannel,
     m_turnRelativeEncoder.SetPosition(initPosition); // Tell the encoder where the absolute encoder is
 }
 
-#pragma GCC diagnostic pop
-
 SwerveModuleState SwerveModule::GetState()
 {
-    return {meters_per_second_t{m_driveEncoder.GetVelocity()}, Rotation2d(radian_t(CalcAbsoluteAngle()))};
+    // return {meters_per_second_t{m_driveEncoder.GetVelocity()}, Rotation2d(radian_t(CalcAbsoluteAngle()))};
+    double angle = m_turnRelativeEncoder.GetPosition();
+    return {meters_per_second_t{m_driveEncoder.GetVelocity()}, frc::Rotation2d(radian_t(angle))};
 }
 
 void SwerveModule::Periodic()
@@ -60,8 +56,8 @@ void SwerveModule::Periodic()
 void SwerveModule::SetDesiredState(SwerveModuleState &state)
 {
     // Retrieving PID values from SmartDashboard if enabled
-    m_drivePIDLoader.LoadFromNetworkTable(m_drivePIDController);
-    m_turnPIDLoader.LoadFromNetworkTable(m_turnPIDController);
+    // m_drivePIDLoader.LoadFromNetworkTable(m_drivePIDController);
+    // m_turnPIDLoader.LoadFromNetworkTable(m_turnPIDController);
 
     // Find NEO relative encoder position
     double currentPosition = m_turnRelativeEncoder.GetPosition();
@@ -76,7 +72,6 @@ void SwerveModule::SetDesiredState(SwerveModuleState &state)
 
     // Set position reference of turnPIDController
     double newPosition = currentPosition + minTurnRads;
-
     if (state.speed != 0_mps) {
         #ifdef DISABLE_DRIVE
         m_drivePIDController.SetReference(0, ControlType::kVelocity);
@@ -89,7 +84,11 @@ void SwerveModule::SetDesiredState(SwerveModuleState &state)
 
     // Set the angle unless module is coming to a full stop
     if (state.speed != 0_mps)
+    {
         m_turnPIDController.SetReference(newPosition, CANSparkMax::ControlType::kPosition);
+        //printf("Position: %f\n", newPosition);
+    }
+
 }
 
 void SwerveModule::ResetEncoders()

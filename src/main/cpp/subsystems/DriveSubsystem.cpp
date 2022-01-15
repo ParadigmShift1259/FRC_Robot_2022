@@ -87,6 +87,7 @@ void DriveSubsystem::Periodic()
     m_frontRight.Periodic();
     m_rearRight.Periodic();
     m_rearLeft.Periodic();
+    SmartDashboard::PutNumber("Gyro", m_gyro->GetHeading());
 }
 
 void DriveSubsystem::RotationDrive(meters_per_second_t xSpeed

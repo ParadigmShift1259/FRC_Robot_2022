@@ -30,7 +30,7 @@
 #include "common/PIDLoaderNEO.h"
  
 // Uncomment this to prevent swerve modules from driving
-//#define DISABLE_DRIVE
+// #define DISABLE_DRIVE
 
 using namespace rev;
 using namespace ModuleConstants;
@@ -93,6 +93,8 @@ private:
 
     SparkMaxPIDController m_drivePIDController = m_driveMotor.GetPIDController();
     SparkMaxPIDController m_turnPIDController = m_turningMotor.GetPIDController();
+    // SparkMaxPIDController m_drivePIDController;
+    // SparkMaxPIDController m_turnPIDController;
 
     /// PID param loader for the drive NEO
     PIDLoaderNEO m_drivePIDLoader;

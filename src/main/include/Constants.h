@@ -21,7 +21,7 @@ using namespace ctre::phoenix;
 using namespace units;
 
 /// Uncomment to set button binds for secondary controller to the primary controller
-#define DualJoysticks
+//#define DualJoysticks
 
 namespace DriveConstants
 {
@@ -85,11 +85,10 @@ namespace DriveConstants
     // constexpr double kRearLeftOffset    = 0.0;
     //===============================================================================
     // Mk2: offsets are in radians
-    constexpr double kFrontLeftOffset   = 3.142; //6.412;           //3.142;         // 3.14;
-    constexpr double kFrontRightOffset  = 5.105; //5.155 + 1.57;    //5.105;         // 5.07;         //5.66;
-    constexpr double kRearLeftOffset    = 5.963; //1.6292;  //1.8292; //4.85;       //1.42921;       // 3.34;         //4.29;
-    constexpr double kRearRightOffset   = 0.665; //0.635 + 1.57;    //0.665;         // 0.63;         //5.29;
-
+    constexpr double kFrontLeftOffset   = (6.28 - 3.14); //3.142; //6.412;           //3.142;         // 3.14;
+    constexpr double kFrontRightOffset  = (6.28 - 1.21); //5.105; //5.155 + 1.57;    //5.105;         // 5.07;         //5.66;
+    constexpr double kRearLeftOffset    = (6.28 - 0.36); //5.963; //1.6292;  //1.8292; //4.85;       //1.42921;       // 3.34;         //4.29;
+    constexpr double kRearRightOffset   = (6.28 - 5.67); //0.665; //0.635 + 1.57;    //0.665;         // 0.63;         //5.29;
     constexpr double kMaxAnalogVoltage = 4.93;                              //!< Absolute encoder runs 0 to 4.93V
     constexpr double kTurnCalcAbsoluteAngle = 2.0 * wpi::numbers::pi / kMaxAnalogVoltage;
 
@@ -111,18 +110,18 @@ namespace DriveConstants
 
 namespace ModuleConstants
 {
-    constexpr int kEncoderCPR = 2048;
+    constexpr int kEncoderCPR = 1024;
 
     constexpr int kEncoderTicksPerSec = 10;                 //!< TalonFX::GetSelectedSensorVelocity() returns ticks/100ms = 10 ticks/sec
     constexpr double kWheelDiameterMeters = .1016;          //!< 4"
 
     constexpr double kDriveGearRatio = 8.16;                //!< MK3 swerve modules w/NEOs 12.1 ft/sec w/Falcon 13.6 ft/sec
-    constexpr double kTurnMotorRevsPerWheelRev = 12.8;
+    constexpr double kTurnMotorRevsPerWheelRev = 18.0;
     /// Assumes the encoders are directly mounted on the wheel shafts
     /// ticks / 100 ms -> ticks / s -> motor rev / s -> wheel rev / s -> m / s
     constexpr double kDriveEncoderMetersPerSec = kEncoderTicksPerSec / static_cast<double>(kEncoderCPR) / kDriveGearRatio * (kWheelDiameterMeters * wpi::numbers::pi);
 
-    constexpr double kTurnEncoderCPR = 4096.0 / kTurnMotorRevsPerWheelRev;    // Mag encoder relative output to SparkMax
+    //constexpr double kTurnEncoderCPR = 4096.0 / kTurnMotorRevsPerWheelRev;    // Mag encoder relative output to SparkMax
 
     constexpr double kP_ModuleTurningController = 1.1;
 
@@ -133,7 +132,7 @@ namespace ModuleConstants
 
     /// \name Turn PID Controller for Swerve Modules
     ///@{
-    constexpr bool kTurnAdjust = false;
+    constexpr bool kTurnAdjust = true;
     constexpr double kTurnP = 0.75;
     constexpr double kTurnI = 0.0;
     constexpr double kTurnD = 0.0;
@@ -155,7 +154,7 @@ namespace AutoConstants
 {
     using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
 
-    constexpr auto kMaxSpeed = meters_per_second_t(3.75);
+    constexpr auto kMaxSpeed = meters_per_second_t(2.0);
     constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.5);
     constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi * 6.0);
     constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi * 6.0);
