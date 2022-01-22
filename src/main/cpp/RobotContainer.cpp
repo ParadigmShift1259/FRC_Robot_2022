@@ -14,6 +14,7 @@ RobotContainer::RobotContainer()
     : m_gyro()
     , m_drive(&m_gyro)
     , m_vision()
+    , m_flywheel()
 {
     m_fieldRelative = false;
 
@@ -52,6 +53,13 @@ void RobotContainer::SetDefaultCommands()
         },
         {&m_drive}
     ));
+    m_flywheel.SetDefaultCommand(
+        frc2::RunCommand(
+            [this] {
+                m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
+            }, {&m_flywheel}
+        )
+    );
 }
 
 void RobotContainer::ConfigureButtonBindings()

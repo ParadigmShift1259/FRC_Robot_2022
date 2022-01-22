@@ -37,6 +37,7 @@
 
 #include "subsystems/DriveSubsystem.h"
 #include "subsystems/VisionSubsystem.h"
+#include "subsystems/FlywheelSubsystem.h"
 
 #include "Constants.h"
 
@@ -71,4 +72,5 @@ private:
     DriveSubsystem m_drive;
     bool m_fieldRelative = true;
     VisionSubsystem m_vision; 
+    FlywheelSubsystem m_flywheel;
 };
