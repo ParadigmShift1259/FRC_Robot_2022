@@ -53,13 +53,13 @@ void RobotContainer::SetDefaultCommands()
         },
         {&m_drive}
     ));
-    m_flywheel.SetDefaultCommand(
-        frc2::RunCommand(
-            [this] {
-                m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
-            }, {&m_flywheel}
-        )
-    );
+    // m_flywheel.SetDefaultCommand(
+    //     frc2::RunCommand(
+    //         [this] {
+    //             m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
+    //         }, {&m_flywheel}
+    //     )
+    // );
 }
 
 void RobotContainer::ConfigureButtonBindings()
@@ -77,6 +77,26 @@ void RobotContainer::ConfigureButtonBindings()
         frc2::InstantCommand(    
             [this] { m_fieldRelative = false; },
             {}
+        )
+    );
+
+    frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kA).WhenPressed(
+        frc2::InstantCommand(    
+            [this] { 
+                m_flywheel.SetRPM(m_flywheel.GetRPM() + 100.0);
+                printf("a");
+             },
+            {&m_flywheel}
+        )
+    );
+
+    frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kB).WhenPressed(
+        frc2::InstantCommand(    
+            [this] { 
+                m_flywheel.SetRPM(m_flywheel.GetRPM() - 100.0);
+                printf("b");
+             },
+            {&m_flywheel}
         )
     );
 

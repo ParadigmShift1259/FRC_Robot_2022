@@ -27,6 +27,8 @@ public:
     /// Sets the flywheel to a desired rpm
     /// \param rpm         Desired set rpm
     void SetRPM(double rpm);
+    /// \return The current desired RPM of the flywheel
+    double GetRPM();
 
     /// \return Whether or not the flywheel in the zone to use the alternative "maintain" PID values
     bool IsAtMaintainPID();

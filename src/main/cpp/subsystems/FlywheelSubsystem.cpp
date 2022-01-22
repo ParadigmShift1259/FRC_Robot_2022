@@ -67,7 +67,7 @@ void FlywheelSubsystem::Periodic()
     //#endif
 
     SmartDashboard::PutNumber("D_F_RPM", m_flywheelencoder.GetVelocity());
-    // SmartDashboard::PutNumber("T_F_Setpoint", m_setpoint);
+    SmartDashboard::PutNumber("T_F_Setpoint", m_setpoint);
     // SmartDashboard::PutNumber("T_F_At_Target", IsAtRPM());
 
     CalculateRPM();
@@ -76,6 +76,11 @@ void FlywheelSubsystem::Periodic()
 void FlywheelSubsystem::SetRPM(double setpoint) {
     m_setpoint = setpoint;
     m_flywheelPID.SetIAccum(0);
+}
+
+double FlywheelSubsystem::GetRPM()
+{
+    return m_setpoint;
 }
 
 bool FlywheelSubsystem::IsAtMaintainPID() {
