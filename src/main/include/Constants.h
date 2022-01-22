@@ -79,16 +79,21 @@ namespace DriveConstants
     // Record values, enter below, then redeploy
     // All gears should face outwards
 
+    //#define OFFSET_CONSTANTS_ZERO
+
+    #ifdef OFFSET_CONSTANTS_ZERO
     //============================================LEAVE THESE ZEROES COMMENTED OUT!!!
-    // constexpr double kFrontLeftOffset   = 0.0;
-    // constexpr double kFrontRightOffset  = 0.0;
-    // constexpr double kRearRightOffset   = 0.0;
-    // constexpr double kRearLeftOffset    = 0.0;
+    constexpr double kFrontLeftOffset   = 0.0;
+    constexpr double kFrontRightOffset  = 0.0;
+    constexpr double kRearRightOffset   = 0.0;
+    constexpr double kRearLeftOffset    = 0.0;
     //===============================================================================
-    constexpr double kFrontLeftOffset   = 2689.0;
-    constexpr double kFrontRightOffset  = 205.0;
-    constexpr double kRearRightOffset   = 1858.0;
-    constexpr double kRearLeftOffset    = 983.0;
+    #else
+    constexpr double kFrontLeftOffset   = 2700.0; //This is Good //Encoder 2.07 Radians //2689.0;
+    constexpr double kFrontRightOffset  = 188.0; //This is Good //1541.0; //Encoder 3.84 Radians //205.0;
+    constexpr double kRearRightOffset   = 3077.0; //Encoder 2.08 Radians //1858.0;
+    constexpr double kRearLeftOffset    = 2007.0; //Encoder 2.04 Radians //983.0;
+    #endif
 
     // Pulse Width per rotation is not equal for all encoders. Some are 0 - 3865, some are 0 - 4096
     // FL: 4096
@@ -242,8 +247,8 @@ namespace FlywheelConstants
     constexpr double kMinOut = 0;
     constexpr double kMaxOut = 1.0;
 
-    constexpr double kS = 0.059;
-    constexpr double kV = 0.102834;
+    constexpr double kS = 0.025499;
+    constexpr double kV = 0.10421;
     constexpr double kA = 0;//0.0399;
 
     // Diameter is in meters

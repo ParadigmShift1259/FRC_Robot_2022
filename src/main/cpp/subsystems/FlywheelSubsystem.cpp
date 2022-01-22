@@ -39,8 +39,8 @@ FlywheelSubsystem::FlywheelSubsystem()
 
     //#ifdef TUNE_FLYWHEEL
     // SmartDashboard::PutNumber("T_F_S", kS);
-    // SmartDashboard::PutNumber("T_F_V", kV);
-    // SmartDashboard::PutNumber("T_F_A", kA);
+    // SmartDashboard::PutNumber("T_F_V", FlywheelConstants::kV);
+    // SmartDashboard::PutNumber("T_F_A", FlywheelConstants::kA);
     // SmartDashboard::PutNumber("T_F_P", kP);
     // SmartDashboard::PutNumber("T_F_I", kI);
     // SmartDashboard::PutNumber("T_F_D", kD);

@@ -114,8 +114,8 @@ double SwerveModule::CalcAbsoluteAngle()
 {
     double pulseWidth = m_pulseWidthCallback(m_pwmChannel);
     // Pulse Width per rotation is not equal for all encoders. Some are 0 - 3865, some are 0 - 4096
+    SmartDashboard::PutNumber("D_SM_PW " + m_name, pulseWidth);
     return fmod((pulseWidth - m_offset) * DriveConstants::kPulseWidthToRadians + 2.0 * wpi::numbers::pi, 2.0 * wpi::numbers::pi);
-    // SmartDashboard::PutNumber("D_SM_PW " + m_name, pulseWidth);
     // SmartDashboard::PutNumber("D_SM_AA " + m_name, absAngle);
     // Convert CW to CCW? absAngle = 2.0 * wpi::numbers::pi - absAngle;
 }
