@@ -31,6 +31,8 @@
 #include <frc/trajectory/TrajectoryGenerator.h>
 #include <frc/trajectory/TrajectoryUtil.h>
 
+#include <wpi/fs.h>
+
 #include "common/Util.h"
 #include "common/Gyro.h"
 #include "common/SwerveControllerCommand2.h"
@@ -45,6 +47,10 @@
 // #include <wpi/Path.h>
 #include <wpi/SmallString.h>
 
+#include <pathplanner/lib/PathPlanner.h>
+
+using namespace pathplanner;
+
 class RobotContainer
 {
 public:
@@ -53,7 +59,7 @@ public:
     void Periodic();
 
     void ZeroDrive();
-    enum AutoPath {kEx1, kEx2, kEx3, kEx4};
+    enum AutoPath {kEx1, kEx2, kEx3, kEx4, kEx5};
     frc2::Command *GetAutonomousCommand(AutoPath path);
 
     frc::SendableChooser<AutoPath> m_chooser;
@@ -61,8 +67,10 @@ public:
 private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();
+    frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> GetSwerveCommandPath(string pathName, bool primaryPath);
     frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> GetSwerveCommand(double path[][6], int length, bool primaryPath);
     frc::Trajectory convertArrayToTrajectory(double a[][6], int length);
+    frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
     void PrintTrajectory(frc::Trajectory& trajectory);
 
     frc::XboxController m_primaryController{OIConstants::kPrimaryControllerPort};

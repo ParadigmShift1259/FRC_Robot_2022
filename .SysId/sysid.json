@@ -1,6 +1,7 @@
 {
   "SysId": {
     "Analysis Type": "General Mechanism",
+    "AnalyzerJSONLocation": "C:\\Users\\Developer\\Downloads\\Characterization\\shooter_v1\\sysid_data20220122-103855.json",
     "NetworkTables Settings": {
       "serverTeam": "10.12.59.2"
     },
