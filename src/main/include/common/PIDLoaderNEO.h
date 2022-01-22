@@ -35,6 +35,6 @@ private:
     double m_iz;
     double m_ia;
     double m_ff;
-    double m_max;
-    double m_min;
+    double m_max = 1.0;
+    double m_min = -1.0;
 };
