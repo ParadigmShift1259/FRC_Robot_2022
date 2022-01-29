@@ -165,8 +165,10 @@ namespace AutoConstants
 {
     using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
 
-    constexpr auto kMaxSpeed = meters_per_second_t(3.75);
-    constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.5);
+    //constexpr auto kMaxSpeed = meters_per_second_t(3.75);
+    constexpr auto kMaxSpeed = meters_per_second_t(1.0);
+    //constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.5);
+    constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
     constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi * 6.0);
     constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi * 6.0);
 

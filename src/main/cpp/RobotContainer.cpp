@@ -134,11 +134,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
     {
         case kEx1:
             return new frc2::SequentialCommandGroup(
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler, &m_vision, &m_turretready, &m_firing, &m_finished, 2.0),
-                frc2::ParallelRaceGroup(
-                    // CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed),
-                    std::move(GetSwerveCommand(pathCircle, sizeof(pathCircle) / sizeof(pathCircle[0]), true))
-                ),
+                std::move(GetSwerveCommandPath("ball1", true)),
                 frc2::InstantCommand(
                     [this]() {
                         ZeroDrive();
@@ -149,7 +145,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
         case kEx2:
             return new frc2::SequentialCommandGroup(
-                std::move(GetSwerveCommand(mid0, sizeof(mid0) / sizeof(mid0[0]), true)),
+                std::move(GetSwerveCommandPath("ball2", true)),
                 frc2::InstantCommand(
                     [this]() {
                         ZeroDrive();
@@ -160,11 +156,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
         case kEx3:
             return new frc2::SequentialCommandGroup(
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler, &m_vision, &m_turretready, &m_firing, &m_finished, 1.8),
-                frc2::ParallelRaceGroup(
-                    // CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed),
-                    std::move(GetSwerveCommand(mid5, sizeof(mid5) / sizeof(mid5[0]), true))
-                ),
+                std::move(GetSwerveCommandPath("ball3", true)),
                 frc2::InstantCommand(
                     [this]() {
                         ZeroDrive();
@@ -175,10 +167,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
         case kEx4:
             return new frc2::SequentialCommandGroup(
-                frc2::ParallelRaceGroup(
-                    // CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed),
-                    std::move(GetSwerveCommand(right2, sizeof(right2) / sizeof(right2[0]), true))
-                ),
+                std::move(GetSwerveCommandPath("ball4", true)),
                 frc2::InstantCommand(
                     [this]() {
                         ZeroDrive();
@@ -189,7 +178,10 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
         case kEx5:
             return new frc2::SequentialCommandGroup(
-                std::move(GetSwerveCommandPath("NewPath", true)),
+                std::move(GetSwerveCommandPath("ball1", true)),
+                std::move(GetSwerveCommandPath("ball2", false)),
+                std::move(GetSwerveCommandPath("ball3", false)),
+                std::move(GetSwerveCommandPath("ball4", false)),
                 frc2::InstantCommand(
                     [this]() {
                         ZeroDrive();
