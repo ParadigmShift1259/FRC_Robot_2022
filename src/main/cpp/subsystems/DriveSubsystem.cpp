@@ -8,7 +8,7 @@
 #include "subsystems/DriveSubsystem.h"
 
 
-DriveSubsystem::DriveSubsystem(Gyro *gyro)
+DriveSubsystem::DriveSubsystem(Gyro2 *gyro)
     : m_frontLeft
       {
           kFrontLeftDriveMotorPort

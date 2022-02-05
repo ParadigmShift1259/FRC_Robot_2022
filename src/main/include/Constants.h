@@ -21,7 +21,7 @@ using namespace ctre::phoenix;
 using namespace units;
 
 /// Uncomment to set button binds for secondary controller to the primary controller
-#define DualJoysticks
+//#define DualJoysticks
 
 namespace DriveConstants
 {
@@ -259,7 +259,43 @@ namespace FlywheelConstants
     /// The fixed RPM to fire at the trench given very heavy defense
     constexpr double kTrenchRPM = 3400;
 }
-/*
+
+// Intake Subsystem constants
+namespace IntakeConstants
+{
+    constexpr double kMotorPort = 9;   // Intake rollers PWM channel (Spark)
+    constexpr double kMotorReverseConstant = 1;
+
+    constexpr double kIngestLow = 0.3;
+    constexpr double kIngestHigh = 0.80;
+    constexpr double kReleaseLow = -0.3;
+    constexpr double kReleaseHigh = -0.70;
+}
+
+namespace CyclerConstants
+{
+    constexpr double kFeederPort = 30;      //!< Feeder CAN ID (SparkMAX)
+    constexpr double kTurnTablePort = 31;   //!< Turn table CAN ID (TalonSRX)
+
+    constexpr double kFeederSpeed = 0.4; //TEMP0.350;
+    constexpr double kTurnTableSpeed = 0.55; //6; //TEMP0.400;
+    constexpr double kTurnTableSpeedHigher = 0.550;
+    constexpr double kTurnTableHoneSpeed = 0.300;
+    constexpr units::second_t kMaxCyclerTime = 5.0_s;
+
+    constexpr double kSensorInvert = true;
+
+    // Time to go from 0 to full throttle
+    constexpr double kTurnTableRampRate = 0.75;
+
+    constexpr double kTimePassed = 0.25;
+    constexpr double kTimeLaunch = 4.00;
+
+    constexpr double kTimeout = 30;
+    constexpr double kTurnTableInverted = false;
+    constexpr double kFeederInverted = true;
+}
+
 // Turret Subsystem Constants
 namespace TurretConstants
 {
@@ -289,7 +325,7 @@ namespace TurretConstants
     constexpr double kMotorRevPerRev = kPulley / kSpinner;
     constexpr double kTicksPerRev = 4096.0;
     constexpr double kDegreesPerRev = 360.0;
-    constexpr double kRadiansPerRev = wpi::math::pi * 2.0;
+    constexpr double kRadiansPerRev = wpi::numbers::pi * 2.0;
 
     // Offset of origin point of turret angle and robot angle, in degrees. Robot 0 is forward
     constexpr double kTurretToRobotAngleOffset = -45;
@@ -304,4 +340,17 @@ namespace TurretConstants
 
     // initial configured angle of the turret relative to the turret, in degrees
     constexpr double kStartingPositionDegrees = 45;
-}*/
+}
+//Hood Subsystem Constants
+namespace HoodConstants
+{
+    /// PWM Port for hood servo
+    constexpr int kPWMPort = 8;                //!< Hood servo PWM channel
+    constexpr double kTestServoSpeed = 0.14;
+    // Drives from Max to Min, where hood is smallest at 0.85, and greatest at 0.0485
+    constexpr double kMax = .95;
+    constexpr double kMin = .20;
+
+    /// The fixed hood to fire in the trench given very heavy defense
+    constexpr double kTrenchPosition = 0.223;
+}

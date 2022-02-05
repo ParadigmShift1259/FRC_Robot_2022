@@ -32,12 +32,21 @@
 #include <frc/trajectory/TrajectoryUtil.h>
 
 #include "common/Util.h"
-#include "common/Gyro.h"
+#include "Gyro.h"
 #include "common/SwerveControllerCommand2.h"
 
 #include "subsystems/DriveSubsystem.h"
 #include "subsystems/VisionSubsystem.h"
 #include "subsystems/FlywheelSubsystem.h"
+#include "subsystems/TurretSubsystem.h"
+#include "subsystems/HoodSubsystem.h"
+
+#include "commands/CyclerAgitation.h"
+#include "commands/CyclerIntakeAgitation.h"
+#include "commands/IntakeIngest.h"
+#include "commands/Unjam.h"
+#include "commands/IntakeRelease.h"
+#include "commands/Fire.h"
 
 #include "Constants.h"
 
@@ -68,9 +77,18 @@ private:
     frc::XboxController m_primaryController{OIConstants::kPrimaryControllerPort};
     frc::XboxController m_secondaryController{OIConstants::kSecondaryControllerPort};
 
-    Gyro m_gyro;
+    Gyro2 m_gyro;
     DriveSubsystem m_drive;
     bool m_fieldRelative = true;
     VisionSubsystem m_vision; 
     FlywheelSubsystem m_flywheel;
+    IntakeSubsystem m_intake;
+    CyclerSubsystem m_cycler;
+    TurretSubsystem m_turret = TurretSubsystem(&m_gyro);
+    HoodSubsystem m_hood;
+
+    //bool m_fieldRelative = true;
+    bool m_turretready = false;
+    bool m_firing = false;
+    bool m_finished = false;
 };

@@ -19,7 +19,7 @@
 #include <ctre/phoenix/CANifier.h>
 
 #include "common/Util.h"
-#include "common/Gyro.h"
+#include "Gyro.h"
 
 #include "Constants.h"
 #include "SwerveModule.h"
@@ -45,7 +45,7 @@ public:
         kRearRight
     };
 
-    DriveSubsystem(Gyro *gyro);
+    DriveSubsystem(Gyro2 *gyro);
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
@@ -132,12 +132,12 @@ private:
     /// Get all 4 swerve module wheel speed to update the odometry with
     SwerveModuleStates getCurrentWheelSpeeds()
     {
-        SwerveModuleStates sms({
+        SwerveModuleStates sms{
             m_frontLeft.GetState(),
             m_frontRight.GetState(),
             m_rearLeft.GetState(),
             m_rearRight.GetState()
-        });
+        };
         return sms;
     }
 
@@ -153,7 +153,7 @@ private:
     /// Reads the absolute encoder pulse widths
     CANifier m_canifier;
     /// Gyro to determine field relative driving, from @ref RobotContainer
-    Gyro *m_gyro;
+    Gyro2 *m_gyro;
     /// Odometry class for tracking robot pose
     SwerveDriveOdometry<DriveConstants::kNumSwerveModules> m_odometry;
 
