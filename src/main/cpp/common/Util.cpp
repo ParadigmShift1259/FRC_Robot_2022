@@ -43,7 +43,7 @@ double Util::NegPiToPiRads(double theta)
     return theta;
 }
 
-double Util::GetAverage(vector<double> numbers)
+double Util::GetAverage(std::vector<double> numbers)
 {
     double sum = 0.0;
 

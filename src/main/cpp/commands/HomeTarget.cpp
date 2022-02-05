@@ -50,12 +50,12 @@ void HomeTarget::Execute()
     double hoodangle = 11.20831 - 0.2645223 * m_distance + 0.002584349 * pow(m_distance, 2) - 0.00001250923 * pow(m_distance, 3) + 2.986403E-8 * pow(m_distance, 4) - 2.81104E-11 * pow(m_distance, 5);
     // std::cout << "Distance: " << distance << std::endl;
     // std::cout << "Hood Angle: "<< hoodangle << std::endl;
-    double angleOverride = 0;
+    //double angleOverride = 0;
     // double turretXRot = m_controller->GetY(frc::GenericHID::kRightHand) * -1.0;
     // double turretYRot = m_controller->GetX(frc::GenericHID::kRightHand);
 
     double turretXRot = m_controller->GetRightY() * -1.0;
-    double turretYRot = m_controller->GetRightX();
+    //double turretYRot = m_controller->GetRightX();
 
     // if (m_controller->GetBumperPressed(GenericHID::JoystickHand::kRightHand)) {
     //     flywheelspeed = FlywheelConstants::kTrenchRPM;
@@ -69,7 +69,7 @@ void HomeTarget::Execute()
     //     m_turret->TurnToRobot(rotPosition);
     // }
     // else {
-        angleOverride = turretXRot * TurretConstants::kMaxOverrideAngle;
+        //angleOverride = turretXRot * TurretConstants::kMaxOverrideAngle;
         //m_turret->TurnToRelative(m_vision->GetAngle() + angleOverride);
     // }
 

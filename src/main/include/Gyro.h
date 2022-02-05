@@ -9,11 +9,13 @@
 using namespace DriveConstants;
 using namespace units;
 
-class Gyro2
+namespace Team1259
+{
+
+class Gyro
 {
 public:
-
-    Gyro2();
+    Gyro();
 
     /// Returns the heading of the robot.
     /// \return the robot's heading in degrees, from -180 to 180
@@ -29,3 +31,5 @@ public:
 
     PigeonIMU m_gyro;
 };
+
+} // namespace Team1259

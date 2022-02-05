@@ -6,7 +6,7 @@
 
 using namespace TurretConstants;
 
-TurretSubsystem::TurretSubsystem(Gyro2 *gyro) 
+TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro) 
     : m_turretmotor(kMotorPort)
     , m_gyro(gyro)
 {
@@ -39,10 +39,10 @@ TurretSubsystem::TurretSubsystem(Gyro2 *gyro)
 
 void TurretSubsystem::Periodic()
 {
-    SmartDashboard::PutNumber("D_T_CAngle", TicksToDegrees(m_turretmotor.GetSelectedSensorPosition()));
-    // SmartDashboard::PutNumber("D_T_DAngle", TicksToDegrees(m_turretmotor.GetClosedLoopTarget()));
-    // SmartDashboard::PutNumber("D_T_Error", TicksToDegrees(m_turretmotor.GetClosedLoopError(0)));
-    // SmartDashboard::PutNumber("D_T_Output", m_turretmotor.GetMotorOutputPercent());
+    frc::SmartDashboard::PutNumber("D_T_CAngle", TicksToDegrees(m_turretmotor.GetSelectedSensorPosition()));
+    // frc::SmartDashboard::PutNumber("D_T_DAngle", TicksToDegrees(m_turretmotor.GetClosedLoopTarget()));
+    // frc::SmartDashboard::PutNumber("D_T_Error", TicksToDegrees(m_turretmotor.GetClosedLoopError(0)));
+    // frc::SmartDashboard::PutNumber("D_T_Output", m_turretmotor.GetMotorOutputPercent());
     m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
 }
 

@@ -1,5 +1,7 @@
 #include "common/PIDLoaderFalcon.h"
+#include <frc/SmartDashboard/SmartDashboard.h>
 
+using namespace frc;
 
 PIDLoaderFalcon::PIDLoaderFalcon(string name, bool adjustable, double p, double i, double d, double ff)
     : m_name(name)

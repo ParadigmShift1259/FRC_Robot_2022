@@ -3,9 +3,6 @@
 #include <wpi/numbers>
 #include "Constants.h"
 
-using namespace std;
-
-
 class Util
 {
 public:
@@ -33,7 +30,7 @@ public:
     /// Get the average of a double vector
     /// \param numbers  vector of doubles
     /// \return         average of doubles in vector
-    static double GetAverage(vector<double> numbers);
+    static double GetAverage(std::vector<double> numbers);
 
     /// If an inputValue is smaller than its deadzone, returns 0, otherwise returns the inputValue
     static double Deadzone(double inputValue, double deadzone)

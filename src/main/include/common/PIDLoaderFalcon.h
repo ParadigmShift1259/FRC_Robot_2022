@@ -1,14 +1,11 @@
 #pragma once
 
 #include <ctre/phoenix/motorcontrol/can/TalonFX.h>
-#include <frc/SmartDashboard/SmartDashboard.h>
 
 #include <string>
 
-using namespace frc;
-using namespace std;
 using namespace ctre::phoenix::motorcontrol::can;
-
+using namespace std;
 
 class PIDLoaderFalcon
 {

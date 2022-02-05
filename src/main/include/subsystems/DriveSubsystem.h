@@ -45,7 +45,7 @@ public:
         kRearRight
     };
 
-    DriveSubsystem(Gyro2 *gyro);
+    DriveSubsystem(Team1259::Gyro *gyro);
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
@@ -153,7 +153,7 @@ private:
     /// Reads the absolute encoder pulse widths
     CANifier m_canifier;
     /// Gyro to determine field relative driving, from @ref RobotContainer
-    Gyro2 *m_gyro;
+    Team1259::Gyro *m_gyro;
     /// Odometry class for tracking robot pose
     SwerveDriveOdometry<DriveConstants::kNumSwerveModules> m_odometry;
 

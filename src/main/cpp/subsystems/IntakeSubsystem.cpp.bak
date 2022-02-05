@@ -6,8 +6,6 @@
 #include <frc/shuffleboard/Shuffleboard.h>
 
 using namespace IntakeConstants;
-using namespace std;
-using namespace frc;
 
 IntakeSubsystem::IntakeSubsystem() 
     : m_motor(kMotorPort)

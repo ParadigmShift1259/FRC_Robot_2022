@@ -31,8 +31,6 @@
 #include <frc/trajectory/TrajectoryGenerator.h>
 #include <frc/trajectory/TrajectoryUtil.h>
 
-#include <wpi/fs.h>
-
 #include "common/Util.h"
 #include "Gyro.h"
 #include "common/SwerveControllerCommand2.h"
@@ -56,10 +54,6 @@
 // #include <wpi/Path.h>
 #include <wpi/SmallString.h>
 
-#include <pathplanner/lib/PathPlanner.h>
-
-using namespace pathplanner;
-
 class RobotContainer
 {
 public:
@@ -76,16 +70,14 @@ public:
 private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();
-    frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> GetSwerveCommandPath(string pathName, bool primaryPath);
     frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> GetSwerveCommand(double path[][6], int length, bool primaryPath);
     frc::Trajectory convertArrayToTrajectory(double a[][6], int length);
-    frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
     void PrintTrajectory(frc::Trajectory& trajectory);
 
     frc::XboxController m_primaryController{OIConstants::kPrimaryControllerPort};
     frc::XboxController m_secondaryController{OIConstants::kSecondaryControllerPort};
 
-    Team1259::Gyro m_gyro;
+    Gyro m_gyro;
     DriveSubsystem m_drive;
     bool m_fieldRelative = true;
     VisionSubsystem m_vision; 

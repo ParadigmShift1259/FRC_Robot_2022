@@ -13,13 +13,10 @@ using namespace ctre::phoenix::motorcontrol::can;
 #include "common/Util.h"
 #include "Gyro.h"
 
-using namespace std;
-using namespace frc;
-
 class TurretSubsystem : public frc2::SubsystemBase
 {
 public:
-    TurretSubsystem(Gyro2 *gyro);
+    TurretSubsystem(Team1259::Gyro *gyro);
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
@@ -65,5 +62,5 @@ private:
     /// The current angle of the turret, in degrees
     double m_currentAngle;
     /// Gyro to determine field relative angles, from @ref RobotContainer
-    Gyro2 *m_gyro;
+    Team1259::Gyro *m_gyro;
 };
