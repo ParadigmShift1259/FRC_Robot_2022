@@ -80,7 +80,6 @@ namespace DriveConstants
     // All gears should face outwards
 
     //#define OFFSET_CONSTANTS_ZERO
-
     #ifdef OFFSET_CONSTANTS_ZERO
     //============================================LEAVE THESE ZEROES COMMENTED OUT!!!
     constexpr double kFrontLeftOffset   = 0.0;
@@ -89,10 +88,11 @@ namespace DriveConstants
     constexpr double kRearLeftOffset    = 0.0;
     //===============================================================================
     #else
-    constexpr double kFrontLeftOffset   = 2701.0; // 2700.0; //This is Good //Encoder 2.07 Radians //2689.0;
-    constexpr double kFrontRightOffset  = 190.0; // 188.0; //This is Good //1541.0; //Encoder 3.84 Radians //205.0;
-    constexpr double kRearRightOffset   = 1863.0; // 3077.0; //Encoder 2.08 Radians //1858.0;
-    constexpr double kRearLeftOffset    = 1029.0; // 2007.0; //Encoder 2.04 Radians //983.0;
+    // Offsets set on 2022 swerve sled 2022 Feb 5
+    constexpr double kFrontLeftOffset   = 1790.0; // 2701.0; // 2700.0; //This is Good //Encoder 2.07 Radians //2689.0;
+    constexpr double kFrontRightOffset  = 2536.0; // 190.0; // 188.0; //This is Good //1541.0; //Encoder 3.84 Radians //205.0;
+    constexpr double kRearRightOffset   = 855.0; // 1863.0; // 3077.0; //Encoder 2.08 Radians //1858.0;
+    constexpr double kRearLeftOffset    = 2666.0; // 1029.0; // 2007.0; //Encoder 2.04 Radians //983.0;
     #endif
 
     // Pulse Width per rotation is not equal for all encoders. Some are 0 - 3865, some are 0 - 4096
@@ -165,10 +165,14 @@ namespace AutoConstants
 {
     using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
 
+    // constexpr auto kMaxSpeed = meters_per_second_t(1.0);
+    // constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
+
+    constexpr auto kMaxSpeed = meters_per_second_t(3.0);
+    constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.0);
+
     //constexpr auto kMaxSpeed = meters_per_second_t(3.75);
-    constexpr auto kMaxSpeed = meters_per_second_t(1.0);
     //constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.5);
-    constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
     constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi * 6.0);
     constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi * 6.0);
 
@@ -296,7 +300,7 @@ namespace CyclerConstants
     constexpr double kTurnTableRampRate = 0.75;
 
     constexpr double kTimePassed = 0.25;
-    constexpr double kTimeLaunch = 4.00;
+    constexpr double kTimeLaunch = 1.50;
 
     constexpr double kTimeout = 30;
     constexpr double kTurnTableInverted = false;

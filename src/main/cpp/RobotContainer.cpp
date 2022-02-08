@@ -7,13 +7,14 @@
 
 #include "RobotContainer.h"
 #include <frc2/command/button/NetworkButton.h>
+#include <frc2/command/WaitCommand.h>
 #include "AutoPaths.h"
 
 RobotContainer::RobotContainer()
     : m_gyro()
     , m_drive(&m_gyro)
-    , m_vision()
-    , m_flywheel()
+    // , m_vision()
+    // , m_flywheel()
 {
     m_fieldRelative = false;
 
@@ -51,7 +52,8 @@ void RobotContainer::SetDefaultCommands()
 
             m_drive.Drive(units::meters_per_second_t(xInput * AutoConstants::kMaxSpeed),
                             units::meters_per_second_t(yInput * AutoConstants::kMaxSpeed),
-                            units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
+                            units::angular_velocity::radians_per_second_t(rotInput),
+                            // units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
                             m_fieldRelative);
         },
         {&m_drive}
@@ -83,15 +85,15 @@ void RobotContainer::ConfigureButtonBindings()
         )
     );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kY).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
-             &m_turretready, &m_firing, &m_finished, 100.0)
-    );
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kY).WhenPressed(
+    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
+    //          &m_turretready, &m_firing, &m_finished, 100.0)
+    // );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kX).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
-             &m_turretready, &m_firing, &m_finished, 200.0)
-    );
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kX).WhenPressed(
+    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
+    //          &m_turretready, &m_firing, &m_finished, 200.0)
+    // );
     frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kX).WhenPressed(
         frc2::InstantCommand(    
             [this] { 
@@ -101,18 +103,18 @@ void RobotContainer::ConfigureButtonBindings()
         )
     );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kRightBumper).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
-             &m_turretready, &m_firing, &m_finished, 0.0)
-    );
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kRightBumper).WhenPressed(
+    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
+    //          &m_turretready, &m_firing, &m_finished, 0.0)
+    // );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kA).WhenHeld(
-        CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed)   
-    );
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kA).WhenHeld(
+    //     CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed)   
+    // );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kLeftBumper).WhenHeld(
-        CyclerAgitation(&m_cycler, CyclerConstants::kTurnTableSpeedHigher)   
-    );
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kLeftBumper).WhenHeld(
+    //     CyclerAgitation(&m_cycler, CyclerConstants::kTurnTableSpeedHigher)   
+    // );
 
     // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kBumperRight).WhenPressed(
     //     frc2::InstantCommand([this] { m_turret.ResetPosition(); }, { &m_turret} )
@@ -122,13 +124,13 @@ void RobotContainer::ConfigureButtonBindings()
     //     CyclerPrepare(&m_cycler, true).WithTimeout(CyclerConstants::kMaxCyclerTime)
     // );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kB).WhenHeld(
-        IntakeRelease(&m_intake)
-    );
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kB).WhenHeld(
+    //     IntakeRelease(&m_intake)
+    // );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kBack).WhenHeld(
-        Unjam(&m_cycler, &m_intake)
-    );    
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kBack).WhenHeld(
+    //     Unjam(&m_cycler, &m_intake)
+    // );    
 
     // frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kA).WhenPressed(
     //     frc2::InstantCommand(    
@@ -216,16 +218,73 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
         case kEx5:
             return new frc2::SequentialCommandGroup(
-                std::move(GetSwerveCommandPath("ball1", true)),
-                std::move(GetSwerveCommandPath("ball2", false)),
-                std::move(GetSwerveCommandPath("ball3", false)),
-                std::move(GetSwerveCommandPath("ball4", false)),
                 frc2::InstantCommand(
+                    [this]() {
+                        m_intake.Set(IntakeConstants::kIngestHigh);
+                    }, {}
+                )                  
+                , std::move(GetSwerveCommandPath("ball1", true))
+                , frc2::WaitCommand(0.1_s)
+                , frc2::InstantCommand(
                     [this]() {
                         ZeroDrive();
                     }, {}
-                )
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
+                )                
+                , std::move(Fire(&m_secondaryController
+                                , &m_flywheel
+                                , &m_turret
+                                , &m_hood
+                                , &m_intake
+                                , &m_cycler
+                                , &m_turretready
+                                , &m_firing
+                                , &m_finished
+                                , CyclerConstants::kTimeLaunch))
+                , std::move(GetSwerveCommandPath("ball2&3", false))
+                , frc2::WaitCommand(0.1_s)
+                , frc2::InstantCommand(
+                    [this]() {
+                        ZeroDrive();
+                    }, {}
+                )  
+                , std::move(Fire(&m_secondaryController
+                                , &m_flywheel
+                                , &m_turret
+                                , &m_hood
+                                , &m_intake
+                                , &m_cycler
+                                , &m_turretready
+                                , &m_firing
+                                , &m_finished
+                                , CyclerConstants::kTimeLaunch))
+                , std::move(GetSwerveCommandPath("ball4", false))
+                , frc2::WaitCommand(0.1_s)
+                , frc2::InstantCommand(
+                    [this]() {
+                        ZeroDrive();
+                    }, {}
+                )  
+                , std::move(Fire(&m_secondaryController
+                                , &m_flywheel
+                                , &m_turret
+                                , &m_hood
+                                , &m_intake
+                                , &m_cycler
+                                , &m_turretready
+                                , &m_firing
+                                , &m_finished
+                                , CyclerConstants::kTimeLaunch))
+                , frc2::WaitCommand(0.1_s)
+                , frc2::InstantCommand(
+                    [this]() {
+                        ZeroDrive();
+                    }, {}
+                )  
+                // frc2::InstantCommand(
+                //     [this]() {
+                //         ZeroDrive();
+                //     }, {}
+                // )
             );
 
         default:
@@ -241,11 +300,11 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
 frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> RobotContainer::GetSwerveCommandPath(string pathName, bool primaryPath)
 {
-
     PathPlannerTrajectory path = PathPlanner::loadPath(pathName, AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration);
     // PathPlannerTrajectory path = PathPlanner::loadPath(pathName, 1.0 * 1_mps, 2.0 * 1_mps_sq);
 
     frc::Trajectory trajectory = convertPathToTrajectory(path);
+    PrintTrajectory(trajectory);
 
     frc::ProfiledPIDController<units::radians> thetaController{
         AutoConstants::kPThetaController, 0, AutoConstants::kDThetaController,
@@ -321,8 +380,8 @@ frc::Trajectory RobotContainer::convertPathToTrajectory(PathPlannerTrajectory pa
     std::vector<frc::Trajectory::State> states;
     for (double time = 0; time < path.getTotalTime().to<double>(); time += 0.02)
     {
-        printf("looping through timestamps...");
         PathPlannerTrajectory::PathPlannerState state = path.sample(time * 1_s);
+        //printf("time %.3f holorot %.3f\n", state.holonomicRotation.Degrees().to<double>());
         states.push_back({
             time * 1_s,
             state.velocity,
@@ -340,11 +399,13 @@ frc::Trajectory RobotContainer::convertPathToTrajectory(PathPlannerTrajectory pa
 
 void RobotContainer::PrintTrajectory(frc::Trajectory& trajectory)
 {
+    printf("Time,X,Y,HoloRot\n");
     for (auto &state:trajectory.States())
     {
         double time = state.t.to<double>();
         double x = state.pose.X().to<double>();
         double y = state.pose.Y().to<double>();
-        printf("%.3f, %.3f, %.3f\n", time, x, y);
+        double holoRot = state.pose.Rotation().Degrees().to<double>();
+        printf("%.3f,%.3f,%.3f,%.3f\n", time, x, y, holoRot);
     }
 }
