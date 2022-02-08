@@ -216,76 +216,76 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                 // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
             );
 
-        case kEx5:
-            return new frc2::SequentialCommandGroup(
-                frc2::InstantCommand(
-                    [this]() {
-                        m_intake.Set(IntakeConstants::kIngestHigh);
-                    }, {}
-                )                  
-                , std::move(GetSwerveCommandPath("ball1", true))
-                , frc2::WaitCommand(0.1_s)
-                , frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )                
-                , std::move(Fire(&m_secondaryController
-                                , &m_flywheel
-                                , &m_turret
-                                , &m_hood
-                                , &m_intake
-                                , &m_cycler
-                                , &m_turretready
-                                , &m_firing
-                                , &m_finished
-                                , CyclerConstants::kTimeLaunch))
-                , std::move(GetSwerveCommandPath("ball2&3", false))
-                , frc2::WaitCommand(0.1_s)
-                , frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )  
-                , std::move(Fire(&m_secondaryController
-                                , &m_flywheel
-                                , &m_turret
-                                , &m_hood
-                                , &m_intake
-                                , &m_cycler
-                                , &m_turretready
-                                , &m_firing
-                                , &m_finished
-                                , CyclerConstants::kTimeLaunch))
-                , std::move(GetSwerveCommandPath("ball4", false))
-                , frc2::WaitCommand(0.1_s)
-                , frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )  
-                , std::move(Fire(&m_secondaryController
-                                , &m_flywheel
-                                , &m_turret
-                                , &m_hood
-                                , &m_intake
-                                , &m_cycler
-                                , &m_turretready
-                                , &m_firing
-                                , &m_finished
-                                , CyclerConstants::kTimeLaunch))
-                , frc2::WaitCommand(0.1_s)
-                , frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )  
-                // frc2::InstantCommand(
-                //     [this]() {
-                //         ZeroDrive();
-                //     }, {}
-                // )
-            );
+        // case kEx5:
+        //     return new frc2::SequentialCommandGroup(
+        //         frc2::InstantCommand(
+        //             [this]() {
+        //                 m_intake.Set(IntakeConstants::kIngestHigh);
+        //             }, {}
+        //         )                  
+        //         , std::move(GetSwerveCommandPath("ball1", true))
+        //         , frc2::WaitCommand(0.1_s)
+        //         , frc2::InstantCommand(
+        //             [this]() {
+        //                 ZeroDrive();
+        //             }, {}
+        //         )                
+        //         , std::move(Fire(&m_secondaryController
+        //                         // , &m_flywheel
+        //                         // , &m_turret
+        //                         // , &m_hood
+        //                         // , &m_intake
+        //                         // , &m_cycler
+        //                         , &m_turretready
+        //                         , &m_firing
+        //                         , &m_finished
+        //                         , CyclerConstants::kTimeLaunch))
+        //         , std::move(GetSwerveCommandPath("ball2&3", false))
+        //         , frc2::WaitCommand(0.1_s)
+        //         , frc2::InstantCommand(
+        //             [this]() {
+        //                 ZeroDrive();
+        //             }, {}
+        //         )  
+        //         , std::move(Fire(&m_secondaryController
+        //                         // , &m_flywheel
+        //                         // , &m_turret
+        //                         // , &m_hood
+        //                         // , &m_intake
+        //                         // , &m_cycler
+        //                         , &m_turretready
+        //                         , &m_firing
+        //                         , &m_finished
+        //                         , CyclerConstants::kTimeLaunch))
+        //         , std::move(GetSwerveCommandPath("ball4", false))
+        //         , frc2::WaitCommand(0.1_s)
+        //         , frc2::InstantCommand(
+        //             [this]() {
+        //                 ZeroDrive();
+        //             }, {}
+        //         )  
+        //         , std::move(Fire(&m_secondaryController
+        //                         // , &m_flywheel
+        //                         // , &m_turret
+        //                         // , &m_hood
+        //                         // , &m_intake
+        //                         // , &m_cycler
+        //                         , &m_turretready
+        //                         , &m_firing
+        //                         , &m_finished
+        //                         , CyclerConstants::kTimeLaunch))
+        //         , frc2::WaitCommand(0.1_s)
+        //         , frc2::InstantCommand(
+        //             [this]() {
+        //                 ZeroDrive();
+        //             }, {}
+        //         )  
+        //         // frc2::InstantCommand(
+        //         //     [this]() {
+        //         //         ZeroDrive();
+        //         //     }, {}
+        //         // )
+        //     );
 
         default:
              return new frc2::SequentialCommandGroup(
