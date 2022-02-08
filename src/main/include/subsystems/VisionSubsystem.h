@@ -6,6 +6,7 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <networktables/NetworkTable.h>
 #include <networktables/NetworkTableInstance.h>
+#include <photonlib/PhotonCamera.h>
 
 #include <wpi/numbers>
 
@@ -50,4 +51,5 @@ private:
     bool m_validTarget;
     vector<double> m_averageDistance;
     vector<double> m_averageAngle;
+    photonlib::PhotonCamera camera{"photonvision"};
 };

@@ -1,10 +1,11 @@
 
 #include "subsystems/VisionSubsystem.h"
+#include <iostream>
 
 
 VisionSubsystem::VisionSubsystem() 
  : m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
- , m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("limelight"))
+ , m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("photonvision"))
  , m_led(true)
  , m_tx(0)
  , m_ty(0)
@@ -17,13 +18,16 @@ VisionSubsystem::VisionSubsystem()
 
 void VisionSubsystem::Periodic()
 {
-    m_validTarget = m_networktable->GetNumber("tv", 0);
+    //m_validTarget = m_networktable->GetNumber("tv", 0);
 
     if (!m_led)
         m_validTarget = false;
 
-    m_tx = m_networktable->GetNumber("tx", 0.0);
-    m_ty = m_networktable->GetNumber("ty", 0.0);
+    // m_tx = m_networktable->GetNumber("tx", 0.0);
+    // m_ty = m_networktable->GetNumber("ty", 0.0);
+    photonlib::PhotonPipelineResult result = camera.GetLatestResult();
+    //std::cout << "PhotonCam HasTarget = " << result.HasTargets();
+    SmartDashboard::PutNumber("PhotonCam HasTarget", result.HasTargets());
 
     double verticalAngle = kMountingAngle + m_ty;    
     double horizontalAngle = m_tx;  // in degrees
@@ -39,6 +43,8 @@ void VisionSubsystem::Periodic()
         m_averageAngle.clear();
         return;
     }
+
+    std::cout << "PhotonCam HasTarget = " << result.HasTargets();
 
     m_averageDistance.push_back(distance);
     m_averageAngle.push_back(horizontalAngle);

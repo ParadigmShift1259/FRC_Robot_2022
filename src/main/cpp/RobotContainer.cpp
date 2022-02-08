@@ -8,6 +8,7 @@
 #include "RobotContainer.h"
 #include <frc2/command/button/NetworkButton.h>
 #include "AutoPaths.h"
+#include <iostream>
 
 RobotContainer::RobotContainer()
     : m_gyro()
@@ -30,7 +31,7 @@ RobotContainer::RobotContainer()
 
 void RobotContainer::Periodic() {
     SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
-
+    m_vision.Periodic();
 }
 
 void RobotContainer::SetDefaultCommands()
