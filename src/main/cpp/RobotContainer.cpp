@@ -13,8 +13,8 @@
 RobotContainer::RobotContainer()
     : m_gyro()
     , m_drive(&m_gyro)
-    // , m_vision()
-    // , m_flywheel()
+    , m_vision()
+    , m_flywheel()
 {
     m_fieldRelative = false;
 
@@ -85,15 +85,15 @@ void RobotContainer::ConfigureButtonBindings()
         )
     );
 
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kY).WhenPressed(
-    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
-    //          &m_turretready, &m_firing, &m_finished, 100.0)
-    // );
+    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kY).WhenPressed(
+        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
+             &m_turretready, &m_firing, &m_finished, 100.0)
+    );
 
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kX).WhenPressed(
-    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
-    //          &m_turretready, &m_firing, &m_finished, 200.0)
-    // );
+    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kX).WhenPressed(
+        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
+             &m_turretready, &m_firing, &m_finished, 200.0)
+    );
     frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kX).WhenPressed(
         frc2::InstantCommand(    
             [this] { 
@@ -103,18 +103,18 @@ void RobotContainer::ConfigureButtonBindings()
         )
     );
 
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kRightBumper).WhenPressed(
-    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
-    //          &m_turretready, &m_firing, &m_finished, 0.0)
-    // );
+    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kRightBumper).WhenPressed(
+        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler,
+             &m_turretready, &m_firing, &m_finished, 0.0)
+    );
 
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kA).WhenHeld(
-    //     CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed)   
-    // );
+    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kA).WhenHeld(
+        CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed)   
+    );
 
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kLeftBumper).WhenHeld(
-    //     CyclerAgitation(&m_cycler, CyclerConstants::kTurnTableSpeedHigher)   
-    // );
+    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kLeftBumper).WhenHeld(
+        CyclerAgitation(&m_cycler, CyclerConstants::kTurnTableSpeedHigher)   
+    );
 
     // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kBumperRight).WhenPressed(
     //     frc2::InstantCommand([this] { m_turret.ResetPosition(); }, { &m_turret} )
@@ -124,13 +124,13 @@ void RobotContainer::ConfigureButtonBindings()
     //     CyclerPrepare(&m_cycler, true).WithTimeout(CyclerConstants::kMaxCyclerTime)
     // );
 
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kB).WhenHeld(
-    //     IntakeRelease(&m_intake)
-    // );
+    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kB).WhenHeld(
+        IntakeRelease(&m_intake)
+    );
 
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kBack).WhenHeld(
-    //     Unjam(&m_cycler, &m_intake)
-    // );    
+    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kBack).WhenHeld(
+        Unjam(&m_cycler, &m_intake)
+    );    
 
     // frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kA).WhenPressed(
     //     frc2::InstantCommand(    

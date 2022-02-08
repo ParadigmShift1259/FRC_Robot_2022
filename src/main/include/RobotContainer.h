@@ -88,12 +88,12 @@ private:
     Team1259::Gyro m_gyro;
     DriveSubsystem m_drive;
     bool m_fieldRelative = true;
-    // VisionSubsystem m_vision; 
-    // FlywheelSubsystem m_flywheel;
-    // IntakeSubsystem m_intake;
-    // CyclerSubsystem m_cycler;
-    // TurretSubsystem m_turret = TurretSubsystem(&m_gyro);
-    // HoodSubsystem m_hood;
+    VisionSubsystem m_vision; 
+    FlywheelSubsystem m_flywheel;
+    IntakeSubsystem m_intake;
+    CyclerSubsystem m_cycler;
+    TurretSubsystem m_turret = TurretSubsystem(&m_gyro);
+    HoodSubsystem m_hood;
 
     //bool m_fieldRelative = true;
     bool m_turretready = false;
