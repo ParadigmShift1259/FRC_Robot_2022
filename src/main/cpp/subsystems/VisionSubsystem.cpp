@@ -5,7 +5,7 @@
 
 VisionSubsystem::VisionSubsystem() 
  : m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
- , m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("photonvision"))
+ , m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("gloworm"))
  , m_led(true)
  , m_tx(0)
  , m_ty(0)
@@ -28,6 +28,24 @@ void VisionSubsystem::Periodic()
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
     //std::cout << "PhotonCam HasTarget = " << result.HasTargets();
     SmartDashboard::PutNumber("PhotonCam HasTarget", result.HasTargets());
+    auto targets = result.GetTargets();
+    // photonlib::PhotonTrackedTarget targets[10] = result.GetTargets();
+    for(int i = 0; i < targets.size(); i++)
+    {
+        std::cout << i << ": " << targets[i].GetPitch() << " . ";
+    }
+    std::cout << std::endl;
+    if(result.HasTargets())
+    {
+        photonlib::PhotonTrackedTarget target = result.GetBestTarget();
+        //std::cout << "Has Target" << std::endl;
+    }
+    else
+    {
+        std::cout<< "No Target" << std::endl;
+    }
+
+    
 
     double verticalAngle = kMountingAngle + m_ty;    
     double horizontalAngle = m_tx;  // in degrees
@@ -37,6 +55,10 @@ void VisionSubsystem::Periodic()
     if ((distance < kMinTargetDistance) || (distance > kMaxTargetDistance))
         m_validTarget = false;
 
+    //std::cout << "PhotonCam HasTarget = " << result.HasTargets() << std::endl;
+    camera.SetLEDMode(photonlib::LEDMode::kDefault);
+
+
     if (!m_validTarget)
     {
         m_averageDistance.clear();
@@ -44,7 +66,7 @@ void VisionSubsystem::Periodic()
         return;
     }
 
-    std::cout << "PhotonCam HasTarget = " << result.HasTargets();
+
 
     m_averageDistance.push_back(distance);
     m_averageAngle.push_back(horizontalAngle);
