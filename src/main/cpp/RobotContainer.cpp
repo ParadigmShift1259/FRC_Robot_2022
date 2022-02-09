@@ -31,7 +31,6 @@ RobotContainer::RobotContainer()
 
 void RobotContainer::Periodic() {
     SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
-
 }
 
 void RobotContainer::SetDefaultCommands()
@@ -41,9 +40,15 @@ void RobotContainer::SetDefaultCommands()
             // up is xbox joystick y pos
             // left is xbox joystick x pos
             /// X and Y are deadzoned twice - once individually with very small values, then another with a pinwheel deadzone
-            auto xInput = Util::Deadzone(m_primaryController.GetLeftY() * -1.0, OIConstants::kDeadzoneX);
-            auto yInput = Util::Deadzone(m_primaryController.GetLeftX() * -1.0, OIConstants::kDeadzoneY);
-            if (Util::Deadzone(sqrt(pow(xInput, 2) + pow(yInput, 2)), OIConstants::kDeadzoneXY) == 0) {
+
+            auto xInput = m_primaryController.GetLeftY() * -1.0;    // The x robot axis is driven from the Y joystick axis
+            auto yInput = m_primaryController.GetLeftX() * -1.0;
+
+            xInput = Util::Deadzone(xInput, OIConstants::kDeadzoneX);
+            yInput = Util::Deadzone(yInput, OIConstants::kDeadzoneY);
+            auto magnitude = sqrt(pow(xInput, 2.0) + pow(yInput, 2.0));
+            if (Util::Deadzone(magnitude, OIConstants::kDeadzoneXY) == 0)
+            {
                 xInput = 0;
                 yInput = 0;
             }
@@ -52,8 +57,8 @@ void RobotContainer::SetDefaultCommands()
 
             m_drive.Drive(units::meters_per_second_t(xInput * AutoConstants::kMaxSpeed),
                             units::meters_per_second_t(yInput * AutoConstants::kMaxSpeed),
-                            units::angular_velocity::radians_per_second_t(rotInput),
-                            // units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
+                            //units::angular_velocity::radians_per_second_t(rotInput),
+                            units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
                             m_fieldRelative);
         },
         {&m_drive}
