@@ -1,12 +1,12 @@
-#include "commands/CyclerLaunch.h"
+#include "commands/TransferLaunch.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
-using namespace CyclerConstants;
+using namespace TransferConstants;
 
-CyclerLaunch::CyclerLaunch(CyclerSubsystem* subsystem, 
+TransferLaunch::TransferLaunch(TransferSubsystem* subsystem, 
                             bool* turretready, bool* firing, bool* finished,
                             double launchtime)
- : m_cycler(subsystem)
+ : m_transfer(subsystem)
  , m_turretready(turretready)
  , m_firing(firing)
  , m_finished(finished)
@@ -18,7 +18,7 @@ CyclerLaunch::CyclerLaunch(CyclerSubsystem* subsystem,
   *m_finished = false;
 }
 
-void CyclerLaunch::Initialize()
+void TransferLaunch::Initialize()
 {
     m_timer.Reset();
     m_timer.Stop();
@@ -27,7 +27,7 @@ void CyclerLaunch::Initialize()
     *m_finished = false;
 }
 
-void CyclerLaunch::Execute()
+void TransferLaunch::Execute()
 {    
     if (*m_turretready)
     {
@@ -37,13 +37,13 @@ void CyclerLaunch::Execute()
 
     if (*m_firing)
     {
-        m_cycler->SetTurnTable(kTurnTableSpeed);
-        m_cycler->SetFeeder(kFeederSpeed);
+        m_transfer->SetTransfer(kTransferSpeedFiring);
+        m_transfer->SetFeeder(kFeederSpeed);
     }
     else
     {
-        m_cycler->SetTurnTable(0);
-        m_cycler->SetFeeder(0);
+        m_transfer->SetTransfer(0);
+        m_transfer->SetFeeder(0);
     }
 
 
@@ -51,17 +51,16 @@ void CyclerLaunch::Execute()
     // SmartDashboard::PutBoolean("TEST_FIRING", *m_firing);
 }
 
-bool CyclerLaunch::IsFinished() {
+bool TransferLaunch::IsFinished() {
     return m_timer.Get().to<double>() > m_launchtime;
 }
 
-void CyclerLaunch::End(bool interrupted) {
+void TransferLaunch::End(bool interrupted) {
     *m_finished = true;
     *m_firing = false;
     m_timer.Stop();
-    m_cycler->ResetSensor();
-    m_cycler->SetFeeder(0);
-    m_cycler->SetTurnTable(0);
+    m_transfer->SetFeeder(0);
+    m_transfer->SetTransfer(0);
 
     // SmartDashboard::PutBoolean("TEST_FIRING", *m_firing);
 }

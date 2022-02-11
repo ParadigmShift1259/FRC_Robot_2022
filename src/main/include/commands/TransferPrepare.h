@@ -3,13 +3,12 @@
 #include <frc2/command/CommandBase.h>
 #include <frc2/command/CommandHelper.h>
 
-#include "subsystems/CyclerSubsystem.h"
+#include "subsystems/TransferSubsystem.h"
 
-#include "Constants.h"
-
-class CyclerPrepare : public frc2::CommandHelper<frc2::CommandBase, CyclerPrepare> {
+class TransferPrepare : public frc2::CommandHelper<frc2::CommandBase, TransferPrepare>
+{
 public:
-    explicit CyclerPrepare(CyclerSubsystem* subsystem, bool reset);
+    explicit TransferPrepare(TransferSubsystem* subsystem);
 
     void Initialize() override;
     void Execute() override;
@@ -17,6 +16,6 @@ public:
     void End(bool interrupted) override;
 
  private:
-    CyclerSubsystem* m_cycler;
+    TransferSubsystem* m_transfer;
     bool reset;
 };

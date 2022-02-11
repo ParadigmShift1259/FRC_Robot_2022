@@ -43,8 +43,8 @@
 #include "subsystems/TurretSubsystem.h"
 #include "subsystems/HoodSubsystem.h"
 
-#include "commands/CyclerAgitation.h"
-#include "commands/CyclerIntakeAgitation.h"
+#include "commands/TransferCmd.h"
+#include "commands/IntakeTransfer.h"
 #include "commands/IntakeIngest.h"
 #include "commands/Unjam.h"
 #include "commands/IntakeRelease.h"
@@ -91,7 +91,7 @@ private:
     VisionSubsystem m_vision; 
     FlywheelSubsystem m_flywheel;
     IntakeSubsystem m_intake;
-    CyclerSubsystem m_cycler;
+    TransferSubsystem m_transfer;
     TurretSubsystem m_turret = TurretSubsystem(&m_gyro);
     HoodSubsystem m_hood;
 

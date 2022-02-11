@@ -4,15 +4,13 @@
 #include <frc2/command/CommandHelper.h>
 #include <frc/Timer.h>
 
-#include "subsystems/CyclerSubsystem.h"
+#include "subsystems/TransferSubsystem.h"
 
-#include "commands/CyclerPrepare.h"
+#include "commands/TransferPrepare.h"
 
-#include "Constants.h"
-
-class CyclerLaunch : public frc2::CommandHelper<frc2::CommandBase, CyclerLaunch> {
+class TransferLaunch : public frc2::CommandHelper<frc2::CommandBase, TransferLaunch> {
 public:
-    explicit CyclerLaunch(CyclerSubsystem* subsystem, 
+    explicit TransferLaunch(TransferSubsystem* subsystem, 
                             bool* turretready, bool* firing, bool* finished,
                             double launchtime);
 
@@ -23,8 +21,8 @@ public:
 
 
  private:
-    CyclerSubsystem* m_cycler;
-    Timer m_timer;
+    TransferSubsystem* m_transfer;
+    frc::Timer m_timer;
     bool* m_turretready;
     bool* m_firing;
     bool* m_finished;

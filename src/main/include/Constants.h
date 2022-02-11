@@ -279,27 +279,27 @@ namespace IntakeConstants
     constexpr double kReleaseHigh = -0.70;
 }
 
-namespace CyclerConstants
+namespace TransferConstants
 {
-    constexpr double kFeederPort = 30;      //!< Feeder CAN ID (SparkMAX)
-    constexpr double kTurnTablePort = 31;   //!< Turn table CAN ID (TalonSRX)
+    constexpr double kFeederCANid = 30;      //!< Feeder CAN ID (TalonSRX)
+    constexpr double kTransferCANid = 31;   //!< Transfer CAN ID (TalonSRX)
+
+    constexpr int kFeederInputChannel = 0;
+    constexpr int kTransferInputChannel = 1;
 
     constexpr double kFeederSpeed = 0.4; //TEMP0.350;
-    constexpr double kTurnTableSpeed = 0.55; //6; //TEMP0.400;
-    constexpr double kTurnTableSpeedHigher = 0.550;
-    constexpr double kTurnTableHoneSpeed = 0.300;
+    constexpr double kTransferSpeedFiring = 0.550;
+    constexpr double kTransferSpeedIntaking = 0.300;
     constexpr units::second_t kMaxCyclerTime = 5.0_s;
 
-    constexpr double kSensorInvert = true;
-
     // Time to go from 0 to full throttle
-    constexpr double kTurnTableRampRate = 0.75;
+    constexpr double kTransferRampRate = 0.75;
 
     constexpr double kTimePassed = 0.25;
     constexpr double kTimeLaunch = 4.00;
 
     constexpr double kTimeout = 30;
-    constexpr double kTurnTableInverted = false;
+    constexpr double kTransferInverted = false;
     constexpr double kFeederInverted = true;
 }
 
