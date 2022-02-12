@@ -6,18 +6,18 @@
 
 #include "subsystems/TransferSubsystem.h"
 
-///#include "Constants.h"
-
-class TransferCmd : public frc2::CommandHelper<frc2::CommandBase, TransferCmd> {
+class TransferSecondBall : public frc2::CommandHelper<frc2::CommandBase, TransferSecondBall> {
  public:
-  explicit TransferCmd(TransferSubsystem* subsystem, double speed);
+  explicit TransferSecondBall(TransferSubsystem* subsystem, double speed);
 
   void Initialize() override;
   void Execute() override;
+  bool IsFinished() override;
   void End(bool interrupted) override;
  
  private:
   TransferSubsystem* m_transfer;
   frc::Timer m_timer;
   double m_speed;
+  int m_photoeyeCount;
 };

@@ -107,12 +107,13 @@ void RobotContainer::ConfigureButtonBindings()
     );
 
     frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kA).WhenHeld(
-        IntakeTransfer(&m_intake, &m_transfer, TransferConstants::kTurnTableSpeed)   
+        IntakeTransfer(&m_intake, &m_transfer, TransferConstants::kTransferSpeedIntaking)   
     );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kLeftBumper).WhenHeld(
-        TransferCmd(&m_transfer, TransferConstants::kTurnTableSpeedHigher)   
-    );
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kLeftBumper).WhenHeld(
+    //     TransferFirstBall(&m_transfer, TransferConstants::kTransferSpeedIntaking),
+    //     TransferSecondBall(&m_transfer, TransferConstants::kTransferSpeedIntaking)
+    // );
 
     // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kBumperRight).WhenPressed(
     //     frc2::InstantCommand([this] { m_turret.ResetPosition(); }, { &m_turret} )

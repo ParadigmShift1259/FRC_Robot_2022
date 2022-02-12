@@ -1,18 +1,18 @@
 #include "commands/Unjam.h"
 #include "Constants.h"
 
-using namespace CyclerConstants;
+using namespace TransferConstants;
 using namespace IntakeConstants;
 
-Unjam::Unjam(CyclerSubsystem* cycler, IntakeSubsystem* intake)
- : m_cycler(cycler)
+Unjam::Unjam(TransferSubsystem* transfer, IntakeSubsystem* intake)
+ : m_transfer(transfer)
  , m_intake(intake)
 {
-    AddRequirements({cycler, intake});
+    AddRequirements({transfer, intake});
 }
 
 void Unjam::Execute() {
-    m_cycler->SetTurnTable(-1.0 * kTurnTableHoneSpeed);
-    m_cycler->SetFeeder(-1.0 * kFeederSpeed);
+    m_transfer->SetTransfer(-1.0 * kTransferSpeedFiring);
+    m_transfer->SetFeeder(-1.0 * kFeederSpeed);
     m_intake->Set(kReleaseHigh);
 }

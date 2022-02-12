@@ -1,7 +1,8 @@
 #include "commands/IntakeTransfer.h"
 #include "Constants.h"
 
-#include "commands/TransferCmd.h"
+#include "commands/TransferFirstBall.h"
+#include "commands/TransferSecondBall.h"
 #include "commands/IntakeIngest.h"
 
 IntakeTransfer::IntakeTransfer(IntakeSubsystem* intake, TransferSubsystem* transfer, double speed)
@@ -10,6 +11,7 @@ IntakeTransfer::IntakeTransfer(IntakeSubsystem* intake, TransferSubsystem* trans
     // Running intake
     IntakeIngest(intake),
     // Move ball to photoeye
-    TransferCmd(transfer, speed)
+    TransferFirstBall(transfer, speed),
+    TransferSecondBall(transfer, speed)
   );
 }

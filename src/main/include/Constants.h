@@ -290,7 +290,7 @@ namespace TransferConstants
     constexpr double kFeederSpeed = 0.4; //TEMP0.350;
     constexpr double kTransferSpeedFiring = 0.550;
     constexpr double kTransferSpeedIntaking = 0.300;
-    constexpr units::second_t kMaxCyclerTime = 5.0_s;
+    ///constexpr units::second_t kMaxCyclerTime = 5.0_s;
 
     // Time to go from 0 to full throttle
     constexpr double kTransferRampRate = 0.75;

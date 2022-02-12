@@ -42,3 +42,11 @@ bool TransferSubsystem::AtFeederPosition()
 {
     return m_transferphotoeye.Get();
 }
+
+bool TransferSubsystem::GetTransferPhotoeye() {
+    return m_transferphotoeye.Get();
+}
+
+bool TransferSubsystem::GetFeederPhotoeye() {
+    return m_feederphotoeye.Get();
+}

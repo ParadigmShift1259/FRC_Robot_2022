@@ -39,6 +39,10 @@ public:
      /// \return Whether or not the transfer sensor is being blocked
     bool AtFeederPosition();
 
+    bool GetTransferPhotoeye();
+
+    bool GetFeederPhotoeye();
+
 private:
     /// 775 that feeds balls from transfer into shooter
     TalonSRX m_feedermotor;

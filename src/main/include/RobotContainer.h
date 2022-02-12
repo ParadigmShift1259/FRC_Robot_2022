@@ -43,7 +43,8 @@
 #include "subsystems/TurretSubsystem.h"
 #include "subsystems/HoodSubsystem.h"
 
-#include "commands/TransferCmd.h"
+#include "commands/TransferFirstBall.h"
+#include "commands/TransferSecondBall.h"
 #include "commands/IntakeTransfer.h"
 #include "commands/IntakeIngest.h"
 #include "commands/Unjam.h"
