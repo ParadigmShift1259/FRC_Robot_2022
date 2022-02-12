@@ -2,6 +2,7 @@
 #include "subsystems/VisionSubsystem.h"
 #include <iostream>
 #include <vector>
+#include <photonlib/PhotonUtils.h>
 
 
 
@@ -19,96 +20,120 @@ VisionSubsystem::VisionSubsystem()
 }
 
 void VisionSubsystem::Periodic()
-{
+    {
+
     static unsigned counter = 0; 
     counter++;
     bool willPrint = false;
     if (counter % 50 == 0)
         willPrint = true;
 
-    //m_validTarget = m_networktable->GetNumber("tv", 0);
-
-    if (!m_led)
-        m_validTarget = false;
-
-    // m_tx = m_networktable->GetNumber("tx", 0.0);
-    // m_ty = m_networktable->GetNumber("ty", 0.0);
-    photonlib::PhotonPipelineResult result = camera.GetLatestResult();
-    //std::cout << "PhotonCam HasTarget = " << result.HasTargets();
-    SmartDashboard::PutNumber("PhotonCam HasTarget", result.HasTargets());
-    auto targets = result.GetTargets();
-
-    //Get List of Points
-    if(!m_allPoints.empty())
-    {
-        m_allPoints.clear();
-    }
-    for(int i = 0; i < targets.size(); i++)
-    {
-        wpi::SmallVector<std::pair<double, double>, 4> corners = targets[i].GetCorners();
-        for (int j = 0; j < corners.size(); j++)
-        {
-            m_allPoints.push_back(corners[j]);
-        }
-    }
-    
-    double totalX = 0, totalY = 0;
-    for(int i = 0; i < 4; i++)
-    {
-        totalX += m_allPoints[i].first;
-        totalY += m_allPoints[i].second;
-    }
-    std::pair<double, double> center;
-    center.first = totalX/4;
-    center.second = totalY/4;
-
-
-    if(willPrint)
-    {
-        std::cout<< "(" << center.first<< ", " << center.second<< ")"<< std::endl;
-    }
-
-
-
-
-
-    
-
-    double verticalAngle = kMountingAngle + m_ty;    
-    double horizontalAngle = m_tx;  // in degrees
-    
-    double distance = (kTargetHeight - kMountingHeight) / tanf(Util::DegreesToRadians(verticalAngle));
-    
-    if ((distance < kMinTargetDistance) || (distance > kMaxTargetDistance))
-        m_validTarget = false;
-
-    //std::cout << "PhotonCam HasTarget = " << result.HasTargets() << std::endl;
     camera.SetLEDMode(photonlib::LEDMode::kDefault);
 
+    photonlib::PhotonPipelineResult result = camera.GetLatestResult();
+    bool m_validTarget = result.HasTargets();
+    vector<frc::Translation2d> targetVectors;
+    frc::Translation2d center;
+    if (m_validTarget)
+        {
+        auto targets = result.GetTargets();
 
-    if (!m_validTarget)
-    {
-        m_averageDistance.clear();
-        m_averageAngle.clear();
-        return;
-    }
+        //Get List of Points
+        //if(!m_allPoints.empty())
+        
+        //Gets Vectors for each target
+        for(int i = 0; i < targets.size(); i++)
+        {
+            units::meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
+                units::inch_t{37}, units::inch_t{8*12 + 8}, units::degree_t{18.8}, units::degree_t{targets[i].GetPitch()});
+            targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(units::degree_t{-targets[i].GetYaw()})));
+        }
+        
+        //Gets all Centers of Targets
+        m_centerPoints.clear();
+        for(int i =0; i< targets.size(); i++)
+        {
+            double totalX = 0, totalY = 0;
+            auto corners = targets[i].GetCorners();
+            for(int j = 0; j < 4; j++)
+                {
+                    totalX += corners[j].first;
+                    totalY += corners[j].second;
+                }
+            double meanX = totalX/4;
+            double meanY = totalY/4;
 
+           m_centerPoints.push_back(std::pair<double, double> (meanX, meanY));
+        }
+        double radius = 0.601;
+        double xSum = 0.0;
+        double ySum = 0.0;
+        for (int i = 0; i < targetVectors.size(); i++) 
+        {
+            xSum += (double) targetVectors[i].X();
+            ySum += (double) targetVectors[i].Y();
+        }
+        center = Translation2d(units::meter_t{xSum / targetVectors.size() + radius}, units::meter_t{ySum / targetVectors.size()});
 
+        // Iterate to find optimal center
+        double shiftDist = radius / 2.0;
+        double minResidual = calcResidual(radius, targetVectors, center);
+        while (true) {
+        vector<frc::Translation2d> translations;
+        translations.push_back(Translation2d(units::meter_t{shiftDist}, units::meter_t{0.0}));
+        translations.push_back(Translation2d(units::meter_t{-shiftDist}, units::meter_t{0.0}));
+        translations.push_back(Translation2d(units::meter_t{0.0}, units::meter_t{shiftDist}));
+        translations.push_back(Translation2d(units::meter_t{0.0}, units::meter_t{-shiftDist}));
+        frc::Translation2d bestPoint = center;
+        bool centerIsBest = true;
 
-    m_averageDistance.push_back(distance);
-    m_averageAngle.push_back(horizontalAngle);
+        // Check all adjacent positions
+        for (int i = 0; i < translations.size(); i++) 
+        {
+            double residual =
+                calcResidual(radius, targetVectors, center + (translations[i]));
+            if (residual < minResidual) {
+            bestPoint = center + (translations[i]);
+            minResidual = residual;
+            centerIsBest = false;
+            break;
+            }
+        }
+        double precision = 0.01;
+        // Decrease shift, exit, or continue
+        if (centerIsBest) {
+            shiftDist /= 2.0;
+            if (shiftDist < precision) {
+            break;
+            }
+        } else {
+            center = bestPoint;
+        }
+        }
 
-    if (m_averageDistance.size() > 3)
-    m_averageDistance.erase(m_averageDistance.begin());
+        
 
-    if (m_averageAngle.size() > 3)
-        m_averageAngle.erase(m_averageAngle.begin());
+        }
 
+    if(willPrint)
+        {
+        if (!m_validTarget)
+            std::cout << "PhotonCam Has No Targets!" << std::endl;
+        else
+            {
+                std::cout << "Center: (" << (double)center.X() << "," << (double)center.Y() << "). ";
+                std::cout << "Target Vectors: ";
+                for(int i = 0; i < targetVectors.size(); i++) {
+                    //std::cout << "(" << m_centerPoints[i].first << "," << m_centerPoints[i].second << "). ";
+                    std::cout << "(" << (double)targetVectors[i].X() << "," << (double)targetVectors[i].Y() << "). ";
+                }
+                std::cout << std::endl;
+            }
+        }
+ 
     SmartDashboard::PutNumber("D_V_Active", m_validTarget);
-    SmartDashboard::PutNumber("D_V_Distance", distance);
+    // SmartDashboard::PutNumber("D_V_Distance", distance);
     // SmartDashboard::PutNumber("D_V_Angle", m_horizontalangle);
-    SmartDashboard::PutNumber("D_V_Average Distance", GetDistance());
-    SmartDashboard::PutNumber("D_V_Average Angle", GetAngle());
 }
 
 bool VisionSubsystem::GetValidTarget()
@@ -140,4 +165,14 @@ void VisionSubsystem::SetLED(bool on)
         /// 1 forces limelight led off
         m_networktable->PutNumber("ledMode", 1);
     }
+}
+
+double VisionSubsystem::calcResidual(double radius, vector<frc::Translation2d> points, frc::Translation2d center)
+{
+    double residual = 0.0;
+    for (int i = 0; i < points.size(); i++) {
+      double diff = (double) (points[i].Distance(center) - units::meter_t{radius});
+      residual += diff * diff;
+    }
+    return residual;
 }

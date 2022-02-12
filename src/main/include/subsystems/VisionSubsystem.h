@@ -7,6 +7,7 @@
 #include <networktables/NetworkTable.h>
 #include <networktables/NetworkTableInstance.h>
 #include <photonlib/PhotonCamera.h>
+#include <vector>
 
 #include <wpi/numbers>
 
@@ -36,6 +37,8 @@ public:
     /// \param on        Boolean where true = LED on
     void SetLED(bool on);
 
+    double calcResidual(double radius, vector<frc::Translation2d> points, frc::Translation2d center);
+
 protected:
     /// Converts degrees to radians
     /// \param degrees Degrees to convert
@@ -52,5 +55,5 @@ private:
     vector<double> m_averageDistance;
     vector<double> m_averageAngle;
     photonlib::PhotonCamera camera{"gloworm"};
-    std::vector<std::pair<double, double>> m_allPoints;
+    std::vector<std::pair<double, double>> m_centerPoints;
 };
