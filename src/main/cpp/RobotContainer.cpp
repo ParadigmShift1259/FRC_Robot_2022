@@ -7,7 +7,6 @@
 
 #include "RobotContainer.h"
 #include <frc2/command/button/NetworkButton.h>
-
 #include "AutoPaths.h"
 
 RobotContainer::RobotContainer()
@@ -47,7 +46,8 @@ void RobotContainer::SetDefaultCommands()
 
             m_drive.Drive(units::meters_per_second_t(xInput * AutoConstants::kMaxSpeed),
                             units::meters_per_second_t(yInput * AutoConstants::kMaxSpeed),
-                            units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
+                            units::angular_velocity::radians_per_second_t(rotInput),
+                            // units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
                             m_fieldRelative);
         },
         {&m_drive}
@@ -141,10 +141,71 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                 ),
                 frc2::InstantCommand(
                     [this]() {
+                        m_intake.Set(IntakeConstants::kIngestHigh);
+                    }, {}
+                )                  
+                , std::move(GetSwerveCommandPath("ball1", true))
+                , frc2::WaitCommand(0.1_s)
+                , frc2::InstantCommand(
+                    [this]() {
                         ZeroDrive();
                     }, {}
-                )
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
+                )                
+                , std::move(Fire(&m_secondaryController
+                                , &m_flywheel
+                                , &m_turret
+                                , &m_hood
+                                , &m_intake
+                                , &m_cycler
+                                , &m_turretready
+                                , &m_firing
+                                , &m_finished
+                                , CyclerConstants::kTimeLaunch))
+                , std::move(GetSwerveCommandPath("ball2&3", false))
+                , frc2::WaitCommand(0.1_s)
+                , frc2::InstantCommand(
+                    [this]() {
+                        ZeroDrive();
+                    }, {}
+                )  
+                , std::move(Fire(&m_secondaryController
+                                , &m_flywheel
+                                , &m_turret
+                                , &m_hood
+                                , &m_intake
+                                , &m_cycler
+                                , &m_turretready
+                                , &m_firing
+                                , &m_finished
+                                , CyclerConstants::kTimeLaunch))
+                , std::move(GetSwerveCommandPath("ball4", false))
+                , frc2::WaitCommand(0.1_s)
+                , frc2::InstantCommand(
+                    [this]() {
+                        ZeroDrive();
+                    }, {}
+                )  
+                , std::move(Fire(&m_secondaryController
+                                , &m_flywheel
+                                , &m_turret
+                                , &m_hood
+                                , &m_intake
+                                , &m_cycler
+                                , &m_turretready
+                                , &m_firing
+                                , &m_finished
+                                , CyclerConstants::kTimeLaunch))
+                , frc2::WaitCommand(0.1_s)
+                , frc2::InstantCommand(
+                    [this]() {
+                        ZeroDrive();
+                    }, {}
+                )  
+                // frc2::InstantCommand(
+                //     [this]() {
+                //         ZeroDrive();
+                //     }, {}
+                // )
             );
 
         default:
@@ -203,13 +264,37 @@ frc::Trajectory RobotContainer::convertArrayToTrajectory(double a[][6], int leng
     return frc::Trajectory(states);
 }
 
+frc::Trajectory RobotContainer::convertPathToTrajectory(PathPlannerTrajectory path)
+{
+    std::vector<frc::Trajectory::State> states;
+    for (double time = 0; time < path.getTotalTime().to<double>(); time += 0.02)
+    {
+        PathPlannerTrajectory::PathPlannerState state = path.sample(time * 1_s);
+        //printf("time %.3f holorot %.3f\n", state.holonomicRotation.Degrees().to<double>());
+        states.push_back({
+            time * 1_s,
+            state.velocity,
+            state.acceleration, 
+            frc::Pose2d(
+                state.pose.X(),
+                state.pose.Y(),
+                state.holonomicRotation
+            ),
+            curvature_t(0)
+        });
+    }
+    return frc::Trajectory(states);
+}
+
 void RobotContainer::PrintTrajectory(frc::Trajectory& trajectory)
 {
+    printf("Time,X,Y,HoloRot\n");
     for (auto &state:trajectory.States())
     {
         double time = state.t.to<double>();
         double x = state.pose.X().to<double>();
         double y = state.pose.Y().to<double>();
-        printf("%.3f, %.3f, %.3f\n", time, x, y);
+        double holoRot = state.pose.Rotation().Degrees().to<double>();
+        printf("%.3f,%.3f,%.3f,%.3f\n", time, x, y, holoRot);
     }
 }
