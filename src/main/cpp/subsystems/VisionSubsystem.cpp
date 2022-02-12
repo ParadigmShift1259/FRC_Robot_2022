@@ -1,6 +1,8 @@
 
 #include "subsystems/VisionSubsystem.h"
 #include <iostream>
+#include <vector>
+
 
 
 VisionSubsystem::VisionSubsystem() 
@@ -18,6 +20,12 @@ VisionSubsystem::VisionSubsystem()
 
 void VisionSubsystem::Periodic()
 {
+    static unsigned counter = 0; 
+    counter++;
+    bool willPrint = false;
+    if (counter % 50 == 0)
+        willPrint = true;
+
     //m_validTarget = m_networktable->GetNumber("tv", 0);
 
     if (!m_led)
@@ -29,21 +37,40 @@ void VisionSubsystem::Periodic()
     //std::cout << "PhotonCam HasTarget = " << result.HasTargets();
     SmartDashboard::PutNumber("PhotonCam HasTarget", result.HasTargets());
     auto targets = result.GetTargets();
-    // photonlib::PhotonTrackedTarget targets[10] = result.GetTargets();
+
+    //Get List of Points
+    if(!m_allPoints.empty())
+    {
+        m_allPoints.clear();
+    }
     for(int i = 0; i < targets.size(); i++)
     {
-        std::cout << i << ": " << targets[i].GetPitch() << " . ";
+        wpi::SmallVector<std::pair<double, double>, 4> corners = targets[i].GetCorners();
+        for (int j = 0; j < corners.size(); j++)
+        {
+            m_allPoints.push_back(corners[j]);
+        }
     }
-    std::cout << std::endl;
-    if(result.HasTargets())
+    
+    double totalX = 0, totalY = 0;
+    for(int i = 0; i < 4; i++)
     {
-        photonlib::PhotonTrackedTarget target = result.GetBestTarget();
-        //std::cout << "Has Target" << std::endl;
+        totalX += m_allPoints[i].first;
+        totalY += m_allPoints[i].second;
     }
-    else
+    std::pair<double, double> center;
+    center.first = totalX/4;
+    center.second = totalY/4;
+
+
+    if(willPrint)
     {
-        std::cout<< "No Target" << std::endl;
+        std::cout<< "(" << center.first<< ", " << center.second<< ")"<< std::endl;
     }
+
+
+
+
 
     
 

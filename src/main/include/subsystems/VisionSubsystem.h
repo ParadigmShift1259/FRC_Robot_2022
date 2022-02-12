@@ -52,4 +52,5 @@ private:
     vector<double> m_averageDistance;
     vector<double> m_averageAngle;
     photonlib::PhotonCamera camera{"gloworm"};
+    std::vector<std::pair<double, double>> m_allPoints;
 };
