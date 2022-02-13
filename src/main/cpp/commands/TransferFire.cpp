@@ -37,8 +37,8 @@ void TransferFire::Execute()
 
     if (*m_firing)
     {
-        m_transfer->SetTransfer(kTransferSpeedFiring);
-        m_transfer->SetFeeder(kFeederSpeed);
+        m_transfer->SetTransfer(kSpeedFiring);
+        m_transfer->SetFeeder(kSpeedFiring);
     }
     else
     {

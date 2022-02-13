@@ -13,7 +13,7 @@ TransferSubsystem::TransferSubsystem()
     m_transfermotor.SetInverted(kTransferInverted);
     m_transfermotor.ConfigOpenloopRamp(kTransferRampRate, kTimeout);
 
-    m_feedermotor.SetNeutralMode(NeutralMode::Coast);
+    m_feedermotor.SetNeutralMode(NeutralMode::Brake);
     m_feedermotor.SetInverted(kFeederInverted);
 }
 

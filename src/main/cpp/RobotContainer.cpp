@@ -29,12 +29,21 @@ RobotContainer::RobotContainer()
 }
 
 void RobotContainer::Periodic() {
-    SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
-
+    //SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
+    SmartDashboard::PutData("DriveSS", &m_drive);
+    SmartDashboard::PutData("FlywheelSS", &m_flywheel);
+    SmartDashboard::PutData("HoodSS", &m_hood);
+    SmartDashboard::PutData("IntakeSS", &m_intake);
+    SmartDashboard::PutData("TransferSS", &m_transfer);
+    SmartDashboard::PutData("TurretSS", &m_turret);
+    SmartDashboard::PutData("VisionSS", &m_vision);
+    m_drive.Periodic();
 }
 
 void RobotContainer::SetDefaultCommands()
 {
+//#define USE_DRIVE
+#ifdef USE_DRIVE
     m_drive.SetDefaultCommand(frc2::RunCommand(
         [this] {
             // up is xbox joystick y pos
@@ -56,6 +65,7 @@ void RobotContainer::SetDefaultCommands()
         },
         {&m_drive}
     ));
+#endif
     // m_flywheel.SetDefaultCommand(
     //     frc2::RunCommand(
     //         [this] {

@@ -2,9 +2,12 @@
 #pragma once
 
 #include <frc2/command/SubsystemBase.h>
-#include <frc/motorcontrol/Spark.h>
+#include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
 
 #include "Constants.h"
+
+using namespace ctre::phoenix::motorcontrol;
+using namespace ctre::phoenix::motorcontrol::can;
 
 class IntakeSubsystem : public frc2::SubsystemBase
 {
@@ -21,5 +24,5 @@ public:
 
 private:
     /// 665 that runs intake
-    frc::Spark m_motor;
+    TalonSRX m_motor;
 };

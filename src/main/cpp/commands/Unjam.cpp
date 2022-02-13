@@ -12,7 +12,7 @@ Unjam::Unjam(TransferSubsystem* transfer, IntakeSubsystem* intake)
 }
 
 void Unjam::Execute() {
-    m_transfer->SetTransfer(-1.0 * kTransferSpeedFiring);
+    m_transfer->SetTransfer(-1.0 * kTransferSpeedIntaking);
     m_transfer->SetFeeder(-1.0 * kFeederSpeed);
     m_intake->Set(kReleaseHigh);
 }

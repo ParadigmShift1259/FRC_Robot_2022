@@ -13,6 +13,8 @@ IntakeSubsystem::IntakeSubsystem()
     : m_motor(kMotorPort)
 {
 
+    m_motor.SetNeutralMode(NeutralMode::Coast);
+
 }
 
 void IntakeSubsystem::Periodic()
@@ -22,5 +24,5 @@ void IntakeSubsystem::Periodic()
 
 void IntakeSubsystem::Set(double speed) 
 {
-    m_motor.Set(speed * kMotorReverseConstant);
+    m_motor.Set(ControlMode::PercentOutput, speed * kMotorReverseConstant);
 }
