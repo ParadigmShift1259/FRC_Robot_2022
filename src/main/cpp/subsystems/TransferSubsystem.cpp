@@ -4,10 +4,10 @@
 using namespace TransferConstants;
 
 TransferSubsystem::TransferSubsystem()
-    : m_feedermotor(kFeederCANid)
-    , m_transfermotor(kTransferCANid)
-    , m_feederphotoeye(kFeederInputChannel) 
+    : m_transfermotor(kTransferCANid)
+    , m_feedermotor(kFeederCANid)
     , m_transferphotoeye(kTransferInputChannel)
+    , m_feederphotoeye(kFeederInputChannel) 
 {
     m_transfermotor.SetNeutralMode(NeutralMode::Brake);
     m_transfermotor.SetInverted(kTransferInverted);

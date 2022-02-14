@@ -241,11 +241,11 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_turret
                                 , &m_hood
                                 , &m_intake
-                                , &m_cycler
+                                , &m_transfer
                                 , &m_turretready
                                 , &m_firing
                                 , &m_finished
-                                , CyclerConstants::kTimeLaunch))
+                                , TransferConstants::kTimeLaunch))
                 , std::move(GetSwerveCommandPath("ball2&3", false))
                 , frc2::WaitCommand(0.1_s)
                 , frc2::InstantCommand(
@@ -258,11 +258,11 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_turret
                                 , &m_hood
                                 , &m_intake
-                                , &m_cycler
+                                , &m_transfer
                                 , &m_turretready
                                 , &m_firing
                                 , &m_finished
-                                , CyclerConstants::kTimeLaunch))
+                                , TransferConstants::kTimeLaunch))
                 , std::move(GetSwerveCommandPath("ball4", false))
                 , frc2::WaitCommand(0.1_s)
                 , frc2::InstantCommand(
@@ -275,11 +275,11 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_turret
                                 , &m_hood
                                 , &m_intake
-                                , &m_cycler
+                                , &m_transfer
                                 , &m_turretready
                                 , &m_firing
                                 , &m_finished
-                                , CyclerConstants::kTimeLaunch))
+                                , TransferConstants::kTimeLaunch))
                 , frc2::WaitCommand(0.1_s)
                 , frc2::InstantCommand(
                     [this]() {
@@ -312,11 +312,11 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
         //                         // , &m_turret
         //                         // , &m_hood
         //                         // , &m_intake
-        //                         // , &m_cycler
+        //                         // , &m_transfer
         //                         , &m_turretready
         //                         , &m_firing
         //                         , &m_finished
-        //                         , CyclerConstants::kTimeLaunch))
+        //                         , TransferConstants::kTimeLaunch))
         //         , std::move(GetSwerveCommandPath("ball2&3", false))
         //         , frc2::WaitCommand(0.1_s)
         //         , frc2::InstantCommand(
@@ -329,11 +329,11 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
         //                         // , &m_turret
         //                         // , &m_hood
         //                         // , &m_intake
-        //                         // , &m_cycler
+        //                         // , &m_transfer
         //                         , &m_turretready
         //                         , &m_firing
         //                         , &m_finished
-        //                         , CyclerConstants::kTimeLaunch))
+        //                         , TransferConstants::kTimeLaunch))
         //         , std::move(GetSwerveCommandPath("ball4", false))
         //         , frc2::WaitCommand(0.1_s)
         //         , frc2::InstantCommand(
@@ -346,11 +346,11 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
         //                         // , &m_turret
         //                         // , &m_hood
         //                         // , &m_intake
-        //                         // , &m_cycler
+        //                         // , &m_transfer
         //                         , &m_turretready
         //                         , &m_firing
         //                         , &m_finished
-        //                         , CyclerConstants::kTimeLaunch))
+        //                         , TransferConstants::kTimeLaunch))
         //         , frc2::WaitCommand(0.1_s)
         //         , frc2::InstantCommand(
         //             [this]() {

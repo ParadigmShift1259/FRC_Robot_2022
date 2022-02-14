@@ -44,10 +44,10 @@ public:
     bool GetFeederPhotoeye();
 
 private:
-    /// 775 that feeds balls from transfer into shooter
-    TalonSRX m_feedermotor;
     /// 775 that shuffles balls around in the transfer system
     TalonSRX m_transfermotor;
+    /// 775 that feeds balls from transfer into shooter
+    TalonSRX m_feedermotor;
     /// Photoeye to sense the ball on the transfer system
     frc::DigitalInput m_transferphotoeye;
     /// Photoeye to sense the ball on the transfer system
