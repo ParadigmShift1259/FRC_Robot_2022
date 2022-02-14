@@ -53,6 +53,7 @@ void SwerveModule::Periodic()
     if (m_timer.Get() < 5_s)
         ResetRelativeToAbsolute();
 
+//    double absAngle = CalcAbsoluteAngle();
     double absAngle = CalcAbsoluteAngle();
     SmartDashboard::PutNumber("D_SM_Rel " + m_name, m_turnRelativeEncoder.GetPosition());
     SmartDashboard::PutNumber("D_SM_Abs " + m_name, absAngle);
@@ -65,7 +66,8 @@ void SwerveModule::Periodic()
 SwerveModuleState SwerveModule::GetState()
 {
     /// Why do we find the absolute angle here instead of the relative angle?
-    return { CalcMetersPerSec(), Rotation2d(radian_t(CalcAbsoluteAngle()))};
+//    return { CalcMetersPerSec(), Rotation2d(radian_t(CalcAbsoluteAngle()))};
+    return { CalcMetersPerSec(), Rotation2d(radian_t(m_turnRelativeEncoder.GetPosition()))};
 }
 
 void SwerveModule::SetDesiredState(SwerveModuleState &state)

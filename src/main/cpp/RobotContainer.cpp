@@ -7,6 +7,7 @@
 
 #include "RobotContainer.h"
 #include <frc2/command/button/NetworkButton.h>
+#include <frc2/command/WaitCommand.h>
 #include "AutoPaths.h"
 
 RobotContainer::RobotContainer()
@@ -23,10 +24,13 @@ RobotContainer::RobotContainer()
     m_chooser.AddOption("Example 2", AutoPath::kEx2);
     m_chooser.AddOption("Example 3", AutoPath::kEx3);
     m_chooser.AddOption("Example 4", AutoPath::kEx4);
+    m_chooser.AddOption("Example 5", AutoPath::kEx5);
     frc::SmartDashboard::PutData("Auto Path", &m_chooser);
 }
 
-void RobotContainer::Periodic() {}
+void RobotContainer::Periodic() {
+    SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
+}
 
 void RobotContainer::SetDefaultCommands()
 {
@@ -35,9 +39,15 @@ void RobotContainer::SetDefaultCommands()
             // up is xbox joystick y pos
             // left is xbox joystick x pos
             /// X and Y are deadzoned twice - once individually with very small values, then another with a pinwheel deadzone
-            auto xInput = Util::Deadzone(m_primaryController.GetLeftY() * -1.0, OIConstants::kDeadzoneX);
-            auto yInput = Util::Deadzone(m_primaryController.GetLeftX() * -1.0, OIConstants::kDeadzoneY);
-            if (Util::Deadzone(sqrt(pow(xInput, 2) + pow(yInput, 2)), OIConstants::kDeadzoneXY) == 0) {
+
+            auto xInput = m_primaryController.GetLeftY() * -1.0;    // The x robot axis is driven from the Y joystick axis
+            auto yInput = m_primaryController.GetLeftX() * -1.0;
+
+            xInput = Util::Deadzone(xInput, OIConstants::kDeadzoneX);
+            yInput = Util::Deadzone(yInput, OIConstants::kDeadzoneY);
+            auto magnitude = sqrt(pow(xInput, 2.0) + pow(yInput, 2.0));
+            if (Util::Deadzone(magnitude, OIConstants::kDeadzoneXY) == 0)
+            {
                 xInput = 0;
                 yInput = 0;
             }
@@ -46,8 +56,8 @@ void RobotContainer::SetDefaultCommands()
 
             m_drive.Drive(units::meters_per_second_t(xInput * AutoConstants::kMaxSpeed),
                             units::meters_per_second_t(yInput * AutoConstants::kMaxSpeed),
-                            units::angular_velocity::radians_per_second_t(rotInput),
-                            // units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
+                            //units::angular_velocity::radians_per_second_t(rotInput),
+                            units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
                             m_fieldRelative);
         },
         {&m_drive}
@@ -94,11 +104,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
     {
         case kEx1:
             return new frc2::SequentialCommandGroup(
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler, &m_vision, &m_turretready, &m_firing, &m_finished, 2.0),
-                frc2::ParallelRaceGroup(
-                    // CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed),
-                    std::move(GetSwerveCommand(left3, sizeof(left3) / sizeof(left3[0]), true))
-                ),
+                std::move(GetSwerveCommandPath("ball1", true)),
                 frc2::InstantCommand(
                     [this]() {
                         ZeroDrive();
@@ -109,7 +115,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
         case kEx2:
             return new frc2::SequentialCommandGroup(
-                std::move(GetSwerveCommand(mid0, sizeof(mid0) / sizeof(mid0[0]), true)),
+                std::move(GetSwerveCommandPath("ball2", true)),
                 frc2::InstantCommand(
                     [this]() {
                         ZeroDrive();
@@ -120,11 +126,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
         case kEx3:
             return new frc2::SequentialCommandGroup(
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_cycler, &m_vision, &m_turretready, &m_firing, &m_finished, 1.8),
-                frc2::ParallelRaceGroup(
-                    // CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed),
-                    std::move(GetSwerveCommand(mid5, sizeof(mid5) / sizeof(mid5[0]), true))
-                ),
+                std::move(GetSwerveCommandPath("ball3", true)),
                 frc2::InstantCommand(
                     [this]() {
                         ZeroDrive();
@@ -135,10 +137,6 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
         case kEx4:
             return new frc2::SequentialCommandGroup(
-                frc2::ParallelRaceGroup(
-                    // CyclerIntakeAgitation(&m_intake, &m_cycler, CyclerConstants::kTurnTableSpeed),
-                    std::move(GetSwerveCommand(right2, sizeof(right2) / sizeof(right2[0]), true))
-                ),
                 frc2::InstantCommand(
                     [this]() {
                         m_intake.Set(IntakeConstants::kIngestHigh);
@@ -208,6 +206,77 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                 // )
             );
 
+        // case kEx5:
+        //     return new frc2::SequentialCommandGroup(
+        //         frc2::InstantCommand(
+        //             [this]() {
+        //                 m_intake.Set(IntakeConstants::kIngestHigh);
+        //             }, {}
+        //         )                  
+        //         , std::move(GetSwerveCommandPath("ball1", true))
+        //         , frc2::WaitCommand(0.1_s)
+        //         , frc2::InstantCommand(
+        //             [this]() {
+        //                 ZeroDrive();
+        //             }, {}
+        //         )                
+        //         , std::move(Fire(&m_secondaryController
+        //                         // , &m_flywheel
+        //                         // , &m_turret
+        //                         // , &m_hood
+        //                         // , &m_intake
+        //                         // , &m_cycler
+        //                         , &m_turretready
+        //                         , &m_firing
+        //                         , &m_finished
+        //                         , CyclerConstants::kTimeLaunch))
+        //         , std::move(GetSwerveCommandPath("ball2&3", false))
+        //         , frc2::WaitCommand(0.1_s)
+        //         , frc2::InstantCommand(
+        //             [this]() {
+        //                 ZeroDrive();
+        //             }, {}
+        //         )  
+        //         , std::move(Fire(&m_secondaryController
+        //                         // , &m_flywheel
+        //                         // , &m_turret
+        //                         // , &m_hood
+        //                         // , &m_intake
+        //                         // , &m_cycler
+        //                         , &m_turretready
+        //                         , &m_firing
+        //                         , &m_finished
+        //                         , CyclerConstants::kTimeLaunch))
+        //         , std::move(GetSwerveCommandPath("ball4", false))
+        //         , frc2::WaitCommand(0.1_s)
+        //         , frc2::InstantCommand(
+        //             [this]() {
+        //                 ZeroDrive();
+        //             }, {}
+        //         )  
+        //         , std::move(Fire(&m_secondaryController
+        //                         // , &m_flywheel
+        //                         // , &m_turret
+        //                         // , &m_hood
+        //                         // , &m_intake
+        //                         // , &m_cycler
+        //                         , &m_turretready
+        //                         , &m_firing
+        //                         , &m_finished
+        //                         , CyclerConstants::kTimeLaunch))
+        //         , frc2::WaitCommand(0.1_s)
+        //         , frc2::InstantCommand(
+        //             [this]() {
+        //                 ZeroDrive();
+        //             }, {}
+        //         )  
+        //         // frc2::InstantCommand(
+        //         //     [this]() {
+        //         //         ZeroDrive();
+        //         //     }, {}
+        //         // )
+        //     );
+
         default:
              return new frc2::SequentialCommandGroup(
                 frc2::InstantCommand(
@@ -217,6 +286,38 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                 )
             );
     }
+}
+
+frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> RobotContainer::GetSwerveCommandPath(string pathName, bool primaryPath)
+{
+    PathPlannerTrajectory path = PathPlanner::loadPath(pathName, AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration);
+    // PathPlannerTrajectory path = PathPlanner::loadPath(pathName, 1.0 * 1_mps, 2.0 * 1_mps_sq);
+
+    frc::Trajectory trajectory = convertPathToTrajectory(path);
+    PrintTrajectory(trajectory);
+
+    frc::ProfiledPIDController<units::radians> thetaController{
+        AutoConstants::kPThetaController, 0, AutoConstants::kDThetaController,
+        AutoConstants::kThetaControllerConstraints};
+
+    thetaController.EnableContinuousInput(units::radian_t(-wpi::numbers::pi), units::radian_t(wpi::numbers::pi));
+
+    frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> swerveControllerCommand(
+        trajectory,                                                             // frc::Trajectory
+        [this]() { return m_drive.GetPose(); },                                 // std::function<frc::Pose2d()>
+        m_drive.kDriveKinematics,                                               // frc::SwerveDriveKinematics<NumModules>
+        frc2::PIDController(AutoConstants::kPXController, 0, AutoConstants::kDXController),                // frc2::PIDController
+        frc2::PIDController(AutoConstants::kPYController, 0, AutoConstants::kDYController),                // frc2::PIDController
+        thetaController,                                                        // frc::ProfiledPIDController<units::radians>
+        [this](auto moduleStates) { m_drive.SetModuleStates(moduleStates); },   // std::function< void(std::array<frc::SwerveModuleState, NumModules>)>
+        {&m_drive}                                                              // std::initializer_list<Subsystem*> requirements
+    );
+
+    // Reset odometry to the starting pose of the trajectory
+    if(primaryPath)
+        m_drive.ResetOdometry(trajectory.InitialPose());
+
+    return swerveControllerCommand;
 }
 
 frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> RobotContainer::GetSwerveCommand(double path[][6],  int length, bool primaryPath)

@@ -1,7 +1,10 @@
 #pragma once
 
 #include <wpi/numbers>
-#include "Constants.h"
+#include <cmath>
+#include <vector>
+
+//#include <cstdio>  // temp for printf
 
 class Util
 {
@@ -35,7 +38,11 @@ public:
     /// If an inputValue is smaller than its deadzone, returns 0, otherwise returns the inputValue
     static double Deadzone(double inputValue, double deadzone)
     {
-        // If the input is small return 0
-        return abs(inputValue) <= deadzone ? 0 : inputValue;
+        // double input = std::abs(inputValue);
+        // double output = (input < deadzone) ? 0.0 : inputValue;
+        // printf("inputValue %.3f absinput %.3f, deadzone %.3f, output %.3f lt %d lte %d\n", inputValue, input, deadzone, output, input < deadzone, input <= deadzone);
+        // // If the input is small return 0
+        // return output;
+        return (std::abs(inputValue) <= deadzone) ? 0.0 : inputValue;
     }   
 };

@@ -33,7 +33,8 @@ namespace DriveConstants
     constexpr meter_t kWheelBase = 23.5_in;
 
     /// \name Teleop Drive Constraints
-    constexpr auto kDriveSpeed = meters_per_second_t(3.5);
+    constexpr auto kDriveSpeed = meters_per_second_t(1.5);
+    //constexpr auto kDriveSpeed = meters_per_second_t(3.5);
     constexpr auto kDriveAngularSpeed = radians_per_second_t(wpi::numbers::pi * 2.0);
 
     /// \name CAN bus IDs
