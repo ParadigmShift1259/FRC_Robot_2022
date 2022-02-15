@@ -33,8 +33,7 @@ namespace DriveConstants
     constexpr meter_t kWheelBase = 23.5_in;
 
     /// \name Teleop Drive Constraints
-    constexpr auto kDriveSpeed = meters_per_second_t(1.5);
-    //constexpr auto kDriveSpeed = meters_per_second_t(3.5);
+    constexpr auto kDriveSpeed = meters_per_second_t(3.5);
     constexpr auto kDriveAngularSpeed = radians_per_second_t(wpi::numbers::pi * 2.0);
 
     /// \name CAN bus IDs
@@ -227,12 +226,11 @@ namespace VisionConstants
 // Flywheel Subsystem constants
 namespace FlywheelConstants
 {
-    constexpr double kPrimaryMotorPort = 11;     //!< Flywheel CAN ID (Primary SparkMAX)
-    constexpr double kFollowerMotorPort = 12;            //!< Flywheel CAN ID (Following SparkMAX)
+    constexpr double kMotorPort = 20;       //!< Flywheel CAN ID (SparkMAX)
 
     constexpr double kRampRate = 1.0;
     // Total error allowed for the flywheel, in RPM
-    constexpr double kAllowedError = 75;
+    constexpr double kAllowedError = 75;//65;
     constexpr double kMaintainPIDError = 300;
 
     // General multiplier added, adjusts for ball conditions and general firing
@@ -248,19 +246,19 @@ namespace FlywheelConstants
     constexpr double kD = 0;
 
     // Maintain PID values, used to adjust for error once the robot is shooting
-    constexpr double kMP = 0.002000;
+    constexpr double kMP = 0.002000;//0.001700;
     constexpr double kMI = 0.00000001;
     constexpr double kMD = 0.000001;
 
     constexpr double kMinOut = 0;
     constexpr double kMaxOut = 1.0;
 
-    constexpr double kS = 0.26625;  // Characterization should be repeated with 2 Neos
-    constexpr double kV = 0.12771;
-    constexpr double kA = 0.031171;
+    constexpr double kS = 0.025499;
+    constexpr double kV = 0.10421;
+    constexpr double kA = 0;//0.0399;
 
     // Diameter is in meters
-    constexpr double kWheelDiameter = 0.1016;   // 4 inches
+    constexpr double kWheelDiameter = 0.1524;
     constexpr double kSecondsPerMinute = 60;
     constexpr double kWheelMetersPerRev = kWheelDiameter * wpi::numbers::pi;
     // Meters per second to Revolutions per minute
@@ -268,7 +266,7 @@ namespace FlywheelConstants
     constexpr double kWheelRevPerMotorRev = 1.25;
 
     /// Use MPSPerRPM to determine the ramp rates, current values are just placeholders
-    constexpr double kIdleRPM = 2000;
+    constexpr double kIdleRPM = 1000; //2950; //0;
     /// The fixed RPM to fire at the trench given very heavy defense
     constexpr double kTrenchRPM = 3400;
 }
@@ -276,7 +274,7 @@ namespace FlywheelConstants
 // Intake Subsystem constants
 namespace IntakeConstants
 {
-    constexpr double kMotorPort = 14;   // Intake rollers CAN ID (Talon)
+    constexpr double kMotorPort = 9;   // Intake rollers PWM channel (Spark)
     constexpr double kMotorReverseConstant = 1;
 
     constexpr double kIngestLow = 0.3;
@@ -285,33 +283,34 @@ namespace IntakeConstants
     constexpr double kReleaseHigh = -0.70;
 }
 
-namespace TransferConstants
+namespace CyclerConstants
 {
-    constexpr double kFeederCANid = 12;      //!< Feeder CAN ID (TalonSRX)
-    constexpr double kTransferCANid = 11;   //!< Transfer CAN ID (TalonSRX)
+    constexpr double kFeederPort = 30;      //!< Feeder CAN ID (SparkMAX)
+    constexpr double kTurnTablePort = 31;   //!< Turn table CAN ID (TalonSRX)
 
-    constexpr int kFeederInputChannel = 0;
-    constexpr int kTransferInputChannel = 1;
+    constexpr double kFeederSpeed = 0.4; //TEMP0.350;
+    constexpr double kTurnTableSpeed = 0.55; //6; //TEMP0.400;
+    constexpr double kTurnTableSpeedHigher = 0.550;
+    constexpr double kTurnTableHoneSpeed = 0.300;
+    constexpr units::second_t kMaxCyclerTime = 5.0_s;
 
-    constexpr double kFeederSpeed = 0.5;
-    constexpr double kSpeedFiring = 0.7;
-    constexpr double kTransferSpeedIntaking = 0.500;
+    constexpr double kSensorInvert = true;
 
     // Time to go from 0 to full throttle
-    constexpr double kTransferRampRate = 0.75;
+    constexpr double kTurnTableRampRate = 0.75;
 
     constexpr double kTimePassed = 0.25;
     constexpr double kTimeLaunch = 1.50;
 
-    constexpr double kTimeout = 30.0;
-    constexpr bool kTransferInverted = false;
-    constexpr bool kFeederInverted = true;
+    constexpr double kTimeout = 30;
+    constexpr double kTurnTableInverted = false;
+    constexpr double kFeederInverted = true;
 }
 
 // Turret Subsystem Constants
 namespace TurretConstants
 {
-    constexpr double kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
+    constexpr double kMotorPort = 11;   //!< Turret CAN ID (TalonSRX)
 
     constexpr double kP = 0.30114;
     constexpr double kI = 0.00035;
