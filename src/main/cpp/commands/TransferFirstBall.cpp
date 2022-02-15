@@ -4,30 +4,27 @@
 
 using namespace TransferConstants;
 
-TransferFirstBall::TransferFirstBall(TransferSubsystem* transfer, double speed)
- : m_transfer(transfer)
- , m_timer()
- , m_speed(speed)
+TransferFirstBall::TransferFirstBall(TransportSubsystem* transport)
+ : m_transport(transport)
  {
-  AddRequirements({transfer});
+  AddRequirements({transport});
 }
 
 void TransferFirstBall::Initialize()
 {
-    m_timer.Start();
 }
 
 void TransferFirstBall::Execute()
 {
-    m_transfer->SetTransfer(kTransferSpeedIntaking);
-    m_transfer->SetFeeder(kFeederSpeed);
+    m_transport->SetTransfer(kTransferSpeedIntaking);
+    m_transport->SetFeeder(kFeederSpeed);
 }
 
 bool TransferFirstBall::IsFinished() {
-    return m_transfer->GetFeederPhotoeye();
+    return m_transport->GetFeederPhotoeye();
 }
 
 void TransferFirstBall::End(bool interrupted)
 {
-    m_transfer->SetFeeder(0);
+    m_transport->SetFeeder(0);
 }

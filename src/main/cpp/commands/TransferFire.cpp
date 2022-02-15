@@ -3,10 +3,10 @@
 
 using namespace TransferConstants;
 
-TransferFire::TransferFire(TransferSubsystem* subsystem, 
+TransferFire::TransferFire(TransportSubsystem* subsystem, 
                             bool* turretready, bool* firing, bool* finished,
                             double launchtime)
- : m_transfer(subsystem)
+ : m_transport(subsystem)
  , m_turretready(turretready)
  , m_firing(firing)
  , m_finished(finished)
@@ -37,13 +37,13 @@ void TransferFire::Execute()
 
     if (*m_firing)
     {
-        m_transfer->SetTransfer(kSpeedFiring);
-        m_transfer->SetFeeder(kSpeedFiring);
+        m_transport->SetTransfer(kSpeedFiring);
+        m_transport->SetFeeder(kSpeedFiring);
     }
     else
     {
-        m_transfer->SetTransfer(0);
-        m_transfer->SetFeeder(0);
+        m_transport->SetTransfer(0);
+        m_transport->SetFeeder(0);
     }
 
 
@@ -59,8 +59,8 @@ void TransferFire::End(bool interrupted) {
     *m_finished = true;
     *m_firing = false;
     m_timer.Stop();
-    m_transfer->SetFeeder(0);
-    m_transfer->SetTransfer(0);
+    m_transport->SetFeeder(0);
+    m_transport->SetTransfer(0);
 
     // SmartDashboard::PutBoolean("TEST_FIRING", *m_firing);
 }

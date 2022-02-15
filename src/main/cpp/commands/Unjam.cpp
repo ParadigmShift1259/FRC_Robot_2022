@@ -4,15 +4,15 @@
 using namespace TransferConstants;
 using namespace IntakeConstants;
 
-Unjam::Unjam(TransferSubsystem* transfer, IntakeSubsystem* intake)
- : m_transfer(transfer)
+Unjam::Unjam(TransportSubsystem* transport, IntakeSubsystem* intake)
+ : m_transport(transport)
  , m_intake(intake)
 {
-    AddRequirements({transfer, intake});
+    AddRequirements({transport, intake});
 }
 
 void Unjam::Execute() {
-    m_transfer->SetTransfer(-1.0 * kTransferSpeedIntaking);
-    m_transfer->SetFeeder(-1.0 * kFeederSpeed);
+    m_transport->SetTransfer(-1.0 * kTransferSpeedIntaking);
+    m_transport->SetFeeder(-1.0 * kFeederSpeed);
     m_intake->Set(kReleaseHigh);
 }

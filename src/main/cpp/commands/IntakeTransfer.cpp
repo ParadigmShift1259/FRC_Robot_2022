@@ -5,13 +5,12 @@
 #include "commands/TransferSecondBall.h"
 #include "commands/IntakeIngest.h"
 
-IntakeTransfer::IntakeTransfer(IntakeSubsystem* intake, TransferSubsystem* transfer, double speed)
+IntakeTransfer::IntakeTransfer(IntakeSubsystem* intake, TransportSubsystem* transport)
 {
   AddCommands(
-    // Running intake
-    IntakeIngest(intake),
-    // Move ball to photoeye
-    TransferFirstBall(transfer, speed)
-    //TransferSecondBall(transfer, speed)
+    
+      IntakeIngest(intake)                  // Running intake
+    , TransferFirstBall(transport)    // Move ball to feeder photoeye
+    , TransferSecondBall(transport)   // Move ball to transfer photoeye
   );
 }

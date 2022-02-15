@@ -3,18 +3,18 @@
 #include <frc2/command/CommandBase.h>
 #include <frc2/command/CommandHelper.h>
 
-#include "subsystems/TransferSubsystem.h"
+#include "subsystems/TransportSubsystem.h"
 #include "subsystems/IntakeSubsystem.h"
 
 #include "Constants.h"
 
 class Unjam : public frc2::CommandHelper<frc2::CommandBase, Unjam> {
 public:
-    explicit Unjam(TransferSubsystem* transfer, IntakeSubsystem* intake);
+    explicit Unjam(TransportSubsystem* transport, IntakeSubsystem* intake);
 
     void Execute() override;
 
  private:
-    TransferSubsystem* m_transfer;
+    TransportSubsystem* m_transport;
     IntakeSubsystem* m_intake;
 };

@@ -12,10 +12,10 @@ using namespace ctre::phoenix::motorcontrol::can;
 #include "Constants.h"
 #include "common/Util.h"
 
-class TransferSubsystem : public frc2::SubsystemBase
+class TransportSubsystem : public frc2::SubsystemBase
 {
 public:
-    TransferSubsystem();
+    TransportSubsystem();
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;

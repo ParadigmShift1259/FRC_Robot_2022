@@ -54,7 +54,7 @@ void HomeTarget::Execute()
     // double turretXRot = m_controller->GetY(frc::GenericHID::kRightHand) * -1.0;
     // double turretYRot = m_controller->GetX(frc::GenericHID::kRightHand);
 
-    double turretXRot = m_controller->GetRightY() * -1.0;
+    // double turretXRot = m_controller->GetRightY() * -1.0;
     //double turretYRot = m_controller->GetRightX();
 
     // if (m_controller->GetBumperPressed(GenericHID::JoystickHand::kRightHand)) {

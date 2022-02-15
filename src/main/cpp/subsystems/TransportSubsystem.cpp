@@ -1,9 +1,9 @@
-#include "subsystems/TransferSubsystem.h"
+#include "subsystems/TransportSubsystem.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
 using namespace TransferConstants;
 
-TransferSubsystem::TransferSubsystem()
+TransportSubsystem::TransportSubsystem()
     : m_feedermotor(kFeederCANid)
     , m_transfermotor(kTransferCANid)
     , m_feederphotoeye(kFeederInputChannel) 
@@ -17,36 +17,36 @@ TransferSubsystem::TransferSubsystem()
     m_feedermotor.SetInverted(kFeederInverted);
 }
 
-void TransferSubsystem::Periodic()
+void TransportSubsystem::Periodic()
 {
     frc::SmartDashboard::PutBoolean("DI_FeederPhotoeye", m_feederphotoeye.Get());
     frc::SmartDashboard::PutBoolean("DI_TransferPhotoeye",  m_transferphotoeye.Get());
 }
 
-void TransferSubsystem::SetFeeder(double speed)
+void TransportSubsystem::SetFeeder(double speed)
 {
     m_feedermotor.Set(ControlMode::PercentOutput, speed);
 }
 
-void TransferSubsystem::SetTransfer(double speed)
+void TransportSubsystem::SetTransfer(double speed)
 {
     m_transfermotor.Set(ControlMode::PercentOutput, speed);
 }
 
-bool TransferSubsystem::AtTransferPosition()
+bool TransportSubsystem::AtTransferPosition()
 {
     return m_feederphotoeye.Get();
 }
 
-bool TransferSubsystem::AtFeederPosition()
+bool TransportSubsystem::AtFeederPosition()
 {
     return m_transferphotoeye.Get();
 }
 
-bool TransferSubsystem::GetTransferPhotoeye() {
+bool TransportSubsystem::GetTransferPhotoeye() {
     return m_transferphotoeye.Get();
 }
 
-bool TransferSubsystem::GetFeederPhotoeye() {
+bool TransportSubsystem::GetFeederPhotoeye() {
     return m_feederphotoeye.Get();
 }

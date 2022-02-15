@@ -4,11 +4,11 @@
 #include <frc2/command/CommandBase.h>
 #include <frc/Timer.h>
 
-#include "subsystems/TransferSubsystem.h"
+#include "subsystems/TransportSubsystem.h"
 
 class TransferFire : public frc2::CommandHelper<frc2::CommandBase, TransferFire> {
 public:
-    TransferFire(TransferSubsystem* transfer, 
+    TransferFire(TransportSubsystem* transfer, 
                 bool* turretready, bool* firing, bool* finished,
                 double launctime);
 
@@ -19,7 +19,7 @@ public:
 
 
  private:
-    TransferSubsystem* m_transfer;
+    TransportSubsystem* m_transport;
     frc::Timer m_timer;
     bool* m_turretready;
     bool* m_firing;

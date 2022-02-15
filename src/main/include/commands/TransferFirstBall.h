@@ -4,12 +4,12 @@
 #include <frc2/command/CommandHelper.h>
 #include <frc/Timer.h>
 
-#include "subsystems/TransferSubsystem.h"
+#include "subsystems/TransportSubsystem.h"
 #include "subsystems/IntakeSubsystem.h"
 
 class TransferFirstBall : public frc2::CommandHelper<frc2::CommandBase, TransferFirstBall> {
  public:
-  explicit TransferFirstBall(TransferSubsystem* transfer, double speed);
+  explicit TransferFirstBall(TransportSubsystem* transport);
 
   void Initialize() override;
   void Execute() override;
@@ -18,7 +18,5 @@ class TransferFirstBall : public frc2::CommandHelper<frc2::CommandBase, Transfer
  
  private:
   IntakeSubsystem* m_intake;
-  TransferSubsystem* m_transfer;
-  frc::Timer m_timer;
-  double m_speed;
+  TransportSubsystem* m_transport;
 };

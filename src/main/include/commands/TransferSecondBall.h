@@ -4,11 +4,11 @@
 #include <frc2/command/CommandHelper.h>
 #include <frc/Timer.h>
 
-#include "subsystems/TransferSubsystem.h"
+#include "subsystems/TransportSubsystem.h"
 
 class TransferSecondBall : public frc2::CommandHelper<frc2::CommandBase, TransferSecondBall> {
  public:
-  explicit TransferSecondBall(TransferSubsystem* subsystem, double speed);
+  explicit TransferSecondBall(TransportSubsystem* subsystem);
 
   void Initialize() override;
   void Execute() override;
@@ -16,8 +16,6 @@ class TransferSecondBall : public frc2::CommandHelper<frc2::CommandBase, Transfe
   void End(bool interrupted) override;
  
  private:
-  TransferSubsystem* m_transfer;
-  frc::Timer m_timer;
-  double m_speed;
+  TransportSubsystem* m_transport;
   int m_photoeyeCount;
 };

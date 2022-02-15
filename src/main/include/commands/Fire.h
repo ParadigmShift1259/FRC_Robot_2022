@@ -9,7 +9,7 @@
 #include "subsystems/TurretSubsystem.h"
 #include "subsystems/HoodSubsystem.h"
 #include "subsystems/IntakeSubsystem.h"
-#include "subsystems/TransferSubsystem.h"
+#include "subsystems/TransportSubsystem.h"
 #include "subsystems/VisionSubsystem.h"
 
 #include "commands/TransferFire.h"
@@ -20,7 +20,7 @@
 class Fire : public frc2::CommandHelper<frc2::ParallelCommandGroup, Fire> {
 public:
     Fire(   frc::XboxController* controller, FlywheelSubsystem* flywheel, TurretSubsystem* turret, HoodSubsystem* hood,
-            IntakeSubsystem* intake, TransferSubsystem* transfer,
+            IntakeSubsystem* intake, TransportSubsystem* transport,
             bool* m_turretready, bool* m_firing, bool* m_finished, double distance,
             double launchtime = TransferConstants::kTimeLaunch);
 private:
