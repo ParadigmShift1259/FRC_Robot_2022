@@ -118,10 +118,12 @@ void VisionSubsystem::Periodic()
         }
     }
 
-    frc::Pose2d centerPose = Pose2d(units::inch_t{324}, units::inch_t{162}, frc::Rotation2d{units::degree_t{0}});
+    frc::Pose2d TargetPose = Pose2d(units::inch_t{324}, units::inch_t{162}, frc::Rotation2d{units::degree_t{0}});
     units::radian_t angleToTarget = units::radian_t(atan2(double(center.X()), double(center.Y())));
-    frc::Pose2d robotPose = photonlib::PhotonUtils::EstimateFieldToCamera(frc::Transform2d(center, angleToTarget), centerPose);
-
+    frc::Pose2d CamPose = photonlib::PhotonUtils::EstimateFieldToCamera(frc::Transform2d(center, angleToTarget), TargetPose);
+    frc::Transform2d CamToTarget = photonlib::PhotonUtils::EstimateCameraToTarget(center, TargetPose, m_gyro->GetHeadingAsRot2d());
+    frc::Transform2d CamToRobot = Transform2d();
+    frc::Pose2d robotPose = photonlib::PhotonUtils::EstimateFieldToRobot(CamToTarget, TargetPose, CamToRobot);
     if(willPrint)
         {
         if (!m_validTarget)
