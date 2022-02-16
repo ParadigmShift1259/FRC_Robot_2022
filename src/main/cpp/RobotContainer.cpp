@@ -13,7 +13,7 @@ RobotContainer::RobotContainer()
     : m_gyro()
     , m_drive(&m_gyro)
     , m_vision()
-    , m_flywheel()
+    //, m_flywheel()
 {
     m_fieldRelative = false;
 
@@ -31,13 +31,13 @@ RobotContainer::RobotContainer()
 void RobotContainer::Periodic() {
     //SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
     SmartDashboard::PutData("DriveSS", &m_drive);
-    SmartDashboard::PutData("FlywheelSS", &m_flywheel);
+    // SmartDashboard::PutData("FlywheelSS", &m_flywheel);
     SmartDashboard::PutData("HoodSS", &m_hood);
     SmartDashboard::PutData("IntakeSS", &m_intake);
     SmartDashboard::PutData("TransferSS", &m_transport);
     SmartDashboard::PutData("TurretSS", &m_turret);
     SmartDashboard::PutData("VisionSS", &m_vision);
-    m_drive.Periodic();
+    // m_drive.Periodic();
 }
 
 void RobotContainer::SetDefaultCommands()
@@ -93,15 +93,16 @@ void RobotContainer::ConfigureButtonBindings()
         )
     );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kY).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transport,
-             &m_turretready, &m_firing, &m_finished, 100.0)
-    );
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kY).WhenPressed(
+    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transport,
+    //          &m_turretready, &m_firing, &m_finished, 100.0)
+    // );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kX).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transport,
-             &m_turretready, &m_firing, &m_finished, 200.0)
-    );
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kX).WhenPressed(
+    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transport,
+    //          &m_turretready, &m_firing, &m_finished, 200.0)
+    // );
+
     frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kX).WhenPressed(
         frc2::InstantCommand(    
             [this] { 
@@ -111,10 +112,10 @@ void RobotContainer::ConfigureButtonBindings()
         )
     );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kRightBumper).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transport,
-             &m_turretready, &m_firing, &m_finished, 0.0)
-    );
+    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kRightBumper).WhenPressed(
+    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transport,
+    //          &m_turretready, &m_firing, &m_finished, 0.0)
+    // );
 
     frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kA).WhenHeld(
         IntakeTransfer(&m_intake, &m_transport)
@@ -134,7 +135,7 @@ void RobotContainer::ConfigureButtonBindings()
     // );
 
     frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kB).WhenHeld(
-        IntakeRelease(&m_intake)
+        TransferFirstBall(&m_transport)
     );
 
     frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kBack).WhenHeld(

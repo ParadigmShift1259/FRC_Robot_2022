@@ -27,4 +27,5 @@ bool TransferFirstBall::IsFinished() {
 void TransferFirstBall::End(bool interrupted)
 {
     m_transport->SetFeeder(0);
+    m_transport->SetTransfer(0);
 }

@@ -90,7 +90,7 @@ private:
     DriveSubsystem m_drive;
     bool m_fieldRelative = true;
     VisionSubsystem m_vision; 
-    FlywheelSubsystem m_flywheel;
+    //FlywheelSubsystem m_flywheel;
     IntakeSubsystem m_intake;
     TransportSubsystem m_transport;
     TurretSubsystem m_turret = TurretSubsystem(&m_gyro);

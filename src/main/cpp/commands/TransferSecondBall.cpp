@@ -25,7 +25,7 @@ bool TransferSecondBall::IsFinished() {
         m_photoeyeCount ++;
     }
 
-    return m_photoeyeCount > 1 && m_transport->GetTransferPhotoeye();
+    return m_transport->GetTransferPhotoeye();
 }
 
 void TransferSecondBall::End(bool interrupted)

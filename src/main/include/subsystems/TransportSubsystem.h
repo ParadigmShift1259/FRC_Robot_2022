@@ -48,8 +48,8 @@ private:
     TalonSRX m_feedermotor;
     /// 775 that shuffles balls around in the transfer system
     TalonSRX m_transfermotor;
-    /// Photoeye to sense the ball on the transfer system
-    frc::DigitalInput m_transferphotoeye;
-    /// Photoeye to sense the ball on the transfer system
+    /// Photoeye to sense the ball at the feeder motor
     frc::DigitalInput m_feederphotoeye;
+    /// Photoeye to sense the ball in the transfer system
+    frc::DigitalInput m_transferphotoeye;
 };
