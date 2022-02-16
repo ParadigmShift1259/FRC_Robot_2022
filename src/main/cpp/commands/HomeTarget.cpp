@@ -26,7 +26,8 @@ void HomeTarget::Initialize()
 {
     *m_turretready = false;
     *m_firing = false;
-    *m_finished = false;
+// TODO put me back    *m_finished = false;
+    *m_finished = true;
 }
 
 void HomeTarget::Execute()

@@ -37,8 +37,10 @@ void TransferFire::Execute()
 
     if (*m_firing)
     {
-        m_transfer->SetTransfer(kSpeedFiring);
         m_transfer->SetFeeder(kSpeedFiring);
+        if (m_timer.Get().to<double>() <= kTimePassed) {
+            m_transfer->SetTransfer(kSpeedFiring);
+    }        
     }
     else
     {

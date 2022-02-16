@@ -21,7 +21,7 @@ using namespace ctre::phoenix;
 using namespace units;
 
 /// Uncomment to set button binds for secondary controller to the primary controller
-//#define DualJoysticks
+#define DualJoysticks
 
 namespace DriveConstants
 {
