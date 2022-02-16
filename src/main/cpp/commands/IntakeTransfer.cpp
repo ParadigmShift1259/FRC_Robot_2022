@@ -9,9 +9,9 @@ IntakeTransfer::IntakeTransfer(IntakeSubsystem* intake, TransferSubsystem* trans
 {
   AddCommands(
     // Running intake
-    IntakeIngest(intake),
+      IntakeIngest(intake)
     // Move ball to photoeye
-    TransferFirstBall(transfer, speed)
-    //TransferSecondBall(transfer, speed)
+    , TransferFirstBall(transfer, speed)
+    , TransferSecondBall(transfer, speed)
   );
 }

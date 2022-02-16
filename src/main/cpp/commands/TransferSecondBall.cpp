@@ -25,10 +25,10 @@ void TransferSecondBall::Execute()
 
 bool TransferSecondBall::IsFinished() {
     if (m_transfer->GetTransferPhotoeye()) {
-        m_photoeyeCount ++;
+        m_photoeyeCount++;
     }
 
-    return m_photoeyeCount > 1 && m_transfer->GetTransferPhotoeye();
+    return m_transfer->GetTransferPhotoeye();
 }
 
 void TransferSecondBall::End(bool interrupted)
