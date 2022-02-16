@@ -6,21 +6,26 @@
 
 
 
-VisionSubsystem::VisionSubsystem() 
+VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro) 
  : m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
  , m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("gloworm"))
  , m_led(true)
  , m_tx(0)
  , m_ty(0)
  , m_validTarget(false)
+ , m_gyro(gyro)
 {
     SetLED(true);
     m_averageDistance.reserve(3);
     m_averageAngle.reserve(3);
+    kCameraHeight = units::inch_t{37};
+    kCurrTargetHeight = units::inch_t{8*12 + 8};
+    kCameraPitch = units::degree_t{18.8};
+    kTargetPitch = units::degree_t{0};
 }
 
 void VisionSubsystem::Periodic()
-    {
+{
 
     static unsigned counter = 0; 
     counter++;
@@ -35,7 +40,7 @@ void VisionSubsystem::Periodic()
     vector<frc::Translation2d> targetVectors;
     frc::Translation2d center;
     if (m_validTarget)
-        {
+    {
         auto targets = result.GetTargets();
 
         //Get List of Points
@@ -44,8 +49,9 @@ void VisionSubsystem::Periodic()
         //Gets Vectors for each target
         for(int i = 0; i < targets.size(); i++)
         {
+            kTargetPitch = units::degree_t{targets[i].GetPitch()};
             units::meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
-                units::inch_t{37}, units::inch_t{8*12 + 8}, units::degree_t{18.8}, units::degree_t{targets[i].GetPitch()});
+                kCameraHeight, kCurrTargetHeight, kCameraPitch, kTargetPitch);
             targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(units::degree_t{-targets[i].GetYaw()})));
         }
         
@@ -79,41 +85,42 @@ void VisionSubsystem::Periodic()
         double shiftDist = radius / 2.0;
         double minResidual = calcResidual(radius, targetVectors, center);
         while (true) {
-        vector<frc::Translation2d> translations;
-        translations.push_back(Translation2d(units::meter_t{shiftDist}, units::meter_t{0.0}));
-        translations.push_back(Translation2d(units::meter_t{-shiftDist}, units::meter_t{0.0}));
-        translations.push_back(Translation2d(units::meter_t{0.0}, units::meter_t{shiftDist}));
-        translations.push_back(Translation2d(units::meter_t{0.0}, units::meter_t{-shiftDist}));
-        frc::Translation2d bestPoint = center;
-        bool centerIsBest = true;
+            vector<frc::Translation2d> translations;
+            translations.push_back(Translation2d(units::meter_t{shiftDist}, units::meter_t{0.0}));
+            translations.push_back(Translation2d(units::meter_t{-shiftDist}, units::meter_t{0.0}));
+            translations.push_back(Translation2d(units::meter_t{0.0}, units::meter_t{shiftDist}));
+            translations.push_back(Translation2d(units::meter_t{0.0}, units::meter_t{-shiftDist}));
+            frc::Translation2d bestPoint = center;
+            bool centerIsBest = true;
 
-        // Check all adjacent positions
-        for (int i = 0; i < translations.size(); i++) 
-        {
-            double residual =
-                calcResidual(radius, targetVectors, center + (translations[i]));
-            if (residual < minResidual) {
-            bestPoint = center + (translations[i]);
-            minResidual = residual;
-            centerIsBest = false;
-            break;
+            // Check all adjacent positions
+            for (int i = 0; i < translations.size(); i++) 
+            {
+                double residual =
+                    calcResidual(radius, targetVectors, center + (translations[i]));
+                if (residual < minResidual) {
+                    bestPoint = center + (translations[i]);
+                    minResidual = residual;
+                    centerIsBest = false;
+                    break;
+                }
+            }
+            double precision = 0.01;
+            // Decrease shift, exit, or continue
+            if (centerIsBest) {
+                shiftDist /= 2.0;
+                if (shiftDist < precision) {
+                    break;
+                }
+            } else {
+                center = bestPoint;
             }
         }
-        double precision = 0.01;
-        // Decrease shift, exit, or continue
-        if (centerIsBest) {
-            shiftDist /= 2.0;
-            if (shiftDist < precision) {
-            break;
-            }
-        } else {
-            center = bestPoint;
-        }
-        }
+    }
 
-        
-
-        }
+    frc::Pose2d centerPose = Pose2d(units::inch_t{324}, units::inch_t{162}, frc::Rotation2d{units::degree_t{0}});
+    units::radian_t angleToTarget = units::radian_t(atan2(double(center.X()), double(center.Y())));
+    frc::Pose2d robotPose = photonlib::PhotonUtils::EstimateFieldToCamera(frc::Transform2d(center, angleToTarget), centerPose);
 
     if(willPrint)
         {
