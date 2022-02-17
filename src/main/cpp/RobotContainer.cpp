@@ -9,11 +9,12 @@
 #include <frc2/command/button/NetworkButton.h>
 #include <frc2/command/WaitCommand.h>
 #include "AutoPaths.h"
+#include <iostream>
 
 RobotContainer::RobotContainer()
     : m_gyro()
     , m_drive(&m_gyro)
-    , m_vision()
+    , m_vision(&m_gyro)
     , m_flywheel()
 {
     m_fieldRelative = false;
@@ -39,6 +40,8 @@ void RobotContainer::Periodic() {
     SmartDashboard::PutData("TurretSS", &m_turret);
     SmartDashboard::PutData("VisionSS", &m_vision);
     m_drive.Periodic();
+    SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
+    m_vision.Periodic();
 }
 
 void RobotContainer::SetDefaultCommands()
