@@ -30,8 +30,8 @@ RobotContainer::RobotContainer()
     frc::SmartDashboard::PutData("Auto Path", &m_chooser);
 }
 
-void RobotContainer::Periodic() {
-    //SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
+void RobotContainer::Periodic()
+{
     SmartDashboard::PutData("DriveSS", &m_drive);
     SmartDashboard::PutData("FlywheelSS", &m_flywheel);
     SmartDashboard::PutData("HoodSS", &m_hood);
