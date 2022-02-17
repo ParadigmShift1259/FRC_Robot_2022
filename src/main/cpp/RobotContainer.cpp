@@ -15,7 +15,6 @@ RobotContainer::RobotContainer()
     , m_drive(&m_gyro)
     , m_vision()
     , m_flywheel()
-    , m_calculation()
 {
     m_fieldRelative = false;
 
@@ -86,17 +85,6 @@ void RobotContainer::SetDefaultCommands()
 
 void RobotContainer::ConfigureButtonBindings()
 {
-// TODO move to HomeTarget?
-//  frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kA).WhenPressed(
-//    frc2::InstantCommand(
-//      [this] {
-//        m_calculation.GetInitRPMS();
-//            double setpoint = m_calculation.GetInitRPMS().to<double>() / FlywheelConstants::kGearRatio;
-//        // frc::SmartDashboard::PutNumber("SecondaryVel", vel.to<double>());
-//      },
-//      {}
-//    )
-//  );	
     // Primary
     // Triggers field relative driving
     frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kLeftBumper).WhenPressed(

@@ -97,7 +97,6 @@ private:
     TransferSubsystem m_transfer;
     TurretSubsystem m_turret = TurretSubsystem(&m_gyro);
     HoodSubsystem m_hood;
-  	Calculations m_calculation;
 
     //bool m_fieldRelative = true;
     bool m_turretready = false;

@@ -1,5 +1,7 @@
 /// Physics/Ballistics calculations for FRC 2022 Game RapidReact
 
+#pragma once
+
 #include <units/time.h>
 #include <units/length.h>
 #include <units/velocity.h>

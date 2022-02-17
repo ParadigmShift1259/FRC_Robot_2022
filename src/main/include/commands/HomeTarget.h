@@ -12,7 +12,7 @@
 #include "subsystems/HoodSubsystem.h"
 #include "subsystems/VisionSubsystem.h"
 
-#include "Constants.h"
+#include "Calculations.h"
 
 class HomeTarget : public frc2::CommandHelper<frc2::CommandBase, HomeTarget> {
 public:
@@ -35,4 +35,5 @@ private:
     bool* m_firing;
     bool* m_finished;
     double m_distance;
+  	Calculations m_calculation;
 };

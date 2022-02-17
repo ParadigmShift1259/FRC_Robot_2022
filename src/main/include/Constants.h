@@ -7,9 +7,7 @@
 
 #pragma once
 
-#include <frc/geometry/Translation2d.h>
-#include <frc/kinematics/SwerveDriveKinematics.h>
-#include <frc/trajectory/TrapezoidProfile.h>
+#include <frc/trajectory/TrapezoidProfile.h>    // For thetaController
 
 #include <wpi/numbers>
 
