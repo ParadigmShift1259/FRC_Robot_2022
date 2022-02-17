@@ -16,9 +16,14 @@
 
 class HomeTarget : public frc2::CommandHelper<frc2::CommandBase, HomeTarget> {
 public:
-    explicit HomeTarget(frc::XboxController* controller, FlywheelSubsystem* flywheel, TurretSubsystem* turret, HoodSubsystem* hood, 
-                        bool* turretready, 
-                        bool* firing, bool* finished, double distance);
+    explicit HomeTarget( frc::XboxController* controller
+                        , FlywheelSubsystem* flywheel
+                        , TurretSubsystem* turret
+                        , HoodSubsystem* hood
+                        , bool* turretready
+                        , bool* firing
+                        , bool* finished
+                        , double distance); // Distance argument used to shoot wihtout vision
 
     void Initialize() override;
     void Execute() override;

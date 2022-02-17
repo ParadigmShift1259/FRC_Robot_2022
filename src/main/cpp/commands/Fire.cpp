@@ -1,10 +1,16 @@
 #include "commands/Fire.h"
 #include "Constants.h"
 
-Fire::Fire(frc::XboxController* controller, FlywheelSubsystem* flywheel, TurretSubsystem* turret, HoodSubsystem* hood, 
-            TransferSubsystem* transfer,
-            bool* turretready, bool* firing, bool* finished,
-             double distance, double launchtime)
+Fire::Fire( frc::XboxController* controller
+          , FlywheelSubsystem* flywheel
+          , TurretSubsystem* turret
+          , HoodSubsystem* hood
+          , TransferSubsystem* transfer
+          , bool* turretready
+          , bool* firing
+          , bool* finished
+          , double distance
+          , double launchtime)
 : m_controller(controller)
 , m_turretready(turretready)
 , m_firing(firing)

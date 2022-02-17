@@ -3,9 +3,14 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <iostream>
 
-HomeTarget::HomeTarget(frc::XboxController* controller, FlywheelSubsystem* flywheel, TurretSubsystem* turret, HoodSubsystem* hood,
-                        bool* turretready, 
-                        bool* firing, bool* finished, double distance)
+HomeTarget::HomeTarget(   frc::XboxController* controller
+                        , FlywheelSubsystem* flywheel
+                        , TurretSubsystem* turret
+                        , HoodSubsystem* hood
+                        , bool* turretready
+                        , bool* firing
+                        , bool* finished
+                        , double distance)
     : m_controller(controller)
     , m_flywheel(flywheel)
     , m_turret(turret)
