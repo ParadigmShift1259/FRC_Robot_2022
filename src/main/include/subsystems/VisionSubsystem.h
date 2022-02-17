@@ -41,6 +41,8 @@ public:
 
     double calcResidual(double radius, vector<frc::Translation2d> points, frc::Translation2d center);
 
+    bool FitCircle(vector<frc::Translation2d> targetVectors);
+
 protected:
     /// Converts degrees to radians
     /// \param degrees Degrees to convert
@@ -57,7 +59,8 @@ private:
     vector<double> m_averageDistance;
     vector<double> m_averageAngle;
     photonlib::PhotonCamera camera{"gloworm"};
-    std::vector<std::pair<double, double>> m_centerPoints;
+    //std::vector<std::pair<double, double>> m_centerPoints;
+    frc::Translation2d m_cameraToHub;
     units::inch_t kCameraHeight;
     units::inch_t kCurrTargetHeight;
     units::degree_t kCameraPitch;

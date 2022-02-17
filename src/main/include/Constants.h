@@ -217,6 +217,9 @@ namespace VisionConstants
 
     constexpr double kMinHoneDistance = 130;
     constexpr double kMaxHoneDistance = 260;
+
+    constexpr double kHubRadius = 0.601; //Should be meters type
+    constexpr double kMaxTargetSpread = 1.1 * kHubRadius;
 }
 
 // Flywheel Subsystem constants
