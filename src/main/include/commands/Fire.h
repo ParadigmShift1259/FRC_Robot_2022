@@ -19,10 +19,16 @@
 
 class Fire : public frc2::CommandHelper<frc2::ParallelCommandGroup, Fire> {
 public:
-    Fire(   frc::XboxController* controller, FlywheelSubsystem* flywheel, TurretSubsystem* turret, HoodSubsystem* hood,
-            TransferSubsystem* transfer,
-            bool* m_turretready, bool* m_firing, bool* m_finished, double distance,
-            double launchtime = TransferConstants::kTimeLaunch);
+    Fire( frc::XboxController* controller
+        , FlywheelSubsystem* flywheel
+        , TurretSubsystem* turret
+        , HoodSubsystem* hood
+        , TransferSubsystem* transfer
+        , bool* m_turretready
+        , bool* m_firing
+        , bool* m_finished
+        , double launchtime = TransferConstants::kTimeLaunch);
+
 private:
     frc::XboxController* m_controller;
     bool* m_turretready;
