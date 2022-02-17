@@ -1,15 +1,16 @@
 #include "commands/TransferSecondBall.h"
 #include "Constants.h"
 
+using namespace IntakeConstants;
 using namespace TransferConstants;
 
-TransferSecondBall::TransferSecondBall(TransferSubsystem* subsystem, double speed)
- : m_transfer(subsystem)
- , m_timer()
+TransferSecondBall::TransferSecondBall(TransferSubsystem& transfer, IntakeSubsystem& intake, double speed)
+ : m_transfer(transfer)
+ , m_intake(intake)
  , m_speed(speed)
  , m_photoeyeCount(0)
  {
-  AddRequirements({subsystem});
+  AddRequirements({&transfer, &intake});
 }
 
 void TransferSecondBall::Initialize()
@@ -20,18 +21,20 @@ void TransferSecondBall::Initialize()
 
 void TransferSecondBall::Execute()
 {
-
+    m_transfer.SetTransfer(kSpeedFiring);
+    m_intake.Set(kIngestHigh);
 }
 
 bool TransferSecondBall::IsFinished() {
-    if (m_transfer->GetTransferPhotoeye()) {
+    if (m_transfer.GetTransferPhotoeye()) {
         m_photoeyeCount++;
     }
 
-    return m_transfer->GetTransferPhotoeye();
+    return m_transfer.GetTransferPhotoeye();
 }
 
 void TransferSecondBall::End(bool interrupted)
 {
-    m_transfer->SetTransfer(0);
+    m_transfer.SetTransfer(0);
+    m_intake.Set(0);
 }

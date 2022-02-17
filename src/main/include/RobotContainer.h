@@ -37,11 +37,7 @@
 #include "Gyro.h"
 #include "common/SwerveControllerCommand2.h"
 
-#include "subsystems/DriveSubsystem.h"
-#include "subsystems/VisionSubsystem.h"
-#include "subsystems/FlywheelSubsystem.h"
-#include "subsystems/TurretSubsystem.h"
-#include "subsystems/HoodSubsystem.h"
+#include "ISubsysAccess.h"
 
 #include "commands/TransferFirstBall.h"
 #include "commands/TransferSecondBall.h"
@@ -54,14 +50,13 @@
 #include "Constants.h"
 
 #include <iostream>
-// #include <wpi/Path.h>
 #include <wpi/SmallString.h>
 
 #include <pathplanner/lib/PathPlanner.h>
 
 using namespace pathplanner;
 
-class RobotContainer
+class RobotContainer : public ISubsysAccess
 {
 public:
     RobotContainer();
@@ -73,7 +68,15 @@ public:
     frc2::Command *GetAutonomousCommand(AutoPath path);
 
     frc::SendableChooser<AutoPath> m_chooser;
-    
+
+    DriveSubsystem&      GetDrive() override { return m_drive; };
+    FlywheelSubsystem&   GetFlywheel() override { return m_flywheel; };
+    HoodSubsystem&       GetHood() override { return m_hood; };
+    IntakeSubsystem&     GetIntake() override { return m_intake; };
+    TransferSubsystem&   GetTransfer() override { return m_transfer; };
+    TurretSubsystem&     GetTurret() override { return m_turret; };
+    VisionSubsystem&     GetVision() override { return m_vision; };    
+
 private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();

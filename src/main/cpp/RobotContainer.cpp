@@ -111,9 +111,7 @@ void RobotContainer::ConfigureButtonBindings()
              &m_turretready, &m_firing, &m_finished)
     );
 
-    JoystickButton(&m_secondaryController, xbox::kA).WhenHeld(
-        IntakeTransfer(&m_intake, &m_transfer, TransferConstants::kTransferSpeedIntaking)   
-    );
+    JoystickButton(&m_secondaryController, xbox::kA).WhenHeld(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking));
 
     // JoystickButton(&m_secondaryController, xbox::kLeftBumper).WhenHeld(
     //     TransferFirstBall(&m_transfer, TransferConstants::kTransferSpeedIntaking),
