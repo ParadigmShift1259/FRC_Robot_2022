@@ -5,13 +5,11 @@
 #include "commands/TransferSecondBall.h"
 #include "commands/IntakeIngest.h"
 
-IntakeTransfer::IntakeTransfer(IntakeSubsystem* intake, TransferSubsystem* transfer, double speed)
+IntakeTransfer::IntakeTransfer(ISubsysAccess& subSysAccess, double speed)
 {
   AddCommands(
-    // Running intake
-      IntakeIngest(intake)
-    // Move ball to photoeye
-    , TransferFirstBall(transfer, speed)
-    , TransferSecondBall(transfer, speed)
+      IntakeIngest(subSysAccess.GetIntake())
+    , TransferFirstBall(subSysAccess.GetTransfer(), subSysAccess.GetIntake(), speed)
+    , TransferSecondBall(subSysAccess.GetTransfer(), subSysAccess.GetIntake(), speed)
   );
 }
