@@ -96,19 +96,19 @@ void RobotContainer::ConfigureButtonBindings()
 
     JoystickButton(&m_secondaryController, xbox::kY).WhenPressed(
         Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer,
-             &m_turretready, &m_firing, &m_finished, 100.0)
+             &m_turretready, &m_firing, &m_finished)
     );
 
     JoystickButton(&m_secondaryController, xbox::kX).WhenPressed(
         Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer,
-             &m_turretready, &m_firing, &m_finished, 200.0)
+             &m_turretready, &m_firing, &m_finished)
     );
 
     JoystickButton(&m_primaryController, xbox::kX).WhenPressed(&m_zeroHeading);
 
     JoystickButton(&m_secondaryController, xbox::kRightBumper).WhenPressed(
         Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer,
-             &m_turretready, &m_firing, &m_finished, 0.0)
+             &m_turretready, &m_firing, &m_finished)
     );
 
     JoystickButton(&m_secondaryController, xbox::kA).WhenHeld(
