@@ -36,8 +36,6 @@
 #include "common/Util.h"
 #include "Gyro.h"
 #include "common/SwerveControllerCommand2.h"
-#include "Calculations.h"
-#include "Constants.h"
 
 #include "subsystems/DriveSubsystem.h"
 #include "subsystems/VisionSubsystem.h"
@@ -97,7 +95,6 @@ private:
     TransferSubsystem m_transfer;
     TurretSubsystem m_turret = TurretSubsystem(&m_gyro);
     HoodSubsystem m_hood;
-  	Calculations m_calculation;
 
     //bool m_fieldRelative = true;
     bool m_turretready = false;
