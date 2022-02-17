@@ -43,6 +43,10 @@ public:
 
     bool FitCircle(vector<frc::Translation2d> targetVectors);
 
+    double GetHubAngle();
+
+    double GetHubDistance();
+
 protected:
     /// Converts degrees to radians
     /// \param degrees Degrees to convert

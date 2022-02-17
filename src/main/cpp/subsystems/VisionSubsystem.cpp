@@ -203,3 +203,13 @@ double VisionSubsystem::calcResidual(double radius, vector<frc::Translation2d> p
     }
     return residual;
 }
+
+double VisionSubsystem::GetHubAngle()
+{
+    return atan2(double(m_cameraToHub.X()), double(m_cameraToHub.Y()));
+}
+
+double VisionSubsystem::GetHubDistance()
+{
+    return (double) m_cameraToHub.Norm();
+}
