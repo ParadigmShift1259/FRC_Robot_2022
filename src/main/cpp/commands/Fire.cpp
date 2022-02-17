@@ -2,7 +2,7 @@
 #include "Constants.h"
 
 Fire::Fire(frc::XboxController* controller, FlywheelSubsystem* flywheel, TurretSubsystem* turret, HoodSubsystem* hood, 
-            IntakeSubsystem* intake, TransferSubsystem* transfer,
+            TransferSubsystem* transfer,
             bool* turretready, bool* firing, bool* finished,
              double distance, double launchtime)
 : m_controller(controller)

@@ -6,15 +6,14 @@
 HomeTarget::HomeTarget(frc::XboxController* controller, FlywheelSubsystem* flywheel, TurretSubsystem* turret, HoodSubsystem* hood,
                         bool* turretready, 
                         bool* firing, bool* finished, double distance)
- : m_controller(controller)
- , m_flywheel(flywheel)
- , m_turret(turret)
- , m_hood(hood)
- , m_turretready(turretready)
- , m_firing(firing)
- , m_finished(finished)
- , m_distance(distance)
-
+    : m_controller(controller)
+    , m_flywheel(flywheel)
+    , m_turret(turret)
+    , m_hood(hood)
+    , m_turretready(turretready)
+    , m_firing(firing)
+    , m_finished(finished)
+    , m_distance(distance)
 {
     AddRequirements({flywheel, turret, hood});
     *m_turretready = false;

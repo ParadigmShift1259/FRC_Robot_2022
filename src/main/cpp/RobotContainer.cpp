@@ -85,72 +85,54 @@ void RobotContainer::SetDefaultCommands()
 
 void RobotContainer::ConfigureButtonBindings()
 {
+    using namespace frc;
+    using namespace frc2;
+    using xbox = frc::XboxController::Button;
+
     // Primary
     // Triggers field relative driving
-    frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kLeftBumper).WhenPressed(
-        frc2::InstantCommand(    
-            [this] { m_fieldRelative = true; },
-            {}
-        )
-    );
+    JoystickButton(&m_primaryController, xbox::kLeftBumper).WhenPressed(&m_setFieldRelative);
+    JoystickButton(&m_primaryController, xbox::kLeftBumper).WhenReleased(&m_clearFieldRelative);
 
-    frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kLeftBumper).WhenReleased(
-        frc2::InstantCommand(    
-            [this] { m_fieldRelative = false; },
-            {}
-        )
-    );
-
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kY).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transfer,
+    JoystickButton(&m_secondaryController, xbox::kY).WhenPressed(
+        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer,
              &m_turretready, &m_firing, &m_finished, 100.0)
     );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kX).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transfer,
+    JoystickButton(&m_secondaryController, xbox::kX).WhenPressed(
+        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer,
              &m_turretready, &m_firing, &m_finished, 200.0)
     );
-    frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kX).WhenPressed(
-        frc2::InstantCommand(    
-            [this] { 
-                m_gyro.ZeroHeading();
-             },
-            {}
-        )
-    );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kRightBumper).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transfer,
+    JoystickButton(&m_primaryController, xbox::kX).WhenPressed(&m_zeroHeading);
+
+    JoystickButton(&m_secondaryController, xbox::kRightBumper).WhenPressed(
+        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer,
              &m_turretready, &m_firing, &m_finished, 0.0)
     );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kA).WhenHeld(
+    JoystickButton(&m_secondaryController, xbox::kA).WhenHeld(
         IntakeTransfer(&m_intake, &m_transfer, TransferConstants::kTransferSpeedIntaking)   
     );
 
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kLeftBumper).WhenHeld(
+    // JoystickButton(&m_secondaryController, xbox::kLeftBumper).WhenHeld(
     //     TransferFirstBall(&m_transfer, TransferConstants::kTransferSpeedIntaking),
     //     TransferSecondBall(&m_transfer, TransferConstants::kTransferSpeedIntaking)
     // );
 
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kBumperRight).WhenPressed(
-    //     frc2::InstantCommand([this] { m_turret.ResetPosition(); }, { &m_turret} )
+    // JoystickButton(&m_secondaryController, xbox::kBumperRight).WhenPressed(
+    //     InstantCommand([this] { m_turret.ResetPosition(); }, { &m_turret} )
     // );
 
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kA).WhenReleased(
+    // JoystickButton(&m_secondaryController, xbox::kA).WhenReleased(
     //     TransferPrepare(&m_transfer, true).WithTimeout(TransferConstants::kMaxTransferTime)
     // );
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kB).WhenHeld(
-        IntakeRelease(&m_intake)
-    );
+    JoystickButton(&m_secondaryController, xbox::kB).WhenHeld(IntakeRelease(&m_intake));
+    JoystickButton(&m_secondaryController, xbox::kBack).WhenHeld(Unjam(&m_transfer, &m_intake));    
 
-    frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kBack).WhenHeld(
-        Unjam(&m_transfer, &m_intake)
-    );    
-
-    // frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kA).WhenPressed(
-    //     frc2::InstantCommand(    
+    // JoystickButton(&m_primaryController, xbox::kA).WhenPressed(
+    //     InstantCommand(    
     //         [this] { 
     //             m_flywheel.SetRPM(m_flywheel.GetRPM() + 100.0);
     //             printf("a");
@@ -159,8 +141,8 @@ void RobotContainer::ConfigureButtonBindings()
     //     )
     // );
 
-    // frc2::JoystickButton(&m_primaryController, (int)frc::XboxController::Button::kB).WhenPressed(
-    //     frc2::InstantCommand(    
+    // JoystickButton(&m_primaryController, xbox::kB).WhenPressed(
+    //     InstantCommand(    
     //         [this] { 
     //             m_flywheel.SetRPM(m_flywheel.GetRPM() - 100.0);
     //             printf("b");
@@ -171,11 +153,10 @@ void RobotContainer::ConfigureButtonBindings()
 
     // Secondary
     // Ex: Triggers Fire sequence
-    // frc2::JoystickButton(&m_secondaryController, (int)frc::XboxController::Button::kY).WhenPressed(
-    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transfer, &m_vision,
+    // JoystickButton(&m_secondaryController, xbox::kY).WhenPressed(
+    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, &m_vision,
     //          &m_turretready, &m_firing, &m_finished)
     // );
-
 }
 
 void RobotContainer::ZeroDrive()
@@ -197,7 +178,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                         ZeroDrive();
                     }, {}
                 )
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
+                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
             );
 
         case kEx2:
@@ -208,7 +189,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                         ZeroDrive();
                     }, {}
                 )
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
+                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
             );
 
         case kEx3:
@@ -219,7 +200,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                         ZeroDrive();
                     }, {}
                 )
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_intake, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
+                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
             );
 
         case kEx4:
@@ -240,7 +221,6 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_flywheel
                                 , &m_turret
                                 , &m_hood
-                                , &m_intake
                                 , &m_transfer
                                 , &m_turretready
                                 , &m_firing
@@ -257,7 +237,6 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_flywheel
                                 , &m_turret
                                 , &m_hood
-                                , &m_intake
                                 , &m_transfer
                                 , &m_turretready
                                 , &m_firing
@@ -274,7 +253,6 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_flywheel
                                 , &m_turret
                                 , &m_hood
-                                , &m_intake
                                 , &m_transfer
                                 , &m_turretready
                                 , &m_firing
