@@ -41,7 +41,7 @@ public:
 
     double calcResidual(double radius, vector<frc::Translation2d> points, frc::Translation2d center);
 
-    bool FitCircle(vector<frc::Translation2d> targetVectors);
+    bool FitCircle(vector<frc::Translation2d> targetVectors, double precision, int maxAttempts);
 
     double GetHubAngle();
 
