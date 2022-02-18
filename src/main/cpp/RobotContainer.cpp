@@ -8,7 +8,6 @@
 #include "RobotContainer.h"
 #include <frc2/command/button/NetworkButton.h>
 #include <frc2/command/WaitCommand.h>
-#include "AutoPaths.h"
 
 RobotContainer::RobotContainer()
     : m_gyro()
@@ -39,6 +38,8 @@ void RobotContainer::Periodic() {
     SmartDashboard::PutData("TurretSS", &m_turret);
     SmartDashboard::PutData("VisionSS", &m_vision);
     m_drive.Periodic();
+    SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
+    m_vision.Periodic();
 }
 
 void RobotContainer::SetDefaultCommands()
@@ -111,9 +112,7 @@ void RobotContainer::ConfigureButtonBindings()
              &m_turretready, &m_firing, &m_finished)
     );
 
-    JoystickButton(&m_secondaryController, xbox::kA).WhenHeld(
-        IntakeTransfer(&m_intake, &m_transfer, TransferConstants::kTransferSpeedIntaking)   
-    );
+    JoystickButton(&m_secondaryController, xbox::kA).WhenHeld(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking));
 
     // JoystickButton(&m_secondaryController, xbox::kLeftBumper).WhenHeld(
     //     TransferFirstBall(&m_transfer, TransferConstants::kTransferSpeedIntaking),
@@ -353,7 +352,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
     }
 }
 
-frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> RobotContainer::GetSwerveCommandPath(string pathName, bool primaryPath)
+SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(string pathName, bool primaryPath)
 {
     PathPlannerTrajectory path = PathPlanner::loadPath(pathName, AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration);
     // PathPlannerTrajectory path = PathPlanner::loadPath(pathName, 1.0 * 1_mps, 2.0 * 1_mps_sq);
@@ -383,51 +382,6 @@ frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> RobotContainer
         m_drive.ResetOdometry(trajectory.InitialPose());
 
     return swerveControllerCommand;
-}
-
-frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> RobotContainer::GetSwerveCommand(double path[][6],  int length, bool primaryPath)
-{
-    frc::Trajectory exampleTrajectory = convertArrayToTrajectory(path, length);
-
-    frc::ProfiledPIDController<units::radians> thetaController{
-        AutoConstants::kPThetaController, 0, AutoConstants::kDThetaController,
-        AutoConstants::kThetaControllerConstraints};
-
-    thetaController.EnableContinuousInput(units::radian_t(-wpi::numbers::pi), units::radian_t(wpi::numbers::pi));
-
-    frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> swerveControllerCommand(
-        exampleTrajectory,                                                      // frc::Trajectory
-        [this]() { return m_drive.GetPose(); },                                 // std::function<frc::Pose2d()>
-        m_drive.kDriveKinematics,                                               // frc::SwerveDriveKinematics<NumModules>
-        frc2::PIDController(AutoConstants::kPXController, 0, AutoConstants::kDXController),                // frc2::PIDController
-        frc2::PIDController(AutoConstants::kPYController, 0, AutoConstants::kDYController),                // frc2::PIDController
-        thetaController,                                                        // frc::ProfiledPIDController<units::radians>
-        [this](auto moduleStates) { m_drive.SetModuleStates(moduleStates); },   // std::function< void(std::array<frc::SwerveModuleState, NumModules>)>
-        {&m_drive}                                                              // std::initializer_list<Subsystem*> requirements
-    );
-
-    // Reset odometry to the starting pose of the trajectory
-    if(primaryPath)
-        m_drive.ResetOdometry(exampleTrajectory.InitialPose());
-
-    return swerveControllerCommand;
-}
-
-// t, v, a, X, Y, H
-frc::Trajectory RobotContainer::convertArrayToTrajectory(double a[][6], int length)
-{
-    std::vector<frc::Trajectory::State> states;
-    printf("Converting array...");
-    for (int i = 0; i < length; i++)
-    {
-        printf("looping through timestamps...");
-        states.push_back({
-            a[i][0] * 1_s, a[i][1] * 1_mps, a[i][2] * 1_mps_sq, 
-            frc::Pose2d(a[i][3] * 1_m, a[i][4] * -1.0 * 1_m, a[i][5] * -1.0 * 1_deg), curvature_t(0)
-        });
-    }
-    printf("Finished looping, returning Trajectory");
-    return frc::Trajectory(states);
 }
 
 frc::Trajectory RobotContainer::convertPathToTrajectory(PathPlannerTrajectory path)

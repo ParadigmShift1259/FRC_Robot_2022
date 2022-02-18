@@ -2,32 +2,34 @@
 #include "commands/IntakeTransfer.h"
 #include "Constants.h"
 
+using namespace IntakeConstants;
 using namespace TransferConstants;
 
-TransferFirstBall::TransferFirstBall(TransferSubsystem* transfer, double speed)
+TransferFirstBall::TransferFirstBall(TransferSubsystem& transfer, IntakeSubsystem& intake, double speed)
  : m_transfer(transfer)
- , m_timer()
+ , m_intake(intake)
  , m_speed(speed)
- {
-  AddRequirements({transfer});
+{
+  AddRequirements({&transfer, &intake});
 }
 
 void TransferFirstBall::Initialize()
 {
-    m_timer.Start();
 }
 
 void TransferFirstBall::Execute()
 {
-    m_transfer->SetTransfer(kTransferSpeedIntaking);
-    m_transfer->SetFeeder(kFeederSpeed);
+    m_transfer.SetFeeder(kFeederSpeed);
+    m_transfer.SetTransfer(kTransferSpeedIntaking);
+    m_intake.Set(kIngestHigh);
 }
 
-bool TransferFirstBall::IsFinished() {
-    return m_transfer->GetFeederPhotoeye();
+bool TransferFirstBall::IsFinished()
+{
+    return m_transfer.GetFeederPhotoeye();
 }
 
 void TransferFirstBall::End(bool interrupted)
 {
-    m_transfer->SetFeeder(0);
+    m_transfer.SetFeeder(0);
 }

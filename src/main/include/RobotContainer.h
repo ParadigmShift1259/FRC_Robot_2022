@@ -37,11 +37,9 @@
 #include "Gyro.h"
 #include "common/SwerveControllerCommand2.h"
 
+#include "ISubsysAccess.h"
 #include "subsystems/DriveSubsystem.h"
-#include "subsystems/VisionSubsystem.h"
 #include "subsystems/FlywheelSubsystem.h"
-#include "subsystems/TurretSubsystem.h"
-#include "subsystems/HoodSubsystem.h"
 
 #include "commands/TransferFirstBall.h"
 #include "commands/TransferSecondBall.h"
@@ -60,8 +58,9 @@
 #include <pathplanner/lib/PathPlanner.h>
 
 using namespace pathplanner;
+using SwerveCtrlCmd = frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules>;
 
-class RobotContainer
+class RobotContainer : public ISubsysAccess
 {
 public:
     RobotContainer();
@@ -73,13 +72,18 @@ public:
     frc2::Command *GetAutonomousCommand(AutoPath path);
 
     frc::SendableChooser<AutoPath> m_chooser;
-    
+
+    //DriveSubsystem&      GetDrive() override { return m_drive; };
+    //FlywheelSubsystem&   GetFlywheel() override { return m_flywheel; };
+    HoodSubsystem&       GetHood() override { return m_hood; };
+    IntakeSubsystem&     GetIntake() override { return m_intake; };
+    TransferSubsystem&   GetTransfer() override { return m_transfer; };
+    TurretSubsystem&     GetTurret() override { return m_turret; };
+    VisionSubsystem&     GetVision() override { return m_vision; };    
 private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();
-    frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> GetSwerveCommandPath(string pathName, bool primaryPath);
-    frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> GetSwerveCommand(double path[][6], int length, bool primaryPath);
-    frc::Trajectory convertArrayToTrajectory(double a[][6], int length);
+    SwerveCtrlCmd GetSwerveCommandPath(string pathName, bool primaryPath);
     frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
     void PrintTrajectory(frc::Trajectory& trajectory);
 
@@ -100,7 +104,6 @@ private:
     frc2::InstantCommand m_clearFieldRelative{[this] { m_fieldRelative = false; }, {}};
     frc2::InstantCommand m_zeroHeading{[this] { m_gyro.ZeroHeading(); }, {}};
 
-    //bool m_fieldRelative = true;
     bool m_turretready = false;
     bool m_firing = false;
     bool m_finished = false;
