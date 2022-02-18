@@ -36,6 +36,8 @@
 #include "common/Util.h"
 #include "Gyro.h"
 #include "common/SwerveControllerCommand2.h"
+#include "Calculations.h"
+#include "Constants.h"
 
 #include "ISubsysAccess.h"
 
