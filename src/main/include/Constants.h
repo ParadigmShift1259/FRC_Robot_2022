@@ -7,13 +7,20 @@
 
 #pragma once
 
-#include <frc/geometry/Translation2d.h>
-#include <frc/kinematics/SwerveDriveKinematics.h>
-#include <frc/trajectory/TrapezoidProfile.h>
+#include <frc/trajectory/TrapezoidProfile.h>    // For thetaController
+
+#include <wpi/numbers>
+
 #include <units/time.h>
 #include <units/velocity.h>
 #include <units/acceleration.h>
-#include <wpi/numbers>
+// #include <units/angular_acceleration.h>
+// #include <units/moment_of_inertia.h>
+// #include <units/mass.h>
+#include <units/length.h>
+// #include <units/dimensionless.h>
+#include <units/angular_velocity.h>
+// #include <units/energy.h>
 
 #include <ctre/phoenix/CANifier.h>
 
@@ -23,6 +30,7 @@ using namespace units;
 /// Uncomment to set button binds for secondary controller to the primary controller
 #define DualJoysticks
 
+/// Drive subsystem constants
 namespace DriveConstants
 {
     constexpr int kNumSwerveModules = 4;
@@ -121,6 +129,7 @@ namespace DriveConstants
     ///@}
 }
 
+/// Swerve module constants
 namespace ModuleConstants
 {
     constexpr int kEncoderCPR = 2048;
@@ -163,6 +172,7 @@ namespace ModuleConstants
     ///@}
 }
 
+/// Autonomous constants
 namespace AutoConstants
 {
     using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
@@ -188,6 +198,7 @@ namespace AutoConstants
     extern const frc::TrapezoidProfile<radians>::Constraints kThetaControllerConstraints;
 }  // namespace AutoConstants
 
+/// Operator Interface constants
 namespace OIConstants
 {
     constexpr double kDeadzoneX = 0.015;
@@ -204,7 +215,7 @@ namespace OIConstants
 #endif
 }
 
-// Vision Subsystem Constants
+// Vision subsystem constants
 namespace VisionConstants
 {
     // 6/30/21
@@ -228,7 +239,7 @@ namespace VisionConstants
     constexpr double kMaxTargetSpread = 1.1 * kHubRadius;
 }
 
-// Flywheel Subsystem constants
+// Flywheel subsystem constants
 namespace FlywheelConstants
 {
     constexpr double kPrimaryMotorPort = 11;     //!< Flywheel CAN ID (Primary SparkMAX)
@@ -269,7 +280,9 @@ namespace FlywheelConstants
     constexpr double kWheelMetersPerRev = kWheelDiameter * wpi::numbers::pi;
     // Meters per second to Revolutions per minute
     constexpr double kMPSPerRPM = kWheelMetersPerRev / kSecondsPerMinute;
-    constexpr double kWheelRevPerMotorRev = 1.25;
+    /// One turn of the Neo is 1.5 turns of the Flywheel
+    constexpr double kGearRatio = 3.0 / 2.0;
+    constexpr double kWheelRevPerMotorRev = kGearRatio;
 
     /// Use MPSPerRPM to determine the ramp rates, current values are just placeholders
     constexpr double kIdleRPM = 2000;
@@ -277,7 +290,7 @@ namespace FlywheelConstants
     constexpr double kTrenchRPM = 3400;
 }
 
-// Intake Subsystem constants
+// Intake subsystem constants
 namespace IntakeConstants
 {
     constexpr double kMotorPort = 14;   // Intake rollers CAN ID (Talon)
@@ -289,6 +302,7 @@ namespace IntakeConstants
     constexpr double kReleaseHigh = -0.70;
 }
 
+/// Transport subsystem constants
 namespace TransferConstants
 {
     constexpr double kFeederCANid = 12;      //!< Feeder CAN ID (TalonSRX)
@@ -312,7 +326,7 @@ namespace TransferConstants
     constexpr bool kFeederInverted = true;
 }
 
-// Turret Subsystem Constants
+// Turret subsystem constants
 namespace TurretConstants
 {
     constexpr double kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
@@ -357,7 +371,8 @@ namespace TurretConstants
     // initial configured angle of the turret relative to the turret, in degrees
     constexpr double kStartingPositionDegrees = 45;
 }
-//Hood Subsystem Constants
+
+// Hood subsystem constants
 namespace HoodConstants
 {
     /// PWM Port for hood servo

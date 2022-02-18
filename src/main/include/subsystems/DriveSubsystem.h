@@ -16,13 +16,14 @@
 #include <frc/SmartDashBoard/SmartDashboard.h>
 #include <frc2/command/SubsystemBase.h>
 
+#include "Constants.h"
+#include "common/Util.h"
+
 #include <ctre/phoenix/CANifier.h>
 
-#include "common/Util.h"
-#include "Gyro.h"
-
-#include "Constants.h"
 #include "SwerveModule.h"
+
+#include "Gyro.h"
 
 // Uncomment to directly set states to each module
 //#define MANUAL_MODULE_STATES

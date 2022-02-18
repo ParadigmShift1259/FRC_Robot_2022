@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "Constants.h"
+
 #include <frc/Filesystem.h>
 #include <frc/XboxController.h>
 
@@ -36,10 +38,10 @@
 #include "common/Util.h"
 #include "Gyro.h"
 #include "common/SwerveControllerCommand2.h"
-#include "Calculations.h"
-#include "Constants.h"
 
 #include "ISubsysAccess.h"
+#include "subsystems/DriveSubsystem.h"
+#include "subsystems/FlywheelSubsystem.h"
 
 #include "commands/TransferFirstBall.h"
 #include "commands/TransferSecondBall.h"
@@ -49,7 +51,7 @@
 #include "commands/IntakeRelease.h"
 #include "commands/Fire.h"
 
-#include "Constants.h"
+#include "Calculations.h"
 
 #include <iostream>
 #include <wpi/SmallString.h>
@@ -71,8 +73,8 @@ public:
 
     frc::SendableChooser<AutoPath> m_chooser;
 
-    DriveSubsystem&      GetDrive() override { return m_drive; };
-    FlywheelSubsystem&   GetFlywheel() override { return m_flywheel; };
+    //DriveSubsystem&      GetDrive() override { return m_drive; };
+    //FlywheelSubsystem&   GetFlywheel() override { return m_flywheel; };
     HoodSubsystem&       GetHood() override { return m_hood; };
     IntakeSubsystem&     GetIntake() override { return m_intake; };
     TransferSubsystem&   GetTransfer() override { return m_transfer; };

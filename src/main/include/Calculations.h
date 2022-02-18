@@ -3,13 +3,42 @@
 #pragma once
 
 #include <units/time.h>
+
 #include <units/length.h>
 #include <units/velocity.h>
+#include <units/acceleration.h>
+
 #include <units/angle.h>
 #include <units/angular_velocity.h>
+#include <units/angular_acceleration.h>
+
+#include <units/moment_of_inertia.h>
+#include <units/mass.h>
+#include <units/energy.h>
+#include <units/dimensionless.h>
+
 #include <networktables/NetworkTableEntry.h>
 
 using namespace units;
+
+/// Ballistics/Physics constants
+constexpr auto gravity = meters_per_second_squared_t(9.81);
+constexpr kilogram_t flywheelMass = pound_t(5.0);
+//?constexpr kilogram_t flywheelMass = pound_t(4.7);
+
+constexpr meter_t flywheelRadius = 2.0_in;
+constexpr auto flywheelRotInertia =  0.5 * flywheelMass * flywheelRadius * flywheelRadius;
+
+constexpr kilogram_t cargoMass = ounce_t(9.5);
+constexpr meter_t cargoRadius = inch_t(4.75);
+constexpr auto cargoRotInertia = 2.0 / 3.0 * cargoMass * cargoRadius * cargoRadius;
+
+constexpr auto rotInertiaRatio = flywheelRotInertia / cargoRotInertia;
+
+constexpr dimensionless_t linearRegSlope = 0.874;
+constexpr auto linearRegConst = radians_per_second_t (12.7);
+
+// auto test = flywheelRotInertia * radians_per_second_squared_t(10.0) /*/ radian_t(10.0)*/;
 
 class Calculations
 {
