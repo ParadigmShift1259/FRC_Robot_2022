@@ -79,7 +79,7 @@ void VisionSubsystem::Periodic()
 
         if(targetVectors.size() >= 3)
         {
-            FitCircle(targetVectors); // To Do: Pass in Precision and Iteration Limit
+            FitCircle(targetVectors, 0.01, 20); // To Do: Pass in Precision and Iteration Limit
         }
         else
         {
@@ -87,6 +87,7 @@ void VisionSubsystem::Periodic()
             m_validTarget = false;
         }
     }
+
 
     // frc::Pose2d TargetPose = Pose2d(units::inch_t{324}, units::inch_t{162}, frc::Rotation2d{units::degree_t{0}});
     // units::radian_t angleToTarget = units::radian_t(atan2(double(m_cameraToHub.X()), double(m_cameraToHub.Y())));
@@ -101,10 +102,11 @@ void VisionSubsystem::Periodic()
         else
             {
                 std::cout << "Center: (" << (double)m_cameraToHub.X() << "," << (double)m_cameraToHub.Y() << "). ";
-                std::cout << "Target Vectors: ";
-                for(int i = 0; i < targetVectors.size(); i++) {
-                    std::cout << "(" << (double)targetVectors[i].X() << "," << (double)targetVectors[i].Y() << "). ";
-                }
+                std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
+                std::cout << "Range: " << GetHubDistance() * 39.37;
+                // for(int i = 0; i < targetVectors.size(); i++) {
+                //     std::cout << "(" << (double)targetVectors[i].X() << "," << (double)targetVectors[i].Y() << "). ";
+                // }
                 std::cout << std::endl;
             }
         }
@@ -146,7 +148,7 @@ void VisionSubsystem::SetLED(bool on)
 }
 
 
-bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors)
+bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors, double precision, int maxAttempts)
 {
     double xSum = 0.0;
     double ySum = 0.0;
@@ -155,43 +157,50 @@ bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors)
         xSum += (double) targetVectors[i].X();
         ySum += (double) targetVectors[i].Y();
     }
-    m_cameraToHub = Translation2d(units::meter_t{xSum / targetVectors.size() + kHubRadius}, units::meter_t{ySum / targetVectors.size()});
+    frc::Translation2d cameraToHub = Translation2d(units::meter_t{xSum / targetVectors.size() + kHubRadius}, units::meter_t{ySum / targetVectors.size()});
 
     // Iterate to find optimal center
     double shiftDist = kHubRadius / 2.0;
-    double minResidual = calcResidual(kHubRadius, targetVectors, m_cameraToHub);
-    while (true) {
+    double minResidual = calcResidual(kHubRadius, targetVectors, cameraToHub);
+
+    int n = 0;
+
+    while (n < maxAttempts) {
         vector<frc::Translation2d> translations;
         translations.push_back(Translation2d(units::meter_t{shiftDist}, units::meter_t{0.0}));
         translations.push_back(Translation2d(units::meter_t{-shiftDist}, units::meter_t{0.0}));
         translations.push_back(Translation2d(units::meter_t{0.0}, units::meter_t{shiftDist}));
         translations.push_back(Translation2d(units::meter_t{0.0}, units::meter_t{-shiftDist}));
-        frc::Translation2d bestPoint = m_cameraToHub;
+        frc::Translation2d bestPoint = cameraToHub;
         bool centerIsBest = true;
 
         // Check all adjacent positions
         for (int i = 0; i < translations.size(); i++) 
         {
             double residual =
-                calcResidual(kHubRadius, targetVectors, m_cameraToHub + (translations[i]));
+                calcResidual(kHubRadius, targetVectors, cameraToHub + (translations[i]));
             if (residual < minResidual) {
-                bestPoint = m_cameraToHub + (translations[i]);
+                bestPoint = cameraToHub + (translations[i]);
                 minResidual = residual;
                 centerIsBest = false;
                 break;
             }
         }
-        double precision = 0.01;
         // Decrease shift, exit, or continue
         if (centerIsBest) {
             shiftDist /= 2.0;
             if (shiftDist < precision) {
+                m_cameraToHub = cameraToHub;
                 return true;
             }
         } else {
-            m_cameraToHub = bestPoint;
+            cameraToHub = bestPoint;
         }
+
+        n++;
     }
+    // failed
+    return false;
 }
 
 double VisionSubsystem::calcResidual(double radius, vector<frc::Translation2d> points, frc::Translation2d center)
@@ -206,7 +215,7 @@ double VisionSubsystem::calcResidual(double radius, vector<frc::Translation2d> p
 
 double VisionSubsystem::GetHubAngle()
 {
-    return atan2(double(m_cameraToHub.X()), double(m_cameraToHub.Y()));
+    return atan2((double)m_cameraToHub.Y(), (double)m_cameraToHub.X());
 }
 
 double VisionSubsystem::GetHubDistance()
