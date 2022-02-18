@@ -6,7 +6,6 @@
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <wpi/StringMap.h>
 #include <stdio.h>
-#include <units/energy.h>
 
 using namespace units;
 
