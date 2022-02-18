@@ -1,16 +1,16 @@
 
 #pragma once
 
+#include "ConstantsFlywheel.h"
+
 #include <frc2/command/SubsystemBase.h>
 
 #include <rev/CANSparkMax.h>
 
-#include "units/length.h"
-#include "units/time.h"
-#include "units/voltage.h"
+#include <units/length.h>
+#include <units/time.h>
+#include <units/voltage.h>
 #include <frc/controller/SimpleMotorFeedforward.h>
-
-#include "Constants.h"
 
 using namespace rev;
 using namespace std;

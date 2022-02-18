@@ -1,10 +1,9 @@
-
 #pragma once
+
+#include "ConstantsIntake.h"
 
 #include <frc2/command/SubsystemBase.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
-
-#include "Constants.h"
 
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;

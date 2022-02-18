@@ -6,8 +6,6 @@
 #include "subsystems/TransferSubsystem.h"
 #include "subsystems/IntakeSubsystem.h"
 
-#include "Constants.h"
-
 class Unjam : public frc2::CommandHelper<frc2::CommandBase, Unjam> {
 public:
     explicit Unjam(TransferSubsystem* transfer, IntakeSubsystem* intake);

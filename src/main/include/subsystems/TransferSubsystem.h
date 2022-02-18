@@ -1,16 +1,15 @@
 #pragma once
 
+#include "ConstantsTransport.h"
+
 #include <frc2/command/SubsystemBase.h>
+#include <frc/DigitalInput.h>
 
 #include <ctre/phoenix/motorcontrol/ControlMode.h>
 #include "ctre/phoenix/motorcontrol/can/TalonSRX.h"
-#include <frc/DigitalInput.h>
 
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
-
-#include "Constants.h"
-#include "common/Util.h"
 
 class TransferSubsystem : public frc2::SubsystemBase
 {

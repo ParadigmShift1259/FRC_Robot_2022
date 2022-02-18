@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include "ConstantsSwerveModule.h"
+
 #include <frc/controller/PIDController.h>
 #include <frc/controller/ProfiledPIDController.h>
 #include <frc/geometry/Rotation2d.h>
@@ -24,7 +26,6 @@
 
 #include <string>
 
-#include "Constants.h"
 #include "common/Util.h"
 #include "common/PIDLoaderFalcon.h"
 #include "common/PIDLoaderNEO.h"
@@ -33,6 +34,7 @@
 //#define DISABLE_DRIVE
 
 using namespace rev;
+using namespace ctre::phoenix;
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
 using namespace ModuleConstants;

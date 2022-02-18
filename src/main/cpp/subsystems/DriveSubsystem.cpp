@@ -5,6 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+#include "ConstantsAuto.h"
 #include "subsystems/DriveSubsystem.h"
 
 using namespace DriveConstants;

@@ -1,6 +1,11 @@
 
 #pragma once
 
+#include "ConstantsTurret.h"
+
+#include "common/Util.h"
+#include "Gyro.h"
+
 #include <frc2/command/SubsystemBase.h>
 
 #include <ctre/phoenix/motorcontrol/ControlMode.h>
@@ -8,10 +13,6 @@
 
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
-
-#include "Constants.h"
-#include "common/Util.h"
-#include "Gyro.h"
 
 class TurretSubsystem : public frc2::SubsystemBase
 {

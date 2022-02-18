@@ -1,11 +1,9 @@
-
+#include "ConstantsVision.h"
 #include "subsystems/VisionSubsystem.h"
+#include "common/Util.h"
 #include <iostream>
 #include <vector>
 #include <photonlib/PhotonUtils.h>
-
-
-
 
 VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro) 
  : m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
@@ -47,7 +45,7 @@ void VisionSubsystem::Periodic()
         //if(!m_allPoints.empty())
         
         //Gets Vectors for each target
-        for(int i = 0; i < targets.size(); i++)
+        for(int i = 0; i < (int)targets.size(); i++)
         {
             kTargetPitch = units::degree_t{targets[i].GetPitch()};
             units::meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
@@ -124,7 +122,6 @@ double VisionSubsystem::GetDistance()
     return Util::GetAverage(m_averageDistance);
 }
 
-
 double VisionSubsystem::GetAngle()
 {
     return Util::GetAverage(m_averageAngle);
@@ -150,7 +147,7 @@ bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors)
 {
     double xSum = 0.0;
     double ySum = 0.0;
-    for (int i = 0; i < targetVectors.size(); i++) 
+    for (int i = 0; i < (int)targetVectors.size(); i++) 
     {
         xSum += (double) targetVectors[i].X();
         ySum += (double) targetVectors[i].Y();
@@ -197,7 +194,7 @@ bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors)
 double VisionSubsystem::calcResidual(double radius, vector<frc::Translation2d> points, frc::Translation2d center)
 {
     double residual = 0.0;
-    for (int i = 0; i < points.size(); i++) {
+    for (int i = 0; i < (int)points.size(); i++) {
       double diff = (double) (points[i].Distance(center) - units::meter_t{radius});
       residual += diff * diff;
     }

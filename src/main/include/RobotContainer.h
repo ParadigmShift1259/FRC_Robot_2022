@@ -9,56 +9,24 @@
 
 #include "Constants.h"
 
-#include <frc/Filesystem.h>
 #include <frc/XboxController.h>
-
-#include <frc/controller/PIDController.h>
-#include <frc/controller/ProfiledPIDController.h>
-
-#include <frc/shuffleboard/Shuffleboard.h>
 #include <frc/smartdashboard/SendableChooser.h>
-
 #include <frc2/command/Command.h>
-#include <frc2/command/button/JoystickButton.h>
 #include <frc2/command/InstantCommand.h>
-#include <frc2/command/PIDCommand.h>
-#include <frc2/command/RunCommand.h>
-#include <frc2/command/SequentialCommandGroup.h>
-#include <frc2/command/ParallelRaceGroup.h>
-#include <frc2/command/SwerveControllerCommand.h>
-
-#include <frc/geometry/Translation2d.h>
-
 #include <frc/trajectory/Trajectory.h>
-#include <frc/trajectory/TrajectoryGenerator.h>
-#include <frc/trajectory/TrajectoryUtil.h>
 
-#include <wpi/fs.h>
-
-#include "common/Util.h"
-#include "Gyro.h"
+//#include <frc2/command/SwerveControllerCommand.h>
 #include "common/SwerveControllerCommand2.h"
-
+#include "Gyro.h"
 #include "ISubsysAccess.h"
+
 #include "subsystems/DriveSubsystem.h"
 #include "subsystems/FlywheelSubsystem.h"
-
-#include "commands/TransferFirstBall.h"
-#include "commands/TransferSecondBall.h"
-#include "commands/IntakeTransfer.h"
-#include "commands/IntakeIngest.h"
-#include "commands/Unjam.h"
-#include "commands/IntakeRelease.h"
-#include "commands/Fire.h"
-
-#include "Calculations.h"
-
-#include <iostream>
-#include <wpi/SmallString.h>
 
 #include <pathplanner/lib/PathPlanner.h>
 
 using namespace pathplanner;
+using SwerveCtrlCmd = frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules>;
 
 class RobotContainer : public ISubsysAccess
 {
@@ -84,9 +52,7 @@ public:
 private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();
-    frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> GetSwerveCommandPath(string pathName, bool primaryPath);
-    frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> GetSwerveCommand(double path[][6], int length, bool primaryPath);
-    frc::Trajectory convertArrayToTrajectory(double a[][6], int length);
+    SwerveCtrlCmd GetSwerveCommandPath(string pathName, bool primaryPath);
     frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
     void PrintTrajectory(frc::Trajectory& trajectory);
 

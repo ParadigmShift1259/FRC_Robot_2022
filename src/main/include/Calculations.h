@@ -1,7 +1,7 @@
 /// Physics/Ballistics calculations for FRC 2022 Game RapidReact
 
 #pragma once
-
+/*
 #include <units/time.h>
 
 #include <units/length.h>
@@ -38,7 +38,8 @@ constexpr auto rotInertiaRatio = flywheelRotInertia / cargoRotInertia;
 constexpr dimensionless_t linearRegSlope = 0.874;
 constexpr auto linearRegConst = radians_per_second_t (12.7);
 
-// auto test = flywheelRotInertia * radians_per_second_squared_t(10.0) /*/ radian_t(10.0)*/;
+// auto test = flywheelRotInertia * radians_per_second_squared_t(10.0);
+// auto test = flywheelRotInertia * radians_per_second_squared_t(10.0) / radian_t(10.0);
 
 class Calculations
 {
@@ -91,3 +92,4 @@ class Calculations
   nt::NetworkTableEntry m_setpointEntry;
 
 };
+*/

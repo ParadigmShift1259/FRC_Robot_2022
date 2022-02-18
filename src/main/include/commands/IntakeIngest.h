@@ -5,8 +5,6 @@
 
 #include "subsystems/IntakeSubsystem.h"
 
-#include "Constants.h"
-
 class IntakeIngest : public frc2::CommandHelper<frc2::CommandBase, IntakeIngest> {
  public:
   explicit IntakeIngest(IntakeSubsystem& subsystem);

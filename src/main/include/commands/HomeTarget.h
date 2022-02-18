@@ -5,8 +5,6 @@
 #include <frc2/command/CommandBase.h>
 #include <frc2/command/CommandHelper.h>
 
-#include "common/Util.h"
-
 #include "subsystems/FlywheelSubsystem.h"
 #include "subsystems/TurretSubsystem.h"
 #include "subsystems/HoodSubsystem.h"
@@ -37,5 +35,5 @@ private:
     bool* m_turretready;
     bool* m_firing;
     bool* m_finished;
-  	Calculations m_calculation;
+  	//Calculations m_calculation;
 };

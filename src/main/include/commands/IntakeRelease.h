@@ -5,8 +5,6 @@
 
 #include "subsystems/IntakeSubsystem.h"
 
-#include "Constants.h"
-
 class IntakeRelease : public frc2::CommandHelper<frc2::CommandBase, IntakeRelease> {
  public:
   explicit IntakeRelease(IntakeSubsystem* subsystem);

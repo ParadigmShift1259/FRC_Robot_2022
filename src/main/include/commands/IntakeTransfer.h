@@ -7,8 +7,6 @@
 //#include "subsystems/TransferSubsystem.h"
 #include "ISubsysAccess.h"
 
-#include "Constants.h"
-
 class IntakeTransfer : public frc2::CommandHelper<frc2::SequentialCommandGroup, IntakeTransfer> {
 public:
     //IntakeTransfer(IntakeSubsystem* intake, TransferSubsystem* transfer, double speed);

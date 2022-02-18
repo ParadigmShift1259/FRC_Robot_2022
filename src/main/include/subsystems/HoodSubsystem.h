@@ -1,10 +1,10 @@
 
 #pragma once
 
+#include "ConstantsHood.h"
+
 #include <frc2/command/SubsystemBase.h>
 #include <frc/Servo.h>
-
-#include "Constants.h"
 
 class HoodSubsystem : public frc2::SubsystemBase
 {

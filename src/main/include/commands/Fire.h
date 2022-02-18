@@ -8,14 +8,8 @@
 #include "subsystems/FlywheelSubsystem.h"
 #include "subsystems/TurretSubsystem.h"
 #include "subsystems/HoodSubsystem.h"
-#include "subsystems/IntakeSubsystem.h"
 #include "subsystems/TransferSubsystem.h"
-#include "subsystems/VisionSubsystem.h"
-
-#include "commands/TransferFire.h"
-#include "commands/HomeTarget.h"
-
-#include "Constants.h"
+//#include "subsystems/VisionSubsystem.h"
 
 class Fire : public frc2::CommandHelper<frc2::ParallelCommandGroup, Fire> {
 public:

@@ -1,9 +1,13 @@
 #include "commands/HomeTarget.h"
 
-#include "Constants.h"
+#include "ConstantsFlywheel.h"
+#include "ConstantsHood.h"
+#include "ConstantsOI.h"
+#include "ConstantsTurret.h"
+
+//#include "common/Util.h"
 
 #include <frc/smartdashboard/SmartDashboard.h>
-#include <iostream>
 
 HomeTarget::HomeTarget(   frc::XboxController* controller
                         , FlywheelSubsystem* flywheel
@@ -48,7 +52,7 @@ void HomeTarget::Execute()
     // Increased flywheel at upper ends 3/18/21
     //y\ =\ 1687.747+15.8111x-0.058079x^{2}+0.00008892342x^{3}
     double flywheelspeed = 1687.747 + 15.8111 * distance - 0.058079 * pow(distance, 2) + 0.00008892342 * pow(distance, 3);
-    double setpoint = m_calculation.GetInitRPMS().to<double>() / FlywheelConstants::kGearRatio;
+    //double setpoint = m_calculation.GetInitRPMS().to<double>() / FlywheelConstants::kGearRatio;
 
     // Quintic regression calculated 3/27
     // https://mycurvefit.com/

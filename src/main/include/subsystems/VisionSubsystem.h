@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include "ConstantsVision.h"
+
 #include <frc2/command/SubsystemBase.h>
 
 #include <frc/smartdashboard/SmartDashboard.h>
@@ -10,9 +12,6 @@
 #include <vector>
 
 #include <wpi/numbers>
-
-#include "Constants.h"
-#include "common/Util.h"
 
 #include "Gyro.h"
 

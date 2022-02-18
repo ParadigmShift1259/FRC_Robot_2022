@@ -1,3 +1,4 @@
+/*
 #include "Calculations.h"
 
 #include "Constants.h"
@@ -241,3 +242,4 @@ void Calculations::CalculateAll() {
 
   fclose(calcFile);
 }
+*/
