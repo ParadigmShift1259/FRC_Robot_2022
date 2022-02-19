@@ -232,8 +232,8 @@ namespace VisionConstants
 // Flywheel Subsystem constants
 namespace FlywheelConstants
 {
-    constexpr double kPrimaryMotorPort = 11;     //!< Flywheel CAN ID (Primary SparkMAX)
-    constexpr double kFollowerMotorPort = 12;            //!< Flywheel CAN ID (Following SparkMAX)
+    constexpr int kPrimaryMotorPort = 11;     //!< Flywheel CAN ID (Primary SparkMAX)
+    constexpr int kFollowerMotorPort = 12;            //!< Flywheel CAN ID (Following SparkMAX)
 
     constexpr double kRampRate = 1.0;
     // Total error allowed for the flywheel, in RPM
@@ -283,8 +283,8 @@ namespace FlywheelConstants
 // Intake Subsystem constants
 namespace IntakeConstants
 {
-    constexpr double kMotorPort = 14;   // Intake rollers CAN ID (Talon)
-    constexpr double kMotorReverseConstant = 1;
+    constexpr int kMotorPort = 14;   // Intake rollers CAN ID (Talon)
+    constexpr int kMotorReverseConstant = 1;
 
     constexpr double kIngestLow = 0.3;
     constexpr double kIngestHigh = 0.80;
@@ -294,8 +294,8 @@ namespace IntakeConstants
 
 namespace TransferConstants
 {
-    constexpr double kFeederCANid = 12;      //!< Feeder CAN ID (TalonSRX)
-    constexpr double kTransferCANid = 11;   //!< Transfer CAN ID (TalonSRX)
+    constexpr int kFeederCANid = 12;      //!< Feeder CAN ID (TalonSRX)
+    constexpr int kTransferCANid = 11;   //!< Transfer CAN ID (TalonSRX)
 
     constexpr int kFeederInputChannel = 0;
     constexpr int kTransferInputChannel = 1;
@@ -318,7 +318,7 @@ namespace TransferConstants
 // Turret Subsystem Constants
 namespace TurretConstants
 {
-    constexpr double kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
+    constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
     constexpr double kP = 0.30114;
     constexpr double kI = 0.00035;

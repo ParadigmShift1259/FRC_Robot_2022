@@ -16,23 +16,30 @@ TransferFirstBall::TransferFirstBall(TransferSubsystem& transfer, IntakeSubsyste
 void TransferFirstBall::Initialize()
 {
     m_bRunning = false;
+    printf("TransferFirstBall::Initialize m_bRunning %d\n", m_bRunning);
 }
 
 void TransferFirstBall::Execute()
 {
+    m_bRunning = true;
     m_transfer.SetFeeder(kFeederSpeed);
     m_transfer.SetTransfer(kTransferSpeedIntaking);
     m_intake.Set(kIngestHigh);
-    m_bRunning = true;
+    printf("TransferFirstBall::Execute m_bRunning %d\n", m_bRunning);
 }
 
 bool TransferFirstBall::IsFinished()
 {
-    return !m_bRunning || m_transfer.GetFeederPhotoeye();
+    bool bPe =  m_transfer.GetFeederPhotoeye();
+    printf("TransferFirstBall::IsFinished m_bRunning %d PE %d\n", m_bRunning, bPe);
+//    return !m_bRunning || m_transfer.GetFeederPhotoeye();
+//    return !m_bRunning || bPe;
+    return bPe;
 }
 
 void TransferFirstBall::End(bool interrupted)
 {
-    m_transfer.SetFeeder(0);
-    m_bRunning = false;
+   m_bRunning = false;
+   printf("TransferFirstBall::End m_bRunning %d\n", m_bRunning);
+   m_transfer.SetFeeder(0);
 }
