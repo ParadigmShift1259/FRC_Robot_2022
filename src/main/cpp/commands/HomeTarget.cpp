@@ -53,11 +53,19 @@ void HomeTarget::Execute()
     // Servo Pos    Measured Angle  Complement
     // 0.0	        50 deg          90 - 50 = 40
     // 0.4	        40 deg          90 - 40 = 50
-    double hoodangle = (m_calculation.GetInitAngle().to<double>() - 40.0) * 0.04;
+    degree_t initAngle = m_calculation.GetInitAngle();
+    double hoodangle = (initAngle.to<double>() - 40.0) * 0.04;
     hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
 
-    // std::cout << "Distance: " << distance << std::endl;
-    // std::cout << "Hood Angle: "<< hoodangle << std::endl;
+    std::cout << "Init Angle: "<< initAngle.to<double>() << std::endl;
+    std::cout << "Hood servo set: "<< hoodangle << std::endl;
+    std::cout << "Distancet: "<< distance << std::endl;
+    std::cout << "Flywheel RPM "<< flywheelspeed << std::endl;
+    SmartDashboard::PutNumber("Init Angle: ", initAngle.to<double>());
+    SmartDashboard::PutNumber("Hood servo set: ", hoodangle);
+    SmartDashboard::PutNumber("Distancet: ", distance);
+    SmartDashboard::PutNumber("Flywheel RPM ", flywheelspeed);
+
     double angleOverride = 0;
     // double turretXRot = m_controller->GetY(frc::GenericHID::kRightHand) * -1.0;
     // double turretYRot = m_controller->GetX(frc::GenericHID::kRightHand);
