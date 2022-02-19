@@ -380,8 +380,8 @@ namespace HoodConstants
     constexpr int kPWMPort = 8;                //!< Hood servo PWM channel
     constexpr double kTestServoSpeed = 0.14;
     // Drives from Max to Min, where hood is smallest at 0.85, and greatest at 0.0485
-    constexpr double kMax = .95;
-    constexpr double kMin = .20;
+    constexpr double kMax = 0.4;
+    constexpr double kMin = 0.0;
 
     /// The fixed hood to fire in the trench given very heavy defense
     constexpr double kTrenchPosition = 0.223;

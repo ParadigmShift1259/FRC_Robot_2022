@@ -10,18 +10,18 @@ using namespace std;
 using namespace frc;
 
 HoodSubsystem::HoodSubsystem() : m_servo(kPWMPort) {
-    // SmartDashboard::PutNumber("T_H_SetAngle", kMax);
+    //SmartDashboard::PutNumber("T_H_SetAngle", 0.5);
 }
 
 void HoodSubsystem::Periodic()
 {
     SmartDashboard::PutNumber("D_H_Angle", m_servo.Get());
-    // double setValue = SmartDashboard::GetNumber("T_H_SetAngle", kMax);
-    // Set(setValue);
+    //double setValue = SmartDashboard::GetNumber("T_H_SetAngle",0.5);// kMax);
+    //Set(setValue);
 }
 
 void HoodSubsystem::Set(double position) 
 {
+    std::cout << "Servo position " << position; 
     m_servo.Set(position);
-    std::cout<< position; 
 }

@@ -11,6 +11,10 @@
 using namespace units;
 
 Calculations::Calculations() {
+  m_heightAboveHub = foot_t(9.0);
+  m_heightRobot = foot_t(3.5);
+  m_heightTarget = foot_t(8.67);
+  m_xTarget = foot_t(2.0);
 
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_10(3);
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_4(3);
@@ -151,11 +155,11 @@ auto Calculations::GetInitVelWithAngle()
   // m_xInput = foot_t(frc::SmartDashboard::GetNumber("FloorHubDistance", 0.0));
   // m_xTarget = foot_t(frc::SmartDashboard::GetNumber("TargetXDistance", 0.0));
 
-  m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(0.0));
-  m_heightTarget = foot_t(m_heightTargetEntry.GetDouble(0.0));
-  m_heightRobot = foot_t(m_heightRobotEntry.GetDouble(0.0));
-  m_xInput = foot_t(m_xFloorDistanceEntry.GetDouble(0.0));
-  m_xTarget = foot_t(m_xTargetDistanceEntry.GetDouble(0.0));
+  // m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(0.0));
+  // m_heightTarget = foot_t(m_heightTargetEntry.GetDouble(0.0));
+  // m_heightRobot = foot_t(m_heightRobotEntry.GetDouble(0.0));
+  // m_xInput = foot_t(m_xFloorDistanceEntry.GetDouble(0.0));
+  // m_xTarget = foot_t(m_xTargetDistanceEntry.GetDouble(0.0));
     
   m_heightMax = HubHeightToMaxHeight();
 
@@ -165,8 +169,8 @@ auto Calculations::GetInitVelWithAngle()
   m_velInit = math::hypot(m_velXInit, m_velYInit);
   m_angleInit = math::atan(m_velYInit / m_velXInit);
 
-  // printf("InitVel %.3f\n", m_velInit.to<double>());
-  // printf("InitAngle %.3f\n", m_angleInit.to<double>());
+  printf("InitVel %.3f\n", m_velInit.to<double>());
+  printf("InitAngle %.3f\n", m_angleInit.to<double>());
 
   m_initVelEntry.SetDouble(m_velInit.to<double>());
   m_initAngleEntry.SetDouble(m_angleInit.to<double>());
@@ -177,8 +181,15 @@ auto Calculations::GetInitVelWithAngle()
   return m_velInit;
 }
 
-revolutions_per_minute_t Calculations::GetInitRPMS()
+degree_t Calculations::GetInitAngle()
 {
+  return m_angleInit;
+}
+
+revolutions_per_minute_t Calculations::GetInitRPMS(meter_t distance)
+{
+  m_xInput = distance;
+  
   GetInitVelWithAngle();
 
   auto aValue = flywheelRotInertia * (linearRegSlope - 1.0) * (linearRegSlope + linearRegSlope * rotInertiaRatio - rotInertiaRatio + 1);
@@ -192,7 +203,7 @@ revolutions_per_minute_t Calculations::GetInitRPMS()
   m_setpointEntry.SetDouble(m_rpmInit.to<double>() / FlywheelConstants::kGearRatio);
   // frc::SmartDashboard::PutNumber("InitRPM", m_rpmInit.to<double>());
 
-  return m_rotVelInit;
+  return m_rpmInit;
 }
 
 radians_per_second_t Calculations::QuadraticFormula(double a, double b, double c, bool subtract)
@@ -215,13 +226,13 @@ void Calculations::CalculateAll() {
 
   for (double i=8.0; i<25.0; i++) {
     for (double j=0.1; j<4; j+=0.1) {
-      m_heightAboveHubEntry.SetDouble(9.0);
-      m_heightTargetEntry.SetDouble(8.0 + 2.0/3.0);
-      m_heightRobotEntry.SetDouble(3.0 + 5.0/6.0);
+      // m_heightAboveHubEntry.SetDouble(9.0);
+      // m_heightTargetEntry.SetDouble(8.0 + 2.0/3.0);
+      // m_heightRobotEntry.SetDouble(3.0 + 5.0/6.0);
       m_xFloorDistanceEntry.SetDouble(i);
       m_xTargetDistanceEntry.SetDouble(j);
 
-      GetInitRPMS();
+      GetInitRPMS(m_xInput);
 
       auto setpoint = m_rpmInit / FlywheelConstants::kGearRatio;
 

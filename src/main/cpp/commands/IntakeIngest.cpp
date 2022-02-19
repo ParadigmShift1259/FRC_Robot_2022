@@ -4,16 +4,14 @@
 
 using namespace IntakeConstants;
 
-IntakeIngest::IntakeIngest(IntakeSubsystem* subsystem) 
-: m_intake(subsystem)
+IntakeIngest::IntakeIngest(IntakeSubsystem& subsystem) 
+  : m_intake(subsystem)
 {
-  // printf("Initailized Intake Ingest command");
-  AddRequirements({subsystem});
-  
+  AddRequirements({&subsystem});
 }
 
 void IntakeIngest::Execute() {
-    m_intake->Set(kIngestHigh);
+    m_intake.Set(kIngestHigh);
     m_bRunning = true;
 }
 
@@ -23,6 +21,6 @@ bool IntakeIngest::IsFinished()
 }
 
 void IntakeIngest::End(bool interrupted) {
-    //m_intake->Set(0);
+    m_intake.Set(0);
     m_bRunning = false;
 }

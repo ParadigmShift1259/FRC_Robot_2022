@@ -53,7 +53,8 @@ class Calculations
   auto GetInitXVel();
   auto GetInitYVel();
   auto GetInitVelWithAngle();
-  revolutions_per_minute_t GetInitRPMS();
+  degree_t GetInitAngle();                //!< Call after GetInitVelWithAngle or GetInitRPMS
+  revolutions_per_minute_t GetInitRPMS(meter_t distance);
   radians_per_second_t QuadraticFormula(double a, double b, double c, bool subtract);
 
   void CalculateAll();
