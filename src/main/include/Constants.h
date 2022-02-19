@@ -208,6 +208,7 @@ namespace OIConstants
 // Vision Subsystem Constants
 namespace VisionConstants
 {
+    constexpr int kVisionFailLimit = 5;
     // 6/30/21
     // Limelight X Offset: -0.04
     // Mounting angle of the limelight, in degrees
