@@ -46,6 +46,8 @@ void HomeTarget::Execute()
     // Increased flywheel at upper ends 3/18/21
     //y\ =\ 1687.747+15.8111x-0.058079x^{2}+0.00008892342x^{3}
     double flywheelspeed = 1687.747 + 15.8111 * distance - 0.058079 * pow(distance, 2) + 0.00008892342 * pow(distance, 3);
+    double setpoint = m_calculation.GetInitRPMS().to<double>() / FlywheelConstants::kGearRatio;
+
     // Quintic regression calculated 3/27
     // https://mycurvefit.com/
     //y=11.20831-0.2645223*x+0.002584349*x^{2}-0.00001250923*x^{3}+2.986403\cdot10^{-8}*x^{4}-2.81104\cdot10^{-11}*x^{5}

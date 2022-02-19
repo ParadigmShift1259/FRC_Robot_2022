@@ -7,12 +7,13 @@
 
 #pragma once
 
-#include <frc/geometry/Translation2d.h>
-#include <frc/kinematics/SwerveDriveKinematics.h>
 #include <frc/trajectory/TrapezoidProfile.h>
+
 #include <units/time.h>
 #include <units/velocity.h>
 #include <units/acceleration.h>
+#include <units/angular_velocity.h>
+
 #include <wpi/numbers>
 
 #include <ctre/phoenix/CANifier.h>
@@ -282,7 +283,9 @@ namespace FlywheelConstants
     constexpr double kWheelMetersPerRev = kWheelDiameter * wpi::numbers::pi;
     // Meters per second to Revolutions per minute
     constexpr double kMPSPerRPM = kWheelMetersPerRev / kSecondsPerMinute;
-    constexpr double kWheelRevPerMotorRev = 1.25;
+        /// One turn of the Neo is 1.5 turns of the Flywheel
+    constexpr double kGearRatio = 3.0 / 2.0;
+    constexpr double kWheelRevPerMotorRev = kGearRatio;
 
     /// Use MPSPerRPM to determine the ramp rates, current values are just placeholders
     constexpr double kIdleRPM = 2000;
