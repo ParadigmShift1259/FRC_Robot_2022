@@ -2,6 +2,7 @@
 #pragma once
 
 #include <frc2/command/SubsystemBase.h>
+#include <frc/geometry/Pose2d.h>
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <networktables/NetworkTable.h>
@@ -15,6 +16,7 @@
 #include "common/Util.h"
 
 #include "Gyro.h"
+#include "TurretSubsystem.h"
 
 using namespace std;
 using namespace frc;
@@ -23,7 +25,7 @@ using namespace VisionConstants;
 class VisionSubsystem : public frc2::SubsystemBase
 {
 public:
-    VisionSubsystem(Team1259::Gyro *gyro);
+    VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem *turret);
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
@@ -39,13 +41,13 @@ public:
     /// \param on        Boolean where true = LED on
     void SetLED(bool on);
 
-    double calcResidual(double radius, vector<frc::Translation2d> points, frc::Translation2d center);
+    units::meter_t calcResidual(units::meter_t radius, vector<frc::Translation2d> points, frc::Translation2d center);
 
-    bool FitCircle(vector<frc::Translation2d> targetVectors, double precision, int maxAttempts);
+    bool FitCircle(vector<frc::Translation2d> targetVectors, units::meter_t precision, int maxAttempts);
 
     double GetHubAngle();
 
-    double GetHubDistance();
+    double GetHubDistance(bool smoothed);
 
 protected:
     /// Converts degrees to radians
@@ -59,7 +61,10 @@ private:
 
     double m_tx;
     double m_ty;
+    int m_consecNoTargets;
     bool m_validTarget;
+    double m_smoothedRange;
+    frc::Pose2d m_robotPose;
     vector<double> m_averageDistance;
     vector<double> m_averageAngle;
     photonlib::PhotonCamera camera{"gloworm"};
@@ -72,4 +77,5 @@ private:
 
     /// Gyro to determine field relative angles, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
+    TurretSubsystem *m_turret;
 };

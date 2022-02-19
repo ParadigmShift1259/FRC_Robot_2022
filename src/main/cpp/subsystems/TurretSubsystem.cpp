@@ -123,3 +123,8 @@ double TurretSubsystem::DegreesToTicks(double degrees)
     double rev = turretrev / kMotorRevPerRev;
     return rev * kTicksPerRev;
 }
+
+double TurretSubsystem::GetCurrentAngle()
+{
+    return m_currentAngle;
+}

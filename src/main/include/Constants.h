@@ -224,8 +224,21 @@ namespace VisionConstants
     constexpr double kMinHoneDistance = 130;
     constexpr double kMaxHoneDistance = 260;
 
-    constexpr double kHubRadius = 0.601; //Should be meters type
-    constexpr double kMaxTargetSpread = 1.1 * kHubRadius;
+    constexpr double kRangeSmoothing = 0.7;
+
+    constexpr units::meter_t kFieldLength = 648.0_in;
+    constexpr units::meter_t kFieldWidth = 324.0_in;
+    constexpr units::meter_t kHangarLength = 128.75_in;
+    constexpr units::meter_t kHangarWidth = 116.0_in;
+
+    //constexpr frc::Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
+
+    constexpr units::meter_t kVisionTargetDiameter = 53.375_in;
+    constexpr units::meter_t kVisionTargetHeight = 77.5_in;
+
+    constexpr units::meter_t kVisionTargetRadius = kVisionTargetDiameter / 2; //Should be meters type
+    constexpr units::meter_t kMaxTargetSpread = 1.1 * kVisionTargetRadius;
+
 }
 
 // Flywheel Subsystem constants

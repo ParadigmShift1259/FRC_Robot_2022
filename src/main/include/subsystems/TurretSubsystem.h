@@ -47,6 +47,8 @@ public:
     /// Set new PID Values for the turret from on the fly SmartDashboard values
     void SetNewPIDValues();
 
+    double GetCurrentAngle();
+
 protected:
     /// Converts motor ticks into turret rotation, in degrees
     /// \param ticks        Number of ticks to be converted
