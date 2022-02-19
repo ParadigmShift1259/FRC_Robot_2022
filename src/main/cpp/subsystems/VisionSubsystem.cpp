@@ -29,7 +29,6 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem *turret)
 
 void VisionSubsystem::Periodic()
 {
-
     static unsigned counter = 0; 
     counter++;
     bool willPrint = false;
@@ -113,6 +112,8 @@ void VisionSubsystem::Periodic()
             std::cout << "PhotonCam Has No Targets!" << std::endl;
         else
             {
+                m_turret->TurnToRelative(-1.0 * GetHubAngle() * 180.0 / wpi::numbers::pi);
+
                 // std::cout << "Center: (" << (double)m_cameraToHub.X() << "," << (double)m_cameraToHub.Y() << "). ";
                 std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
                 std::cout << "Range: " << GetHubDistance(true) * 39.37 << ", ";

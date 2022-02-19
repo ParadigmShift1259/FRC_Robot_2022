@@ -20,6 +20,10 @@ public:
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
+    
+    /// Set the current angle to zero
+    /// Used to reset the straigt ahead angle (physically turn the turret forward)
+    void SetZeroAngle();
 
     /// Turns the turret to a specified angle on the turret
     /// Most calculations currently depend on counter clockwise turning, with 0 as "front"

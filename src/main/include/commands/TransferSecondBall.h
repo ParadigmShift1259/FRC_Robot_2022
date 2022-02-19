@@ -7,7 +7,8 @@
 #include "subsystems/IntakeSubsystem.h"
 #include "subsystems/TransferSubsystem.h"
 
-class TransferSecondBall : public frc2::CommandHelper<frc2::CommandBase, TransferSecondBall> {
+class TransferSecondBall : public frc2::CommandHelper<frc2::CommandBase, TransferSecondBall>
+{
  public:
   explicit TransferSecondBall(TransferSubsystem& transfer, IntakeSubsystem& intake, double speed);
 
@@ -19,8 +20,6 @@ class TransferSecondBall : public frc2::CommandHelper<frc2::CommandBase, Transfe
  private:
   IntakeSubsystem& m_intake;
   TransferSubsystem& m_transfer;
-  frc::Timer m_timer;
   double m_speed;
   int m_photoeyeCount;
-  bool m_bRunning = false;  
 };

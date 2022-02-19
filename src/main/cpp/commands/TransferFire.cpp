@@ -1,5 +1,5 @@
 #include "commands/TransferFire.h"
-//#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/smartdashboard/SmartDashboard.h>
 
 using namespace TransferConstants;
 
@@ -13,7 +13,6 @@ TransferFire::TransferFire(TransferSubsystem* subsystem,
  , m_launchtime(launchtime)
 {
   AddRequirements({subsystem});
-  *m_turretready = false;
   *m_firing = false;
   *m_finished = false;
 }
@@ -22,7 +21,6 @@ void TransferFire::Initialize()
 {
     m_timer.Reset();
     m_timer.Stop();
-    *m_turretready = false;
     *m_firing = false;
     *m_finished = false;
 }
@@ -48,8 +46,7 @@ void TransferFire::Execute()
         m_transfer->SetFeeder(0);
     }
 
-
-    // SmartDashboard::PutBoolean("TEST_READY_TO_FIRE", *m_turretready);
+    frc::SmartDashboard::PutBoolean("TEST_READY_TO_FIRE", *m_turretready);
     // SmartDashboard::PutBoolean("TEST_FIRING", *m_firing);
 }
 
