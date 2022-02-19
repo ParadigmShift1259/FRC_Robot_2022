@@ -40,6 +40,8 @@ void RobotContainer::Periodic() {
     m_drive.Periodic();
     SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
     m_vision.Periodic();
+
+    //m_hood.Periodic();  // Temp for test
 }
 
 void RobotContainer::SetDefaultCommands()
@@ -96,21 +98,21 @@ void RobotContainer::ConfigureButtonBindings()
     JoystickButton(&m_primaryController, xbox::kLeftBumper).WhenReleased(&m_clearFieldRelative);
 
     JoystickButton(&m_secondaryController, xbox::kY).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer,
+        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, m_vision,
              &m_turretready, &m_firing, &m_finished)
     );
 
-    JoystickButton(&m_secondaryController, xbox::kX).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer,
-             &m_turretready, &m_firing, &m_finished)
-    );
+    // JoystickButton(&m_secondaryController, xbox::kX).WhenPressed(
+    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, m_vision,
+    //          &m_turretready, &m_firing, &m_finished)
+    // );
 
     JoystickButton(&m_primaryController, xbox::kX).WhenPressed(&m_zeroHeading);
 
-    JoystickButton(&m_secondaryController, xbox::kRightBumper).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer,
-             &m_turretready, &m_firing, &m_finished)
-    );
+    // JoystickButton(&m_secondaryController, xbox::kRightBumper).WhenPressed(
+    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, m_vision,
+    //          &m_turretready, &m_firing, &m_finished)
+    // );
 
     JoystickButton(&m_secondaryController, xbox::kA).WhenHeld(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking));
 
@@ -221,6 +223,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_turret
                                 , &m_hood
                                 , &m_transfer
+                                , m_vision
                                 , &m_turretready
                                 , &m_firing
                                 , &m_finished
@@ -237,6 +240,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_turret
                                 , &m_hood
                                 , &m_transfer
+                                , m_vision
                                 , &m_turretready
                                 , &m_firing
                                 , &m_finished
@@ -253,6 +257,7 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_turret
                                 , &m_hood
                                 , &m_transfer
+                                , m_vision
                                 , &m_turretready
                                 , &m_firing
                                 , &m_finished

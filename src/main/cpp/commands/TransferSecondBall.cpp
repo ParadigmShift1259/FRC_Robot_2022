@@ -17,11 +17,12 @@ void TransferSecondBall::Initialize()
 {
     m_timer.Start();
     m_photoeyeCount = 0;
+    m_bRunning = false;
 }
 
 void TransferSecondBall::Execute()
 {
-    m_transfer.SetTransfer(kSpeedFiring);
+    m_transfer.SetTransfer(kTransferSpeedIntaking);
     m_intake.Set(kIngestHigh);
 }
 
@@ -30,11 +31,12 @@ bool TransferSecondBall::IsFinished() {
         m_photoeyeCount++;
     }
 
-    return m_transfer.GetTransferPhotoeye();
+    return !m_bRunning || m_transfer.GetTransferPhotoeye();
 }
 
 void TransferSecondBall::End(bool interrupted)
 {
     m_transfer.SetTransfer(0);
     m_intake.Set(0);
+    m_bRunning = false;
 }

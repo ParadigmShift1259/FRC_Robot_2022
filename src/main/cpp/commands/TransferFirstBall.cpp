@@ -15,6 +15,7 @@ TransferFirstBall::TransferFirstBall(TransferSubsystem& transfer, IntakeSubsyste
 
 void TransferFirstBall::Initialize()
 {
+    m_bRunning = false;
 }
 
 void TransferFirstBall::Execute()
@@ -22,14 +23,16 @@ void TransferFirstBall::Execute()
     m_transfer.SetFeeder(kFeederSpeed);
     m_transfer.SetTransfer(kTransferSpeedIntaking);
     m_intake.Set(kIngestHigh);
+    m_bRunning = true;
 }
 
 bool TransferFirstBall::IsFinished()
 {
-    return m_transfer.GetFeederPhotoeye();
+    return !m_bRunning || m_transfer.GetFeederPhotoeye();
 }
 
 void TransferFirstBall::End(bool interrupted)
 {
     m_transfer.SetFeeder(0);
+    m_bRunning = false;
 }

@@ -18,6 +18,7 @@ public:
                         , FlywheelSubsystem* flywheel
                         , TurretSubsystem* turret
                         , HoodSubsystem* hood
+                        , VisionSubsystem& vision
                         , bool* turretready
                         , bool* firing
                         , bool* finished);
@@ -32,6 +33,7 @@ private:
     FlywheelSubsystem* m_flywheel;
     TurretSubsystem* m_turret;
     HoodSubsystem* m_hood;
+    VisionSubsystem& m_vision;
     bool* m_turretready;
     bool* m_firing;
     bool* m_finished;

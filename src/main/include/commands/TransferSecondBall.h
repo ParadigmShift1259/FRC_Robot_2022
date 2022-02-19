@@ -22,4 +22,5 @@ class TransferSecondBall : public frc2::CommandHelper<frc2::CommandBase, Transfe
   frc::Timer m_timer;
   double m_speed;
   int m_photoeyeCount;
+  bool m_bRunning = false;  
 };

@@ -6,6 +6,7 @@ Fire::Fire( frc::XboxController* controller
           , TurretSubsystem* turret
           , HoodSubsystem* hood
           , TransferSubsystem* transfer
+          , VisionSubsystem& vision
           , bool* turretready
           , bool* firing
           , bool* finished
@@ -18,7 +19,7 @@ Fire::Fire( frc::XboxController* controller
   // Both two run parallel, but the second has a delay hack through boolean pointers
   AddCommands(
     // Home flywheel, turret, and hood to the correct speeds based on tuned fit function
-      HomeTarget(m_controller, flywheel, turret, hood, m_turretready, m_firing, m_finished)
+      HomeTarget(m_controller, flywheel, turret, hood, vision, m_turretready, m_firing, m_finished)
     // If m_transfer ready and turret ready are true, transfer launch drives all of the balls through
     // m_turretready is checked every loop until success
     , TransferFire(transfer, m_turretready, m_firing, m_finished, launchtime)

@@ -19,4 +19,5 @@ class TransferFirstBall : public frc2::CommandHelper<frc2::CommandBase, Transfer
   IntakeSubsystem& m_intake;
   TransferSubsystem& m_transfer;
   double m_speed;
+  bool m_bRunning = false;  
 };

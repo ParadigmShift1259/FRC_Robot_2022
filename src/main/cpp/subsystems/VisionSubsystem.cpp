@@ -27,7 +27,6 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro)
 
 void VisionSubsystem::Periodic()
 {
-
     static unsigned counter = 0; 
     counter++;
     bool willPrint = false;
@@ -37,7 +36,7 @@ void VisionSubsystem::Periodic()
     camera.SetLEDMode(photonlib::LEDMode::kDefault);
 
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
-    bool m_validTarget = result.HasTargets();
+    m_validTarget = result.HasTargets();
     vector<frc::Translation2d> targetVectors;
     if (m_validTarget)
     {
@@ -68,14 +67,14 @@ void VisionSubsystem::Periodic()
         frc::Translation2d averageTarget = Translation2d(units::meter_t{xMean}, units::meter_t{yMean});
 
         //Throw out outliers
-        for (auto it = targetVectors.begin(); it != targetVectors.end(); ++it)
-        {
-            if (averageTarget.Distance(*it) > units::meter_t{kMaxTargetSpread})
-            {
-                targetVectors.erase(it);
-                std::cout << "Target Discarded" << std::endl;
-            }
-        }
+        // for (auto it = targetVectors.begin(); it != targetVectors.end(); ++it)
+        // {
+        //     if (averageTarget.Distance(*it) > units::meter_t{kMaxTargetSpread})
+        //     {
+        //         targetVectors.erase(it);
+        //         std::cout << "Target Discarded" << std::endl;
+        //     }
+        // }
 
         if(targetVectors.size() >= 3)
         {
