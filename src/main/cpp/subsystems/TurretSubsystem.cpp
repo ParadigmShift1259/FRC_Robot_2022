@@ -39,6 +39,7 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
 
 void TurretSubsystem::Periodic()
 {
+    frc::SmartDashboard::PutNumber("D_T_CTicks", m_turretmotor.GetSelectedSensorPosition());
     frc::SmartDashboard::PutNumber("D_T_CAngle", TicksToDegrees(m_turretmotor.GetSelectedSensorPosition()));
     // frc::SmartDashboard::PutNumber("D_T_DAngle", TicksToDegrees(m_turretmotor.GetClosedLoopTarget()));
     // frc::SmartDashboard::PutNumber("D_T_Error", TicksToDegrees(m_turretmotor.GetClosedLoopError(0)));
@@ -46,10 +47,15 @@ void TurretSubsystem::Periodic()
     m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
 }
 
+void TurretSubsystem::SetZeroAngle()
+{
+    m_currentAngle = 0;
+}
+
 void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)
 {
     // safeguard
-    angle = Util::ZeroTo360Degs(angle);
+    //angle = Util::ZeroTo360Degs(angle);
     // Turret is not set if desired angle is within the deadzone area
     if (angle >= minAngle && angle <= maxAngle)
         m_currentAngle = angle;
@@ -78,9 +84,9 @@ void TurretSubsystem::TurnToField(double desiredAngle)
 void TurretSubsystem::TurnToRelative(double angle, double minAngle, double maxAngle)
 {   
     double desiredAngle = TicksToDegrees(m_turretmotor.GetSelectedSensorPosition());
-    angle = Util::ZeroTo360Degs(angle);
+    //angle = Util::ZeroTo360Degs(angle);
     desiredAngle += angle;
-    desiredAngle = Util::ZeroTo360Degs(desiredAngle);
+    //desiredAngle = Util::ZeroTo360Degs(desiredAngle);
     TurnTo(desiredAngle, minAngle, maxAngle);
 }
 

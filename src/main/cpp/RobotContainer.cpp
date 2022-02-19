@@ -30,13 +30,14 @@ RobotContainer::RobotContainer()
 
 void RobotContainer::Periodic() {
     //SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
-    SmartDashboard::PutData("DriveSS", &m_drive);
-    SmartDashboard::PutData("FlywheelSS", &m_flywheel);
-    SmartDashboard::PutData("HoodSS", &m_hood);
-    SmartDashboard::PutData("IntakeSS", &m_intake);
-    SmartDashboard::PutData("TransferSS", &m_transfer);
-    SmartDashboard::PutData("TurretSS", &m_turret);
-    SmartDashboard::PutData("VisionSS", &m_vision);
+    // SmartDashboard::PutData("DriveSS", &m_drive);
+    // SmartDashboard::PutData("FlywheelSS", &m_flywheel);
+    // SmartDashboard::PutData("HoodSS", &m_hood);
+    // SmartDashboard::PutData("IntakeSS", &m_intake);
+    // SmartDashboard::PutData("TransferSS", &m_transfer);
+    // SmartDashboard::PutData("TurretSS", &m_turret);
+    // SmartDashboard::PutData("VisionSS", &m_vision);
+    SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
     m_drive.Periodic();
 }
 
@@ -98,11 +99,35 @@ void RobotContainer::ConfigureButtonBindings()
              &m_turretready, &m_firing, &m_finished)
     );
 
-    // JoystickButton(&m_secondaryController, xbox::kX).WhenPressed(
-    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, m_vision,
-    //          &m_turretready, &m_firing, &m_finished)
-    // );
+     JoystickButton(&m_secondaryController, xbox::kX).WhenPressed(
+             InstantCommand(    
+             [this] { 
+                m_transfer.SetFeeder(.5);
+                m_transfer.SetTransfer(0.5);
+              },
+             {&m_transfer}
+         )
+    );
 
+     JoystickButton(&m_secondaryController, xbox::kX).WhenReleased(
+         InstantCommand(    
+             [this] { 
+                m_transfer.SetFeeder(0.0);
+                m_transfer.SetTransfer(0.0);
+              },
+             {&m_transfer}
+         )
+    );
+
+    JoystickButton(&m_secondaryController, xbox::kLeftBumper).WhenHeld(
+         InstantCommand(    
+             [this] { 
+                m_turret.SetZeroAngle();
+              },
+             {&m_turret}
+         )
+    );
+    
     JoystickButton(&m_primaryController, xbox::kX).WhenPressed(&m_zeroHeading);
 
     // JoystickButton(&m_secondaryController, xbox::kRightBumper).WhenPressed(
@@ -110,7 +135,7 @@ void RobotContainer::ConfigureButtonBindings()
     //          &m_turretready, &m_firing, &m_finished)
     // );
 
-    JoystickButton(&m_secondaryController, xbox::kA).WhenHeld(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking));
+    JoystickButton(&m_secondaryController, xbox::kA).WhenPressed(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking));
 
     // JoystickButton(&m_secondaryController, xbox::kLeftBumper).WhenHeld(
     //     TransferFirstBall(&m_transfer, TransferConstants::kTransferSpeedIntaking),

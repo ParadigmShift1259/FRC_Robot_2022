@@ -32,14 +32,17 @@ FlywheelSubsystem::FlywheelSubsystem()
     m_flywheelPID.SetP(kP, 0);
     m_flywheelPID.SetI(kI, 0);
     m_flywheelPID.SetD(kD, 0);
+
     m_flywheelPID.SetP(kMP, 1);
     m_flywheelPID.SetI(kMI, 1);
     m_flywheelPID.SetD(kMD, 1);
+    
     m_flywheelPID.SetOutputRange(kMinOut, kMaxOut);
 
-    m_flywheelencoder.SetVelocityConversionFactor(kWheelRevPerMotorRev);
+    //m_flywheelencoder.SetVelocityConversionFactor(kWheelRevPerMotorRev);
+    m_flywheelencoder.SetVelocityConversionFactor(1.0);
 
-    m_setpoint = kIdleRPM;
+    m_setpoint = kIdleRPM / kGearRatio;
 
     //#ifdef TUNE_FLYWHEEL
     // SmartDashboard::PutNumber("T_F_S", kS);
@@ -78,13 +81,13 @@ void FlywheelSubsystem::Periodic()
 }
 
 void FlywheelSubsystem::SetRPM(double setpoint) {
-    m_setpoint = setpoint;
+    m_setpoint = setpoint / FlywheelConstants::kGearRatio;
     m_flywheelPID.SetIAccum(0);
 }
 
 double FlywheelSubsystem::GetRPM()
 {
-    return m_setpoint;
+    return m_setpoint * FlywheelConstants::kGearRatio;
 }
 
 bool FlywheelSubsystem::IsAtMaintainPID() {
@@ -98,6 +101,8 @@ bool FlywheelSubsystem::IsAtRPM() {
 bool FlywheelSubsystem::IsAtRPMPositive()
 {
     double error = m_flywheelencoder.GetVelocity() - m_setpoint;
+    frc::SmartDashboard::PutNumber("Flywheel error", error);
+
     // If error is negative, always return false
     // RPM must be greater than the error with variance of Allowed Error
     return signbit(error) ? false : (error <= kAllowedError);
@@ -111,4 +116,5 @@ void FlywheelSubsystem::CalculateRPM()
     // Choose "Maintain" PID set, or slot 1, if we're near the setpoint
     int pidslot = IsAtMaintainPID() ? 1 : 0;
     m_flywheelPID.SetReference(m_setpoint, CANSparkMax::ControlType::kVelocity, pidslot, FF);
+    //m_flywheelPID.SetReference(m_setpoint, CANSparkMax::ControlType::kVelocity);
 }

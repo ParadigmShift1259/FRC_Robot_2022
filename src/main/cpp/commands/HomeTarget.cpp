@@ -38,12 +38,16 @@ void HomeTarget::Execute()
     // Homes flywheel, turret, and hood to the right angles through a formula
     SmartDashboard::PutBoolean("TEST_VIS_ACTIVE", m_vision.GetValidTarget());
     
-    if (!m_vision.GetValidTarget())
-        return;
-
     double distance = m_vision.GetHubDistance(true);
+
+    //if (std::isnan(distance))
+    if (distance != distance)
+    {
+        distance = 5.0;
+    }
+
     //double flywheelspeed = 1687.747 + 15.8111 * distance - 0.058079 * pow(distance, 2) + 0.00008892342 * pow(distance, 3);
-    double flywheelspeed = m_calculation.GetInitRPMS(meter_t(distance)).to<double>() / FlywheelConstants::kGearRatio;
+    double flywheelspeed = m_calculation.GetInitRPMS(meter_t(distance)).to<double>();
 
     // Quintic regression calculated 3/27
     // https://mycurvefit.com/
@@ -59,14 +63,18 @@ void HomeTarget::Execute()
 
     std::cout << "Init Angle: "<< initAngle.to<double>() << std::endl;
     std::cout << "Hood servo set: "<< hoodangle << std::endl;
-    std::cout << "Distancet: "<< distance << std::endl;
+    std::cout << "Distance: "<< distance << std::endl;
     std::cout << "Flywheel RPM "<< flywheelspeed << std::endl;
     SmartDashboard::PutNumber("Init Angle: ", initAngle.to<double>());
     SmartDashboard::PutNumber("Hood servo set: ", hoodangle);
-    SmartDashboard::PutNumber("Distancet: ", distance);
+    SmartDashboard::PutNumber("Distance: ", distance);
     SmartDashboard::PutNumber("Flywheel RPM ", flywheelspeed);
+    SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
 
-    double angleOverride = 0;
+    if (!m_vision.GetValidTarget())
+        return;
+
+    //double angleOverride = 0;
     // double turretXRot = m_controller->GetY(frc::GenericHID::kRightHand) * -1.0;
     // double turretYRot = m_controller->GetX(frc::GenericHID::kRightHand);
 
@@ -86,7 +94,7 @@ void HomeTarget::Execute()
     // }
     // else {
         //angleOverride = turretXRot * TurretConstants::kMaxOverrideAngle;
-        m_turret->TurnToRelative(m_vision.GetHubAngle() + angleOverride);
+//        m_turret->TurnToRelative(-1.0 * m_vision.GetHubAngle() * 180.0 / wpi::numbers::pi         + angleOverride);
     // }
 
     //flywheelspeed *= FlywheelConstants::kHomingRPMMultiplier;
@@ -115,18 +123,18 @@ void HomeTarget::Execute()
     {
         *m_turretready = true;
     }
+    frc::SmartDashboard::PutBoolean("TEST_READY_TO_FIRE", *m_turretready);
 }
 
 bool HomeTarget::IsFinished()
 {
     // SmartDashboard::PutBoolean("TEST_FIRE_FINISIHED", *m_finished);
-    return *m_finished;
+    return *m_turretready;
 }
 
 void HomeTarget::End(bool interrupted) {
-    *m_finished = false;
-    *m_turretready = false;
-    m_flywheel->SetRPM(FlywheelConstants::kIdleRPM);
-    m_hood->Set(HoodConstants::kMax);
-    m_turret->TurnTo(TurretConstants::kStartingPositionDegrees);
+    //*m_finished = false;
+    // m_flywheel->SetRPM(FlywheelConstants::kIdleRPM);
+    // m_hood->Set(HoodConstants::kMax);
+    // m_turret->TurnTo(TurretConstants::kStartingPositionDegrees);
 }

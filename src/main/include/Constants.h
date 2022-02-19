@@ -246,8 +246,8 @@ namespace VisionConstants
 // Flywheel Subsystem constants
 namespace FlywheelConstants
 {
-    constexpr double kPrimaryMotorPort = 11;     //!< Flywheel CAN ID (Primary SparkMAX)
-    constexpr double kFollowerMotorPort = 12;            //!< Flywheel CAN ID (Following SparkMAX)
+    constexpr int kPrimaryMotorPort = 11;     //!< Flywheel CAN ID (Primary SparkMAX)
+    constexpr int kFollowerMotorPort = 12;            //!< Flywheel CAN ID (Following SparkMAX)
 
     constexpr double kRampRate = 1.0;
     // Total error allowed for the flywheel, in RPM
@@ -263,8 +263,8 @@ namespace FlywheelConstants
 
     // Launch PID values, used to first get to setpoint
     constexpr double kP = 0.0002900;
-    constexpr double kI = 0;
-    constexpr double kD = 0;
+    constexpr double kI = 0.0;
+    constexpr double kD = 0.0;
 
     // Maintain PID values, used to adjust for error once the robot is shooting
     constexpr double kMP = 0.002000;
@@ -297,8 +297,8 @@ namespace FlywheelConstants
 // Intake Subsystem constants
 namespace IntakeConstants
 {
-    constexpr double kMotorPort = 14;   // Intake rollers CAN ID (Talon)
-    constexpr double kMotorReverseConstant = 1;
+    constexpr int kMotorPort = 14;   // Intake rollers CAN ID (Talon)
+    constexpr int kMotorReverseConstant = 1;
 
     constexpr double kIngestLow = 0.3;
     constexpr double kIngestHigh = 0.80;
@@ -308,8 +308,8 @@ namespace IntakeConstants
 
 namespace TransferConstants
 {
-    constexpr double kFeederCANid = 12;      //!< Feeder CAN ID (TalonSRX)
-    constexpr double kTransferCANid = 11;   //!< Transfer CAN ID (TalonSRX)
+    constexpr int kFeederCANid = 12;      //!< Feeder CAN ID (TalonSRX)
+    constexpr int kTransferCANid = 11;   //!< Transfer CAN ID (TalonSRX)
 
     constexpr int kFeederInputChannel = 0;
     constexpr int kTransferInputChannel = 1;
@@ -332,11 +332,11 @@ namespace TransferConstants
 // Turret Subsystem Constants
 namespace TurretConstants
 {
-    constexpr double kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
+    constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
-    constexpr double kP = 0.30114;
-    constexpr double kI = 0.00035;
-    constexpr double kD = 19.6;
+    constexpr double kP = 0.8;
+    constexpr double kI = 0.0007;
+    constexpr double kD = 10.0;
 
     constexpr double kMinOut = 0;
     constexpr double kMaxOut = 0.700;
@@ -350,12 +350,9 @@ namespace TurretConstants
     constexpr double kDegreeStopRange = 0.85; //1; //1.35; //0.6; //0.4; //0.5;
     constexpr double kDegreePIDStopRange = 0.25; //0.35; //0.35;
 
-    constexpr double kPulley = 2.7305;
-    constexpr double kSpinner = 29.845;
-
     // The motor on the turret drives a pulley, while drives the turret
     // MotorRev indicates the revolution of the motor, while Rev indicates the revolution of the turret
-    constexpr double kMotorRevPerRev = kPulley / kSpinner;
+    constexpr double kMotorRevPerRev = 4096.0 / 8132.0;
     constexpr double kTicksPerRev = 4096.0;
     constexpr double kDegreesPerRev = 360.0;
     constexpr double kRadiansPerRev = wpi::numbers::pi * 2.0;
@@ -363,8 +360,8 @@ namespace TurretConstants
     // Offset of origin point of turret angle and robot angle, in degrees. Robot 0 is forward
     constexpr double kTurretToRobotAngleOffset = -45;
     // Maximum rotation of the turret relative to the turret, in degrees
-    constexpr double kMinAngle = 0;
-    constexpr double kMaxAngle = 90;
+    constexpr double kMinAngle = -60.0;
+    constexpr double kMaxAngle = 60.0;
     // Range of angle allowed for auto targeting by default
     constexpr double kMinAutoAngle = 25;
     constexpr double kMaxAutoAngle = 65;
@@ -372,7 +369,7 @@ namespace TurretConstants
     constexpr double kMaxAutoRelAngle = 20;
 
     // initial configured angle of the turret relative to the turret, in degrees
-    constexpr double kStartingPositionDegrees = 45;
+    constexpr double kStartingPositionDegrees = 0.0;
 }
 //Hood Subsystem Constants
 namespace HoodConstants

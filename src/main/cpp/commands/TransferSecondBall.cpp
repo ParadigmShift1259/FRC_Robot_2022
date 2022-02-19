@@ -15,9 +15,7 @@ TransferSecondBall::TransferSecondBall(TransferSubsystem& transfer, IntakeSubsys
 
 void TransferSecondBall::Initialize()
 {
-    m_timer.Start();
     m_photoeyeCount = 0;
-    m_bRunning = false;
 }
 
 void TransferSecondBall::Execute()
@@ -31,12 +29,11 @@ bool TransferSecondBall::IsFinished() {
         m_photoeyeCount++;
     }
 
-    return !m_bRunning || m_transfer.GetTransferPhotoeye();
+    return m_transfer.GetTransferPhotoeye();
 }
 
 void TransferSecondBall::End(bool interrupted)
 {
     m_transfer.SetTransfer(0);
     m_intake.Set(0);
-    m_bRunning = false;
 }
