@@ -25,11 +25,16 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem *turret)
     kCameraPitch = units::degree_t{21.0}; // 18.8
     kTargetPitch = units::degree_t{0};
     m_consecNoTargets = 0;
+
+   // m_networktable->AddEntryListener(NTcallback, nt::EntryListenerFlags::kUpdate);
 }
 
 void VisionSubsystem::Periodic()
-{
+//{
+//}
 
+//void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name, nt::NetworkTableEntry entry, std::shared_ptr<nt::Value> value, int flags))
+{
     static unsigned counter = 0; 
     counter++;
     bool willPrint = false;
@@ -84,13 +89,21 @@ void VisionSubsystem::Periodic()
         {
             if (FitCircle(targetVectors, units::meter_t{0.01}, 20))
                 {
-                m_smoothedRange = kRangeSmoothing * m_smoothedRange + (1-kRangeSmoothing) * GetHubDistance(false);
+                if (m_smoothedRange > 0)
+                    m_smoothedRange = kRangeSmoothing * m_smoothedRange + (1-kRangeSmoothing) * GetHubDistance(false);
+                else
+                    m_smoothedRange = GetHubDistance(false);
                 m_consecNoTargets = 0;
                 m_validTarget = true;
                 double angleToHub = m_gyro->GetHeading() + m_turret->GetCurrentAngle() - GetHubDistance(false);
                 frc::Translation2d displacement = Translation2d(units::meter_t{(cos(angleToHub) * GetHubDistance(false))}, units::meter_t{(sin(angleToHub) * GetHubDistance(false))});
                 frc::Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
-                m_robotPose = Pose2d(kHubCenter-displacement, m_gyro->GetHeadingAsRot2d());
+                frc::Rotation2d turretRot = Rotation2d(units::radian_t{m_turret->GetCurrentAngle()});
+                frc::Pose2d cameraPose = Pose2d(kHubCenter-displacement, m_gyro->GetHeadingAsRot2d() + turretRot);
+                frc::Translation2d turretCenterToRobotCenter = Translation2d(units::inch_t{2.25}, units::inch_t{0});
+                frc::Translation2d camToTurretCenter = Translation2d(units::meter_t{(cos(m_turret->GetCurrentAngle()) * units::inch_t{-12})}, units::meter_t{(sin(m_turret->GetCurrentAngle()) * units::inch_t{-12})});
+                frc::Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, units::radian_t{-m_turret->GetCurrentAngle()});
+                m_robotPose = cameraPose.TransformBy(camreaTransform);
                 }
             else
                 {
@@ -103,8 +116,11 @@ void VisionSubsystem::Periodic()
             std::cout << "Only " << targetVectors.size() << " vision targets" << std::endl;
             m_consecNoTargets++;
         }
-        if(m_consecNoTargets >= 5) //TO DO MAKE THIS A CONSTANT
-                m_validTarget = false;
+        if(m_consecNoTargets >= kVisionFailLimit)
+        {
+            m_validTarget = false;
+            m_smoothedRange = 0;
+        }
     }
 
     if(willPrint)
