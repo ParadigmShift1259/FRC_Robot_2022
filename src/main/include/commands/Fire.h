@@ -32,6 +32,7 @@ public:
 
 private:
     frc::XboxController* m_controller;
+    FlywheelSubsystem* m_flywheel;
     bool* m_turretready;
     bool* m_firing;
     bool* m_finished;

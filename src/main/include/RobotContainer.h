@@ -68,6 +68,8 @@ public:
     void Periodic();
 
     void ZeroDrive();
+    void TurretSetZeroAngle() { m_turret.SetZeroAngle(); }
+
     enum AutoPath {kEx1, kEx2, kEx3, kEx4, kEx5};
     frc2::Command *GetAutonomousCommand(AutoPath path);
 

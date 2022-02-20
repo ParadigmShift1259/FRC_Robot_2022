@@ -120,14 +120,20 @@ void VisionSubsystem::Periodic()
         }
     }
 
+    // if (m_validTarget)
+    // {
+    //     auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
+    //     m_turret->TurnToRelative(hubAngle * 0.35);
+    // }
+
     if(willPrint)
         {
         if (!m_validTarget)
             std::cout << "PhotonCam Has No Targets!" << std::endl;
         else
             {
-                m_turret->TurnToRelative(-1.0 * GetHubAngle() * 180.0 / wpi::numbers::pi);
-
+                //auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
+                //m_turret->TurnToRelative(hubAngle * 0.10);
                 // std::cout << "Center: (" << (double)m_cameraToHub.X() << "," << (double)m_cameraToHub.Y() << "). ";
                 std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
                 std::cout << "Range: " << GetHubDistance(true) * 39.37 << ", ";

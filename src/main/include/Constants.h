@@ -263,6 +263,7 @@ namespace FlywheelConstants
 
     // Launch PID values, used to first get to setpoint
     constexpr double kP = 0.0002900;
+//    constexpr double kP = 0.0;
     constexpr double kI = 0.0;
     constexpr double kD = 0.0;
 
@@ -274,9 +275,12 @@ namespace FlywheelConstants
     constexpr double kMinOut = 0;
     constexpr double kMaxOut = 1.0;
 
-    constexpr double kS = 0.26625;  // Characterization should be repeated with 2 Neos
-    constexpr double kV = 0.12771;
-    constexpr double kA = 0.031171;
+    // constexpr double kS = 0.26625;  // Characterization should be repeated with 2 Neos
+    // constexpr double kV = 0.12771;
+    // constexpr double kA = 0.031171;
+    constexpr double kS = 0.25701;  // Characterization for 2 Neos 2022 Feb 19
+    constexpr double kV = 0.12024;
+    constexpr double kA = 0.025359;
 
     // Diameter is in meters
     constexpr double kWheelDiameter = 0.1016;   // 4 inches
@@ -334,12 +338,14 @@ namespace TurretConstants
 {
     constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
-    constexpr double kP = 0.8;
-    constexpr double kI = 0.0007;
-    constexpr double kD = 10.0;
+    constexpr double kP = 0.05;
+    constexpr double kI = 0.0;
+//    constexpr double kI = 0.01;
+//    constexpr double kI = 0.0007;
+    constexpr double kD = 0.0;
 
     constexpr double kMinOut = 0;
-    constexpr double kMaxOut = 0.700;
+    constexpr double kMaxOut = 0.900;
 
     constexpr double kTimeout = 30;
     constexpr double kInverted = true;

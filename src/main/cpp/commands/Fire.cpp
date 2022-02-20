@@ -1,4 +1,5 @@
 #include "commands/Fire.h"
+#include <frc2/command/InstantCommand.h>
 #include "Constants.h"
 
 Fire::Fire( frc::XboxController* controller
@@ -12,6 +13,7 @@ Fire::Fire( frc::XboxController* controller
           , bool* finished
           , double launchtime)
   : m_controller(controller)
+  , m_flywheel(flywheel)
   , m_turretready(turretready)
   , m_firing(firing)
   , m_finished(finished)
@@ -23,5 +25,6 @@ Fire::Fire( frc::XboxController* controller
     // If m_transfer ready and turret ready are true, transfer launch drives all of the balls through
     // m_turretready is checked every loop until success
     , TransferFire(transfer, m_turretready, m_firing, m_finished, launchtime)
+    //, frc2::InstantCommand([this]() { m_flywheel->SetRPM(FlywheelConstants::kIdleRPM); }, {m_flywheel} )
   );
 }

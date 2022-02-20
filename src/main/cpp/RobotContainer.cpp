@@ -26,6 +26,8 @@ RobotContainer::RobotContainer()
     m_chooser.AddOption("Example 4", AutoPath::kEx4);
     m_chooser.AddOption("Example 5", AutoPath::kEx5);
     frc::SmartDashboard::PutData("Auto Path", &m_chooser);
+
+    SmartDashboard::PutNumber("fudge", 100.0);
 }
 
 void RobotContainer::Periodic() {
@@ -39,6 +41,7 @@ void RobotContainer::Periodic() {
     // SmartDashboard::PutData("VisionSS", &m_vision);
     SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
     m_drive.Periodic();
+    //m_flywheel.Periodic();
 }
 
 void RobotContainer::SetDefaultCommands()
@@ -114,6 +117,7 @@ void RobotContainer::ConfigureButtonBindings()
              [this] { 
                 m_transfer.SetFeeder(0.0);
                 m_transfer.SetTransfer(0.0);
+                m_turret.SetZeroAngle();
               },
              {&m_transfer}
          )

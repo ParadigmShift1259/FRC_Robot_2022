@@ -24,32 +24,36 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.ConfigPeakOutputForward(kMaxOut, kTimeout);
     m_turretmotor.ConfigPeakOutputReverse(kMaxOut * -1.0, kTimeout);
     //m_turretmotor.ConfigClosedloopRamp()
-    m_turretmotor.ConfigAllowableClosedloopError(0, DegreesToTicks(kDegreePIDStopRange), kTimeout);
+//    m_turretmotor.ConfigAllowableClosedloopError(0, DegreesToTicks(kDegreePIDStopRange), kTimeout);
+    m_turretmotor.ConfigAllowableClosedloopError(0, 0, kTimeout);
 
     m_turretmotor.SetSelectedSensorPosition(DegreesToTicks(kStartingPositionDegrees), 0, kTimeout);
     m_turretmotor.Set(ControlMode::Position, DegreesToTicks(kStartingPositionDegrees));
+    //m_turretmotor.Set(ControlMode::PercentOutput, 0.1);
     m_currentAngle = kStartingPositionDegrees;
 
     // frc::SmartDashboard::PutNumber("T_T_P", kP);
     // frc::SmartDashboard::PutNumber("T_T_I", kI);
     // frc::SmartDashboard::PutNumber("T_T_D", kD);
     // frc::SmartDashboard::PutNumber("T_T_Max", kMaxOut);
-
 }
 
 void TurretSubsystem::Periodic()
 {
     frc::SmartDashboard::PutNumber("D_T_CTicks", m_turretmotor.GetSelectedSensorPosition());
     frc::SmartDashboard::PutNumber("D_T_CAngle", TicksToDegrees(m_turretmotor.GetSelectedSensorPosition()));
+    frc::SmartDashboard::PutNumber("D_T_CAngleCmd", m_currentAngle);
     // frc::SmartDashboard::PutNumber("D_T_DAngle", TicksToDegrees(m_turretmotor.GetClosedLoopTarget()));
     // frc::SmartDashboard::PutNumber("D_T_Error", TicksToDegrees(m_turretmotor.GetClosedLoopError(0)));
     // frc::SmartDashboard::PutNumber("D_T_Output", m_turretmotor.GetMotorOutputPercent());
-    m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
+    //m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
+    m_turretmotor.Set(ControlMode::Position, 0.0);
 }
 
 void TurretSubsystem::SetZeroAngle()
 {
     m_currentAngle = 0;
+    m_turretmotor.SetSelectedSensorPosition(0.0);
 }
 
 void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)
@@ -59,10 +63,11 @@ void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)
     // Turret is not set if desired angle is within the deadzone area
     if (angle >= minAngle && angle <= maxAngle)
         m_currentAngle = angle;
-    // else if (angle <= minAngle)
-    //     m_currentAngle = minAngle;
-    // else if (angle >= maxAngle)
-    //     m_currentAngle = maxAngle;
+    else if (angle < minAngle)
+        m_currentAngle = minAngle;
+    else if (angle > maxAngle)
+        m_currentAngle = maxAngle;
+//    m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
 }
 
 void TurretSubsystem::TurnToRobot(double robotAngle)
@@ -84,6 +89,7 @@ void TurretSubsystem::TurnToField(double desiredAngle)
 void TurretSubsystem::TurnToRelative(double angle, double minAngle, double maxAngle)
 {   
     double desiredAngle = TicksToDegrees(m_turretmotor.GetSelectedSensorPosition());
+    printf("delta angle %.3f encoder %.3f current cmd %.3f\n", angle, desiredAngle, m_currentAngle);
     //angle = Util::ZeroTo360Degs(angle);
     desiredAngle += angle;
     //desiredAngle = Util::ZeroTo360Degs(desiredAngle);
@@ -117,17 +123,19 @@ void TurretSubsystem::SetNewPIDValues()
 
 double TurretSubsystem::TicksToDegrees(double ticks)
 {
-    double rev = ticks / kTicksPerRev;
-    double turretrev = rev * kMotorRevPerRev;
-    return turretrev * kDegreesPerRev;
+    // double rev = ticks / kTicksPerRev;
+    // double turretrev = rev * kMotorRevPerRev;
+    // return turretrev * kDegreesPerRev;
+    return -ticks * 90.0 / 8132.0;
 }
 
 
 double TurretSubsystem::DegreesToTicks(double degrees)
 {
-    double turretrev = degrees / kDegreesPerRev;
-    double rev = turretrev / kMotorRevPerRev;
-    return rev * kTicksPerRev;
+    // double turretrev = degrees / kDegreesPerRev;
+    // double rev = turretrev / kMotorRevPerRev;
+    // return rev * kTicksPerRev;
+    return -degrees * 8132.0 / 90.0;    
 }
 
 double TurretSubsystem::GetCurrentAngle()

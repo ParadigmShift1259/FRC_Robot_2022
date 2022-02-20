@@ -46,8 +46,25 @@ void HomeTarget::Execute()
         distance = 5.0;
     }
 
-    //double flywheelspeed = 1687.747 + 15.8111 * distance - 0.058079 * pow(distance, 2) + 0.00008892342 * pow(distance, 3);
-    double flywheelspeed = m_calculation.GetInitRPMS(meter_t(distance)).to<double>();
+    const std::map<double, double> distCompensation = 
+    {
+         std::make_pair(6.0 * 12.0, 1100.0)
+        ,std::make_pair(8.0 * 12.0, 1200.0)
+        ,std::make_pair(10.0 * 12.0, 1400.0)
+        ,std::make_pair(12.0 * 12.0, 1500.0)
+        ,std::make_pair(14.0 * 12.0, 1600.0)
+        ,std::make_pair(16.0 * 12.0, 17500.0)
+        ,std::make_pair(18.0 * 12.0, 1950.0)
+        ,std::make_pair(20.0 * 12.0, 1950.0)
+    };
+    auto it = distCompensation.lower_bound(distance / 12.0);
+    double offset = 100.0 * distance / 12.0;
+    if (it != distCompensation.end())
+    {
+        double fudge = SmartDashboard::GetNumber("fudge", 100.0);
+        offset = it->second + fudge;
+    } 
+    double flywheelspeed = offset + m_calculation.GetInitRPMS(meter_t(distance)).to<double>();
 
     // Quintic regression calculated 3/27
     // https://mycurvefit.com/
