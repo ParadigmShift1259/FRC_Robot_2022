@@ -35,7 +35,7 @@ void VisionSubsystem::Periodic()
     static unsigned counter = 0; 
     counter++;
     bool willPrint = false;
-    if (counter % 10 == 0)
+    if (counter % 25 == 0)
         willPrint = true;
 
     camera.SetLEDMode(photonlib::LEDMode::kDefault);
@@ -126,14 +126,42 @@ void VisionSubsystem::Periodic()
     //     m_turret->TurnToRelative(hubAngle * 0.35);
     // }
 
-    if(willPrint)
+    static int turretCmdHoldoff = 0;
+
+#define USE_VISION_FOR_TURRET
+#ifdef USE_VISION_FOR_TURRET
+        if (turretCmdHoldoff>0)
+            turretCmdHoldoff--;
+        else if (m_validTarget)
         {
+            bool bUseVisionForTurret = SmartDashboard::GetBoolean("UseVisionForTurret", true);
+            if (bUseVisionForTurret)
+            {
+                auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
+                m_turret->TurnToRelative(hubAngle * 1);
+                turretCmdHoldoff = 10;
+            }
+            else
+            {
+                m_turret->TurnToRelative(0.0);
+            }
+        }
+#endif // def USE_VISION_FOR_TURRET
+
+    if(willPrint)
+    {
+#define PRINT_NO_TARGETS
+#ifdef PRINT_NO_TARGETS
         if (!m_validTarget)
             std::cout << "PhotonCam Has No Targets!" << std::endl;
         else
-            {
-                //auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
-                //m_turret->TurnToRelative(hubAngle * 0.10);
+#else
+        if (m_validTarget)
+#endif  // def PRINT_NO_TARGETS
+        {
+
+#define PRINT_TARGET_INFO
+#ifdef PRINT_TARGET_INFO
                 // std::cout << "Center: (" << (double)m_cameraToHub.X() << "," << (double)m_cameraToHub.Y() << "). ";
                 std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
                 std::cout << "Range: " << GetHubDistance(true) * 39.37 << ", ";
@@ -142,6 +170,7 @@ void VisionSubsystem::Periodic()
                 //     std::cout << "(" << (double)targetVectors[i].X() << "," << (double)targetVectors[i].Y() << "). ";
                 // }
                 std::cout << std::endl;
+#endif  // def PRINT_TARGET_INFO
             }
         }
  

@@ -10,14 +10,19 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     : m_turretmotor(kMotorPort)
     , m_gyro(gyro)
 {
+    m_turretmotor.ConfigFactoryDefault();
+
     m_turretmotor.ConfigSelectedFeedbackSensor(FeedbackDevice::QuadEncoder, 0, kTimeout);
     m_turretmotor.SetNeutralMode(NeutralMode::Brake);
     m_turretmotor.SetSensorPhase(kSensorPhase);
     m_turretmotor.SetInverted(kInverted);
+    m_turretmotor.SetStatusFramePeriod(StatusFrameEnhanced::Status_13_Base_PIDF0, 10.0, 1.0);
+    //m_turretmotor.SetStatusFramePeriod(StatusFrameEnhanced::Status_10_MotionMagic, 10.0, 1.0);
 
     m_turretmotor.Config_kP(0, kP, kTimeout);
     m_turretmotor.Config_kI(0, kI, kTimeout);
     m_turretmotor.Config_kD(0, kD, kTimeout);
+    m_turretmotor.Config_kF(0, 0.0, kTimeout);
 
     m_turretmotor.ConfigNominalOutputForward(kMinOut, kTimeout);
     m_turretmotor.ConfigNominalOutputReverse(kMinOut * -1.0, kTimeout);
@@ -47,7 +52,10 @@ void TurretSubsystem::Periodic()
     // frc::SmartDashboard::PutNumber("D_T_Error", TicksToDegrees(m_turretmotor.GetClosedLoopError(0)));
     // frc::SmartDashboard::PutNumber("D_T_Output", m_turretmotor.GetMotorOutputPercent());
     //m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
-    m_turretmotor.Set(ControlMode::Position, 0.0);
+    
+    //m_turretmotor.Set(ControlMode::Position, 0.0);
+     frc::SmartDashboard::PutNumber("ClosedLoopError", m_turretmotor.GetClosedLoopError());
+     frc::SmartDashboard::PutNumber("IntegralAccumulator", m_turretmotor.GetIntegralAccumulator());
 }
 
 void TurretSubsystem::SetZeroAngle()
@@ -67,7 +75,7 @@ void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)
         m_currentAngle = minAngle;
     else if (angle > maxAngle)
         m_currentAngle = maxAngle;
-//    m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
+    m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
 }
 
 void TurretSubsystem::TurnToRobot(double robotAngle)

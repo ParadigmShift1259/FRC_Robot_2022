@@ -27,7 +27,14 @@ RobotContainer::RobotContainer()
     m_chooser.AddOption("Example 5", AutoPath::kEx5);
     frc::SmartDashboard::PutData("Auto Path", &m_chooser);
 
-    SmartDashboard::PutNumber("fudge", 100.0);
+    SmartDashboard::PutNumber("servo override", 0.0);
+
+    SmartDashboard::PutNumber("fudge", 0.0);
+    SmartDashboard::PutBoolean("UseFudgeFactor", false);
+    SmartDashboard::PutBoolean("UseLut", true);
+    SmartDashboard::PutBoolean("UseVisionForTurret", true);
+    SmartDashboard::PutBoolean("UseKnownDist", false);
+    SmartDashboard::PutNumber("KnownDist", 10.0);
 }
 
 void RobotContainer::Periodic() {
@@ -115,6 +122,8 @@ void RobotContainer::ConfigureButtonBindings()
      JoystickButton(&m_secondaryController, xbox::kX).WhenReleased(
          InstantCommand(    
              [this] { 
+                auto s = SmartDashboard::GetNumber("servo override", 0.0);
+                m_hood.Set(s);
                 m_transfer.SetFeeder(0.0);
                 m_transfer.SetTransfer(0.0);
                 m_turret.SetZeroAngle();
@@ -131,7 +140,29 @@ void RobotContainer::ConfigureButtonBindings()
              {&m_turret}
          )
     );
-    
+
+ 
+    JoystickButton(&m_primaryController, xbox::kA).WhenHeld(
+         InstantCommand(    
+             [this] { 
+                 
+                 //m_overrideAngle += 10.0;
+                m_turret.TurnToRelative(10.0);
+              },
+             {&m_turret}
+         )
+    );
+
+    JoystickButton(&m_primaryController, xbox::kY).WhenHeld(
+         InstantCommand(    
+             [this] { 
+                // m_overrideAngle -= 10.0;
+                m_turret.TurnToRelative(-10.0);
+               },
+             {&m_turret}
+         )
+    );
+
     JoystickButton(&m_primaryController, xbox::kX).WhenPressed(&m_zeroHeading);
 
     // JoystickButton(&m_secondaryController, xbox::kRightBumper).WhenPressed(
@@ -197,15 +228,16 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
     switch(path)
     {
         case kEx1:
-            return new frc2::SequentialCommandGroup(
-                std::move(GetSwerveCommandPath("ball1", true)),
-                frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
-            );
+            // return new frc2::SequentialCommandGroup(
+            //     std::move(GetSwerveCommandPath("ball1", true)),
+            //     frc2::InstantCommand(
+            //         [this]() {
+            //             ZeroDrive();
+            //         }, {}
+            //     )
+            //     // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
+            // );
+            return nullptr;
 
         case kEx2:
             return new frc2::SequentialCommandGroup(

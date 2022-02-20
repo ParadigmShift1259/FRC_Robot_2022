@@ -105,6 +105,8 @@ private:
     frc2::InstantCommand m_setFieldRelative{[this] { m_fieldRelative = true; }, {}};
     frc2::InstantCommand m_clearFieldRelative{[this] { m_fieldRelative = false; }, {}};
     frc2::InstantCommand m_zeroHeading{[this] { m_gyro.ZeroHeading(); }, {}};
+    
+    double m_overrideAngle = 0.0;
 
     bool m_turretready = false;
     bool m_firing = false;

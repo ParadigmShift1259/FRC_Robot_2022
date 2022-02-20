@@ -34,8 +34,8 @@ namespace DriveConstants
     constexpr meter_t kWheelBase = 23.5_in;
 
     /// \name Teleop Drive Constraints
-    constexpr auto kDriveSpeed = meters_per_second_t(1.5);
-    //constexpr auto kDriveSpeed = meters_per_second_t(3.5);
+    // constexpr auto kDriveSpeed = meters_per_second_t(1.5);
+    constexpr auto kDriveSpeed = meters_per_second_t(3.5);
     constexpr auto kDriveAngularSpeed = radians_per_second_t(wpi::numbers::pi * 2.0);
 
     /// \name CAN bus IDs
@@ -338,14 +338,14 @@ namespace TurretConstants
 {
     constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
-    constexpr double kP = 0.05;
+    constexpr double kP = 0.2;
     constexpr double kI = 0.0;
 //    constexpr double kI = 0.01;
 //    constexpr double kI = 0.0007;
     constexpr double kD = 0.0;
 
     constexpr double kMinOut = 0;
-    constexpr double kMaxOut = 0.900;
+    constexpr double kMaxOut = 1.0; //0.900;
 
     constexpr double kTimeout = 30;
     constexpr double kInverted = true;

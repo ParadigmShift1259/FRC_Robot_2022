@@ -40,6 +40,13 @@ void HomeTarget::Execute()
     
     double distance = m_vision.GetHubDistance(true);
 
+    bool bUseKnownDist = SmartDashboard::GetBoolean("UseKnownDist", false);
+    if (bUseKnownDist)
+    {
+        distance = SmartDashboard::GetNumber("KnownDist", 10.0);
+    }
+
+
     //if (std::isnan(distance))
     if (distance != distance)
     {
@@ -51,19 +58,30 @@ void HomeTarget::Execute()
          std::make_pair(6.0 * 12.0, 1100.0)
         ,std::make_pair(8.0 * 12.0, 1200.0)
         ,std::make_pair(10.0 * 12.0, 1400.0)
-        ,std::make_pair(12.0 * 12.0, 1500.0)
-        ,std::make_pair(14.0 * 12.0, 1600.0)
-        ,std::make_pair(16.0 * 12.0, 17500.0)
-        ,std::make_pair(18.0 * 12.0, 1950.0)
-        ,std::make_pair(20.0 * 12.0, 1950.0)
+        ,std::make_pair(12.0 * 12.0, 1650.0)
+        ,std::make_pair(14.0 * 12.0, 1750.0)
+        ,std::make_pair(16.0 * 12.0, 1900.0)
+        ,std::make_pair(18.0 * 12.0, 2100.0)
+        ,std::make_pair(20.0 * 12.0, 2100.0)
     };
     auto it = distCompensation.lower_bound(distance / 12.0);
+    
     double offset = 100.0 * distance / 12.0;
-    if (it != distCompensation.end())
+
+    bool bUseLut = SmartDashboard::GetBoolean("UseLut", true);
+    if (bUseLut && it != distCompensation.end())
     {
-        double fudge = SmartDashboard::GetNumber("fudge", 100.0);
-        offset = it->second + fudge;
-    } 
+        offset = it->second;
+    }
+
+    bool bUseFudgeFactor = SmartDashboard::GetBoolean("UseFudgeFactor", true);
+    double fudge = 0.0;
+    if (bUseFudgeFactor)
+    {
+        fudge = SmartDashboard::GetNumber("fudge", 100.0);
+        offset += fudge;      
+    }
+
     double flywheelspeed = offset + m_calculation.GetInitRPMS(meter_t(distance)).to<double>();
 
     // Quintic regression calculated 3/27
@@ -88,7 +106,7 @@ void HomeTarget::Execute()
     SmartDashboard::PutNumber("Flywheel RPM ", flywheelspeed);
     SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
 
-    if (!m_vision.GetValidTarget())
+    if (!m_vision.GetValidTarget() && !bUseKnownDist)
         return;
 
     //double angleOverride = 0;
