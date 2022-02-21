@@ -100,7 +100,7 @@ Calculations::Calculations() {
   // frc::SmartDashboard::PutNumber("TargetXDistance", m_xTarget.to<double>());
 }
 
-auto Calculations::HubHeightToMaxHeight()
+meter_t Calculations::HubHeightToMaxHeight()
 {
   auto aValue = (m_xInput * (m_heightTarget - m_heightRobot) - (m_xInput + m_xTarget) * (m_heightAboveHub - m_heightRobot)) / (m_xTarget * m_xInput * (m_xInput + m_xTarget));
   auto bValue = ((m_xInput + m_xTarget) * (m_xInput + m_xTarget) * (m_heightAboveHub - m_heightRobot) - m_xInput * m_xInput * (m_heightTarget - m_heightRobot)) / (m_xTarget * m_xInput * (m_xInput + m_xTarget));
@@ -112,42 +112,42 @@ auto Calculations::HubHeightToMaxHeight()
   return m_heightMax;
 }
 
-auto Calculations::GetTimeOne()
+second_t Calculations::CalcTimeOne()
 {
   m_timeOne = math::sqrt(2.0 * (m_heightMax - m_heightRobot) / gravity);
 
   return m_timeOne;
 }
 
-auto Calculations::GetTimeTwo()
+second_t Calculations::CalcTimeTwo()
 {
   m_timeTwo = math::sqrt(2.0 * (m_heightMax - m_heightTarget) / gravity);
 
   return m_timeTwo;
 }
 
-auto Calculations::GetTotalTime()
+second_t Calculations::CalcTotalTime()
 {
-  m_timeTotal = GetTimeOne() + GetTimeTwo();
+  m_timeTotal = CalcTimeOne() + CalcTimeTwo();
 
   return m_timeTotal;
 }
 
-auto Calculations::GetInitXVel()
+meters_per_second_t Calculations::CalcInitXVel()
 {
-  m_velXInit = (m_xInput + m_xTarget) / GetTotalTime();
+  m_velXInit = (m_xInput + m_xTarget) / CalcTotalTime();
 
   return m_velXInit;
 }
 
-auto Calculations::GetInitYVel()
+meters_per_second_t Calculations::CalcInitYVel()
 {
   m_velYInit = math::sqrt(2.0 * gravity * (m_heightMax - m_heightRobot));
 
   return m_velYInit;
 }
 
-auto Calculations::GetInitVelWithAngle()
+meters_per_second_t Calculations::CalcInitVel()
 {
   // m_heightAboveHub = foot_t(frc::SmartDashboard::GetNumber("HeightAboveHub", 0.0));
   // m_heightTarget = foot_t(frc::SmartDashboard::GetNumber("TargetHeight", 0.0));
@@ -161,16 +161,19 @@ auto Calculations::GetInitVelWithAngle()
   // m_xInput = foot_t(m_xFloorDistanceEntry.GetDouble(0.0));
   // m_xTarget = foot_t(m_xTargetDistanceEntry.GetDouble(0.0));
     
-  m_heightMax = HubHeightToMaxHeight();
+  HubHeightToMaxHeight();
 
-  GetInitXVel();
-  GetInitYVel();
+  CalcInitXVel();
+  CalcInitYVel();
   
-  m_velInit = math::hypot(m_velXInit, m_velYInit);
   m_angleInit = math::atan(m_velYInit / m_velXInit);
+  // printf("Angle Before Clamp %.3f\n", m_angleInit.to<double>());
+  m_angleInit = degree_t(std::clamp(m_angleInit.to<double>(), minAngle.to<double>(), maxAngle.to<double>()));
+  // printf("Angle After Clamp %.3f\n", m_angleInit);
 
-  printf("InitVel %.3f\n", m_velInit.to<double>());
-  printf("InitAngle %.3f\n", m_angleInit.to<double>());
+  CalcInitVelWithAngle();
+  // printf("InitVel %.3f\n", m_velInit.to<double>());
+  // printf("InitAngle %.3f\n", m_angleInit.to<double>());
 
   m_initVelEntry.SetDouble(m_velInit.to<double>());
   m_initAngleEntry.SetDouble(m_angleInit.to<double>());
@@ -181,16 +184,25 @@ auto Calculations::GetInitVelWithAngle()
   return m_velInit;
 }
 
+meters_per_second_t Calculations::CalcInitVelWithAngle() {
+  meter_t totalXDist = m_xInput + m_xTarget;
+  meter_t totalYDist = m_heightTarget - m_heightRobot;
+
+  m_velInit = math::sqrt(gravity * totalXDist * totalXDist / (2.0 * (totalXDist * math::tan(m_angleInit) - totalYDist))) / math::cos(m_angleInit);
+  return m_velInit;
+}
+
 degree_t Calculations::GetInitAngle()
 {
   return m_angleInit;
 }
 
-revolutions_per_minute_t Calculations::GetInitRPMS(meter_t distance)
+revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t targetDist)
 {
   m_xInput = distance;
+  m_xTarget = targetDist;
   
-  GetInitVelWithAngle();
+  CalcInitVel();
 
   auto aValue = flywheelRotInertia * (linearRegSlope - 1.0) * (linearRegSlope + linearRegSlope * rotInertiaRatio - rotInertiaRatio + 1);
   auto bValue = 2 * flywheelRotInertia * linearRegConst * (linearRegSlope + linearRegSlope * rotInertiaRatio - rotInertiaRatio);
@@ -220,6 +232,8 @@ radians_per_second_t Calculations::QuadraticFormula(double a, double b, double c
 }
 
 void Calculations::CalculateAll() {
+  printf("Calculate All Called\n");
+
   FILE *calcFile = fopen("/tmp/calcfile.txt", "w");
 
   fprintf(calcFile, "HeightAboveHub, TargetHeight, RobotHeight, FloorDist, TargetDist, RPMs, Setpoint, InitialVelocity, InitialAngle\n");
@@ -229,10 +243,10 @@ void Calculations::CalculateAll() {
       // m_heightAboveHubEntry.SetDouble(9.0);
       // m_heightTargetEntry.SetDouble(8.0 + 2.0/3.0);
       // m_heightRobotEntry.SetDouble(3.0 + 5.0/6.0);
-      m_xFloorDistanceEntry.SetDouble(i);
-      m_xTargetDistanceEntry.SetDouble(j);
+      // m_xFloorDistanceEntry.SetDouble(i);
+      // m_xTargetDistanceEntry.SetDouble(j);
 
-      GetInitRPMS(m_xInput);
+      CalcInitRPMs(foot_t(i), foot_t(j));
 
       auto setpoint = m_rpmInit / FlywheelConstants::kGearRatio;
 
