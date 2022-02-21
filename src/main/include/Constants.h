@@ -81,8 +81,7 @@ namespace DriveConstants
     // Record values, enter below, then redeploy
     // All gears should face outwards
 
-    //#define OFFSET_CONSTANTS_ZERO
-
+    //#define OFFSET_CONSTANTS_ZERO // Define this for callbrating the offsets
     #ifdef OFFSET_CONSTANTS_ZERO
     //============================================LEAVE THESE ZEROES COMMENTED OUT!!!
     constexpr double kFrontLeftOffset   = 0.0;
@@ -91,11 +90,11 @@ namespace DriveConstants
     constexpr double kRearLeftOffset    = 0.0;
     //===============================================================================
     #else
-    // Offsets set on 2022 swerve sled 2022 Feb 5
-    constexpr double kFrontLeftOffset   = 1776.0; // 2701.0; // 2700.0; //This is Good //Encoder 2.07 Radians //2689.0;
-    constexpr double kFrontRightOffset  = 2550.0; // 190.0; // 188.0; //This is Good //1541.0; //Encoder 3.84 Radians //205.0;
-    constexpr double kRearRightOffset   = 911.0; // 1863.0; // 3077.0; //Encoder 2.08 Radians //1858.0;
-    constexpr double kRearLeftOffset    = 2683.0; // 1029.0; // 2007.0; //Encoder 2.04 Radians //983.0;
+    // Offsets updated on 2022 Feb 21 after Sussex
+    constexpr double kFrontLeftOffset   = 1776.0;
+    constexpr double kFrontRightOffset  = 2537.0;
+    constexpr double kRearRightOffset   = 907.0;
+    constexpr double kRearLeftOffset    = 2685.0;
     #endif
 
     // Pulse Width per rotation is not equal for all encoders. Some are 0 - 3865, some are 0 - 4096
