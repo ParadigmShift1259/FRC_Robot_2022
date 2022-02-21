@@ -85,10 +85,10 @@ namespace DriveConstants
     // constexpr double kRearRightOffset   = 0.0;
     // constexpr double kRearLeftOffset    = 0.0;
     //===============================================================================
-    constexpr double kFrontLeftOffset   = 2689.0;
-    constexpr double kFrontRightOffset  = 205.0;
-    constexpr double kRearRightOffset   = 1858.0;
-    constexpr double kRearLeftOffset    = 983.0;
+    constexpr double kFrontLeftOffset   = 2720.0;
+    constexpr double kFrontRightOffset  = 179.0;
+    constexpr double kRearRightOffset   = 1837.0;
+    constexpr double kRearLeftOffset    = 1047.0;
 
     // Pulse Width per rotation is not equal for all encoders. Some are 0 - 3865, some are 0 - 4096
     // FL: 4096
@@ -174,7 +174,7 @@ namespace AutoConstants
 
     extern const frc::TrapezoidProfile<radians>::Constraints kThetaControllerConstraints;
 }  // namespace AutoConstants
-
+#define DualJoysticks;
 namespace OIConstants
 {
     constexpr double kDeadzoneX = 0.015;
