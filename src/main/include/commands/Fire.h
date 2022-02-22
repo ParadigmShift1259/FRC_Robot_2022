@@ -30,6 +30,9 @@ public:
         , bool* m_finished
         , double launchtime = TransferConstants::kTimeLaunch);
 
+    //void Execute() override;
+    //void End(bool interrupted) override;
+
 private:
     frc::XboxController* m_controller;
     FlywheelSubsystem* m_flywheel;

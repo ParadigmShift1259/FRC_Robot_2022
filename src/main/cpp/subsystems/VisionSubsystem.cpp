@@ -4,9 +4,6 @@
 #include <vector>
 #include <photonlib/PhotonUtils.h>
 
-
-
-
 VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem *turret) 
  : m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
  , m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("gloworm"))
@@ -139,7 +136,7 @@ void VisionSubsystem::Periodic()
             {
                 auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
                 m_turret->TurnToRelative(hubAngle * 1);
-                turretCmdHoldoff = 10;
+                turretCmdHoldoff = 10;  // limit turret command rate due to vision lag
             }
             else
             {
@@ -150,7 +147,7 @@ void VisionSubsystem::Periodic()
 
     if(willPrint)
     {
-#define PRINT_NO_TARGETS
+//#define PRINT_NO_TARGETS
 #ifdef PRINT_NO_TARGETS
         if (!m_validTarget)
             std::cout << "PhotonCam Has No Targets!" << std::endl;
@@ -160,7 +157,7 @@ void VisionSubsystem::Periodic()
 #endif  // def PRINT_NO_TARGETS
         {
 
-#define PRINT_TARGET_INFO
+//#define PRINT_TARGET_INFO
 #ifdef PRINT_TARGET_INFO
                 // std::cout << "Center: (" << (double)m_cameraToHub.X() << "," << (double)m_cameraToHub.Y() << "). ";
                 std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";

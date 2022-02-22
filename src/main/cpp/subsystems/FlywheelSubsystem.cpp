@@ -92,6 +92,11 @@ void FlywheelSubsystem::Periodic()
 
 void FlywheelSubsystem::SetRPM(double setpoint) {
     m_setpoint = setpoint / FlywheelConstants::kGearRatio;
+    bool bSupressFlywheel = SmartDashboard::GetBoolean("SupressFlywheel", false);
+    if (bSupressFlywheel)
+    {
+        m_setpoint = 0.0;
+    }
     m_flywheelPID.SetIAccum(0);
 }
 

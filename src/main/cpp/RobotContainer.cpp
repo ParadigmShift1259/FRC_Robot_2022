@@ -35,6 +35,7 @@ RobotContainer::RobotContainer()
     SmartDashboard::PutBoolean("UseVisionForTurret", true);
     SmartDashboard::PutBoolean("UseKnownDist", false);
     SmartDashboard::PutNumber("KnownDist", 10.0);
+    SmartDashboard::PutBoolean("SupressFlywheel", false);
 }
 
 void RobotContainer::Periodic() {
@@ -109,7 +110,7 @@ void RobotContainer::ConfigureButtonBindings()
              &m_turretready, &m_firing, &m_finished)
     );
 
-     JoystickButton(&m_secondaryController, xbox::kX).WhenPressed(
+    JoystickButton(&m_secondaryController, xbox::kX).WhenPressed(
              InstantCommand(    
              [this] { 
                 m_transfer.SetFeeder(.5);

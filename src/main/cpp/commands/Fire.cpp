@@ -18,6 +18,8 @@ Fire::Fire( frc::XboxController* controller
   , m_firing(firing)
   , m_finished(finished)
 {
+  printf("Secondary Y firing\n");
+
   // Both two run parallel, but the second has a delay hack through boolean pointers
   AddCommands(
     // Home flywheel, turret, and hood to the correct speeds based on tuned fit function
@@ -28,3 +30,19 @@ Fire::Fire( frc::XboxController* controller
     //, frc2::InstantCommand([this]() { m_flywheel->SetRPM(FlywheelConstants::kIdleRPM); }, {m_flywheel} )
   );
 }
+
+// void Fire::Execute()
+// {
+//    if (m_controller->GetBackButton())
+
+//    {
+//      printf("Fire cancelling?\n");
+//      Cancel();
+//    }
+// }
+
+// void Fire::End(bool interrupted)
+// {
+//   printf("Fire ended?\n");
+//   m_flywheel->SetRPM(FlywheelConstants::kIdleRPM);
+// }
