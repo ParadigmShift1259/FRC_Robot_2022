@@ -82,7 +82,7 @@ void HomeTarget::Execute()
         offset += fudge;      
     }
 
-    double flywheelspeed = offset + m_calculation.GetInitRPMS(meter_t(distance)).to<double>();
+    double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), meter_t(2.0)).to<double>();
 
     // Quintic regression calculated 3/27
     // https://mycurvefit.com/

@@ -38,23 +38,24 @@ constexpr auto rotInertiaRatio = flywheelRotInertia / cargoRotInertia;
 constexpr dimensionless_t linearRegSlope = 0.874;
 constexpr auto linearRegConst = radians_per_second_t (12.7);
 
-// auto test = flywheelRotInertia * radians_per_second_squared_t(10.0);
-// auto test = flywheelRotInertia * radians_per_second_squared_t(10.0) / radian_t(10.0);
+constexpr degree_t maxAngle = degree_t(50.0);
+constexpr degree_t minAngle = degree_t(40.0);
 
 class Calculations
 {
  public:
   Calculations();
 
-  auto HubHeightToMaxHeight();
-  auto GetTimeOne();
-  auto GetTimeTwo();
-  auto GetTotalTime();
-  auto GetInitXVel();
-  auto GetInitYVel();
-  auto GetInitVelWithAngle();
-  degree_t GetInitAngle();                //!< Call after GetInitVelWithAngle or GetInitRPMS
-  revolutions_per_minute_t GetInitRPMS(meter_t distance);
+  meter_t HubHeightToMaxHeight();
+  second_t CalcTimeOne();
+  second_t CalcTimeTwo();
+  second_t CalcTotalTime();
+  meters_per_second_t CalcInitXVel();
+  meters_per_second_t CalcInitYVel();
+  meters_per_second_t CalcInitVel();
+  meters_per_second_t CalcInitVelWithAngle();
+  degree_t GetInitAngle();                                                            //!< Call after GetInitVelWithAngle or GetInitRPMS
+  revolutions_per_minute_t CalcInitRPMs(meter_t distance, meter_t targetDist);        //!< Calculates the RPMs needed to shoot the specified distance
   radians_per_second_t QuadraticFormula(double a, double b, double c, bool subtract);
 
   void CalculateAll();
