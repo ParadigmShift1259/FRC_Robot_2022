@@ -135,7 +135,7 @@ void VisionSubsystem::Periodic()
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
             m_turret->TurnToRelative(hubAngle * 1);
-            turretCmdHoldoff = 10;  // limit turret command rate due to vision lag
+            turretCmdHoldoff = 3;  // limit turret command rate due to vision lag
         }
     }
     else
