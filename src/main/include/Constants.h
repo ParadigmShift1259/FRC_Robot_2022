@@ -348,32 +348,21 @@ namespace TurretConstants
     constexpr double kInverted = true;
     constexpr double kSensorPhase = true;
 
-    constexpr double kMaxOverrideAngle = 5.0; //10.0;
-
     constexpr double kDegreeStopRange = 0.85; //1; //1.35; //0.6; //0.4; //0.5;
-    constexpr double kDegreePIDStopRange = 0.25; //0.35; //0.35;
-
-    // The motor on the turret drives a pulley, while drives the turret
-    // MotorRev indicates the revolution of the motor, while Rev indicates the revolution of the turret
-    constexpr double kMotorRevPerRev = 4096.0 / 8132.0;
-    constexpr double kTicksPerRev = 4096.0;
-    constexpr double kDegreesPerRev = 360.0;
-    constexpr double kRadiansPerRev = wpi::numbers::pi * 2.0;
 
     // Offset of origin point of turret angle and robot angle, in degrees. Robot 0 is forward
-    constexpr double kTurretToRobotAngleOffset = -45;
+    constexpr double kTurretToRobotAngleOffset = 0.0;
     // Maximum rotation of the turret relative to the turret, in degrees
     constexpr double kMinAngle = -60.0;
     constexpr double kMaxAngle = 60.0;
-    // Range of angle allowed for auto targeting by default
-    constexpr double kMinAutoAngle = 25;
-    constexpr double kMaxAutoAngle = 65;
-    // Maximum relative angle allowed for auto targeting by default
-    constexpr double kMaxAutoRelAngle = 20;
 
     // initial configured angle of the turret relative to the turret, in degrees
     constexpr double kStartingPositionDegrees = 0.0;
 }
+
+
+
+
 //Hood Subsystem Constants
 namespace HoodConstants
 {
