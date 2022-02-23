@@ -337,9 +337,12 @@ namespace TurretConstants
 {
     constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
-    constexpr double kP = 0.3;
+    // constexpr double kP = 0.3;
+    // constexpr double kI = 0.001;
+    // constexpr double kD = 10.0;
+    constexpr double kP = 0.05;
     constexpr double kI = 0.001;
-    constexpr double kD = 10.0;
+    constexpr double kD = 0.0;
 
     constexpr double kMinOut = 0;
     constexpr double kMaxOut = 1.0; //0.900;

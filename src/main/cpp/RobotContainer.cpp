@@ -123,8 +123,8 @@ void RobotContainer::ConfigureButtonBindings()
      JoystickButton(&m_secondaryController, xbox::kX).WhenReleased(
          InstantCommand(    
              [this] { 
-                auto s = SmartDashboard::GetNumber("servo override", 0.0);
-                m_hood.Set(s);
+                //auto s = SmartDashboard::GetNumber("servo override", 0.0);
+                //m_hood.Set(s);
                 m_transfer.SetFeeder(0.0);
                 m_transfer.SetTransfer(0.0);
                 m_turret.SetZeroAngle();
@@ -148,7 +148,7 @@ void RobotContainer::ConfigureButtonBindings()
              [this] { 
                  
                  //m_overrideAngle += 10.0;
-                m_turret.TurnToRelative(10.0);
+                m_turret.TurnToRelative(50.0);
               },
              {&m_turret}
          )
@@ -158,7 +158,7 @@ void RobotContainer::ConfigureButtonBindings()
          InstantCommand(    
              [this] { 
                 // m_overrideAngle -= 10.0;
-                m_turret.TurnToRelative(-10.0);
+                m_turret.TurnToRelative(-50.0);
                },
              {&m_turret}
          )
