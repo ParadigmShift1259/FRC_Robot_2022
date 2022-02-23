@@ -84,12 +84,13 @@ void VisionSubsystem::Periodic()
             if (FitCircle(targetVectors, units::meter_t{0.01}, 20))
                 {
                 if (m_smoothedRange > 0)
+
                     m_smoothedRange = kRangeSmoothing * m_smoothedRange + (1-kRangeSmoothing) * GetHubDistance(false);
                 else
                     m_smoothedRange = GetHubDistance(false);
                 m_consecNoTargets = 0;
                 m_validTarget = true;
-                double angleToHub = m_gyro->GetHeading() + m_turret->GetCurrentAngle() - GetHubDistance(false);
+                double angleToHub = m_gyro->GetHeading() + m_turret->GetCurrentAngle() - GetHubAngle();
                 frc::Translation2d displacement = Translation2d(units::meter_t{(cos(angleToHub) * GetHubDistance(false))}, units::meter_t{(sin(angleToHub) * GetHubDistance(false))});
                 frc::Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
                 frc::Rotation2d turretRot = Rotation2d(units::radian_t{m_turret->GetCurrentAngle()});
@@ -136,7 +137,7 @@ void VisionSubsystem::Periodic()
             {
                 auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
                 m_turret->TurnToRelative(hubAngle * 1);
-                turretCmdHoldoff = 10;  // limit turret command rate due to vision lag
+                turretCmdHoldoff = 3;  // limit turret command rate due to vision lag
             }
             else
             {
@@ -147,7 +148,7 @@ void VisionSubsystem::Periodic()
 
     if(willPrint)
     {
-//#define PRINT_NO_TARGETS
+#define PRINT_NO_TARGETS
 #ifdef PRINT_NO_TARGETS
         if (!m_validTarget)
             std::cout << "PhotonCam Has No Targets!" << std::endl;
