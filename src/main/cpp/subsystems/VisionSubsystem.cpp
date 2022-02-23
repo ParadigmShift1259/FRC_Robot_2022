@@ -8,8 +8,6 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem *turret)
  : m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
  , m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("gloworm"))
  , m_led(true)
- , m_tx(0)
- , m_ty(0)
  , m_validTarget(false)
  , m_gyro(gyro)
  , m_turret(turret)
@@ -17,10 +15,10 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem *turret)
     SetLED(true);
     m_averageDistance.reserve(3);
     m_averageAngle.reserve(3);
-    kCameraHeight = units::inch_t{41.25}; //37
-    kCurrTargetHeight = units::inch_t{8*12 + 7};
-    kCameraPitch = units::degree_t{21.0}; // 18.8
-    kTargetPitch = units::degree_t{0};
+    kCameraHeight = inch_t{41.25}; //37
+    kCurrTargetHeight = inch_t{8*12 + 7};
+    kCameraPitch = degree_t{21.0}; // 18.8
+    kTargetPitch = degree_t{0};
     m_consecNoTargets = 0;
 
    // m_networktable->AddEntryListener(NTcallback, nt::EntryListenerFlags::kUpdate);
@@ -31,6 +29,7 @@ void VisionSubsystem::Periodic()
 {
     static unsigned counter = 0; 
     counter++;
+    bool bLogInvalid = m_dbgLogInvalid;
     bool willPrint = false;
     if (counter % 25 == 0)
         willPrint = true;
@@ -39,7 +38,7 @@ void VisionSubsystem::Periodic()
 
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
     bool validTarget = result.HasTargets();
-    vector<frc::Translation2d> targetVectors;
+    vector<Translation2d> targetVectors;
     if (validTarget)
     {
         auto targets = result.GetTargets();
@@ -48,128 +47,119 @@ void VisionSubsystem::Periodic()
         //if(!m_allPoints.empty())
         
         //Gets Vectors for each target
-        for(int i = 0; i < targets.size(); i++)
+        for (int i = 0; i < targets.size(); i++)
         {
-            kTargetPitch = units::degree_t{targets[i].GetPitch()};
-            units::meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
+            kTargetPitch = degree_t{targets[i].GetPitch()};
+            meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
                 kCameraHeight, kCurrTargetHeight, kCameraPitch, kTargetPitch);
-            targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(units::degree_t{-targets[i].GetYaw()})));
+            targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
         }
 
         //find the center of the vision tape targets
         double xTotal = 0;
         double yTotal = 0;
-        for(int i = 0; i < targetVectors.size(); i++)
+        for (int i = 0; i < targetVectors.size(); i++)
         {
             xTotal += (double)targetVectors[i].X();
             yTotal += (double)targetVectors[i].Y();
         }
         double xMean = xTotal/targetVectors.size();
         double yMean = yTotal/targetVectors.size();
-        frc::Translation2d averageTarget = Translation2d(units::meter_t{xMean}, units::meter_t{yMean});
+        Translation2d averageTarget = Translation2d(meter_t{xMean}, meter_t{yMean});
 
         //Throw out outliers
-        for(int i = 0; i < targetVectors.size(); i++)
+        for (int i = 0; i < targetVectors.size(); i++)
         {
-            if (averageTarget.Distance(targetVectors[i]) > units::meter_t{kMaxTargetSpread})
+            if (averageTarget.Distance(targetVectors[i]) > meter_t{kMaxTargetSpread})
             {
-                targetVectors.erase(targetVectors.begin()+i);
+                targetVectors.erase(targetVectors.begin() + i);
                 i--;
-                std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
+                if (bLogInvalid)
+                    std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
             }
         }
 
-        if(targetVectors.size() >= 3)
+        if (targetVectors.size() >= 3)
         {
-            if (FitCircle(targetVectors, units::meter_t{0.01}, 20))
-                {
+            if (FitCircle(targetVectors, meter_t{0.01}, 20))
+            {
                 if (m_smoothedRange > 0)
-                    m_smoothedRange = kRangeSmoothing * m_smoothedRange + (1-kRangeSmoothing) * GetHubDistance(false);
+                    m_smoothedRange = kRangeSmoothing * m_smoothedRange + (1 - kRangeSmoothing) * GetHubDistance(false);
                 else
                     m_smoothedRange = GetHubDistance(false);
                 m_consecNoTargets = 0;
                 m_validTarget = true;
-                double angleToHub = m_gyro->GetHeading() + m_turret->GetCurrentAngle() - GetHubDistance(false);
-                frc::Translation2d displacement = Translation2d(units::meter_t{(cos(angleToHub) * GetHubDistance(false))}, units::meter_t{(sin(angleToHub) * GetHubDistance(false))});
-                frc::Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
-                frc::Rotation2d turretRot = Rotation2d(units::radian_t{m_turret->GetCurrentAngle()});
-                frc::Pose2d cameraPose = Pose2d(kHubCenter-displacement, m_gyro->GetHeadingAsRot2d() + turretRot);
-                frc::Translation2d turretCenterToRobotCenter = Translation2d(units::inch_t{2.25}, units::inch_t{0});
-                frc::Translation2d camToTurretCenter = Translation2d(units::meter_t{(cos(m_turret->GetCurrentAngle()) * units::inch_t{-12})}, units::meter_t{(sin(m_turret->GetCurrentAngle()) * units::inch_t{-12})});
-                frc::Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, units::radian_t{-m_turret->GetCurrentAngle()});
+                double distToHub = GetHubDistance(false);
+                double angleTurret = m_turret->GetCurrentAngle();
+                double angleToHub = m_gyro->GetHeading() + angleTurret - distToHub;
+                Translation2d displacement = Translation2d(meter_t{(cos(angleToHub) * distToHub)}, meter_t{(sin(angleToHub) * distToHub)});
+                Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
+                Rotation2d turretRot = Rotation2d(radian_t{angleTurret});
+                Pose2d cameraPose = Pose2d(kHubCenter-displacement, m_gyro->GetHeadingAsRot2d() + turretRot);
+                Translation2d turretCenterToRobotCenter = Translation2d(inch_t{2.25}, inch_t{0});
+                Translation2d camToTurretCenter = Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
+                Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{-m_turret->GetCurrentAngle()});
                 m_robotPose = cameraPose.TransformBy(camreaTransform);
-                }
+            }
             else
-                {
-                std::cout << "Circle fit failed " << std::endl;
+            {
+                if (bLogInvalid)
+                    std::cout << "Circle fit failed " << std::endl;
                 m_consecNoTargets++;
-                }
+            }
         }
         else
         {
-            std::cout << "Only " << targetVectors.size() << " vision targets" << std::endl;
+            if (bLogInvalid)
+                std::cout << "Only " << targetVectors.size() << " vision targets" << std::endl;
             m_consecNoTargets++;
         }
-        if(m_consecNoTargets >= kVisionFailLimit)
+
+        if (m_consecNoTargets >= kVisionFailLimit)
         {
             m_validTarget = false;
             m_smoothedRange = 0;
         }
     }
 
-    // if (m_validTarget)
-    // {
-    //     auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
-    //     m_turret->TurnToRelative(hubAngle * 0.35);
-    // }
-
     static int turretCmdHoldoff = 0;
 
-#define USE_VISION_FOR_TURRET
-#ifdef USE_VISION_FOR_TURRET
-        if (turretCmdHoldoff>0)
+    if (m_dbgUseUseVisionForTurret)
+    {
+        if (turretCmdHoldoff > 0)
+        {
             turretCmdHoldoff--;
+        }
         else if (m_validTarget)
         {
-            bool bUseVisionForTurret = SmartDashboard::GetBoolean("UseVisionForTurret", true);
-            if (bUseVisionForTurret)
-            {
-                auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
-                m_turret->TurnToRelative(hubAngle * 1);
-                turretCmdHoldoff = 10;  // limit turret command rate due to vision lag
-            }
-            else
-            {
-                m_turret->TurnToRelative(0.0);
-            }
+            auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
+            m_turret->TurnToRelative(hubAngle * 1);
+            turretCmdHoldoff = 10;  // limit turret command rate due to vision lag
         }
-#endif // def USE_VISION_FOR_TURRET
-
-    if(willPrint)
+    }
+    else
     {
-//#define PRINT_NO_TARGETS
-#ifdef PRINT_NO_TARGETS
-        if (!m_validTarget)
-            std::cout << "PhotonCam Has No Targets!" << std::endl;
-        else
-#else
-        if (m_validTarget)
-#endif  // def PRINT_NO_TARGETS
-        {
+        m_turret->TurnToRelative(0.0);
+    }
 
-//#define PRINT_TARGET_INFO
-#ifdef PRINT_TARGET_INFO
-                // std::cout << "Center: (" << (double)m_cameraToHub.X() << "," << (double)m_cameraToHub.Y() << "). ";
-                std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
-                std::cout << "Range: " << GetHubDistance(true) * 39.37 << ", ";
-                std::cout << "Robot X: " << (double) m_robotPose.X() * 39.37 << ", Y: " << (double) m_robotPose.Y() * 39.37 << ", Theta: ", (double) m_robotPose.Rotation().Degrees();
-                // for(int i = 0; i < targetVectors.size(); i++) {
-                //     std::cout << "(" << (double)targetVectors[i].X() << "," << (double)targetVectors[i].Y() << "). ";
-                // }
-                std::cout << std::endl;
-#endif  // def PRINT_TARGET_INFO
-            }
+    if (willPrint)
+    {
+        if (!m_validTarget && bLogInvalid)
+        {
+            std::cout << "PhotonCam Has No Targets!" << std::endl;
         }
+        else if (m_dbgLogTargetData)
+        {
+            // std::cout << "Center: (" << (double)m_cameraToHub.X() << "," << (double)m_cameraToHub.Y() << "). ";
+            std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
+            std::cout << "Range: " << GetHubDistance(true) * 39.37 << ", ";
+            std::cout << "Robot X: " << (double) m_robotPose.X() * 39.37 << ", Y: " << (double) m_robotPose.Y() * 39.37 << ", Theta: ", (double) m_robotPose.Rotation().Degrees();
+            // for(int i = 0; i < targetVectors.size(); i++) {
+            //     std::cout << "(" << (double)targetVectors[i].X() << "," << (double)targetVectors[i].Y() << "). ";
+            // }
+            std::cout << std::endl;
+        }
+    }
  
     SmartDashboard::PutNumber("D_V_Active", m_validTarget);
     // SmartDashboard::PutNumber("D_V_Distance", distance);
@@ -185,7 +175,6 @@ double VisionSubsystem::GetDistance()
 {
     return Util::GetAverage(m_averageDistance);
 }
-
 
 double VisionSubsystem::GetAngle()
 {
@@ -208,7 +197,7 @@ void VisionSubsystem::SetLED(bool on)
 }
 
 
-bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors, units::meter_t precision, int maxAttempts)
+bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors, meter_t precision, int maxAttempts)
 {
     double xSum = 0.0;
     double ySum = 0.0;
@@ -217,27 +206,27 @@ bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors, units:
         xSum += (double) targetVectors[i].X();
         ySum += (double) targetVectors[i].Y();
     }
-    frc::Translation2d cameraToHub = Translation2d(units::meter_t{xSum / targetVectors.size()} + kVisionTargetRadius, units::meter_t{ySum / targetVectors.size()});
+    frc::Translation2d cameraToHub = Translation2d(meter_t{xSum / targetVectors.size()} + kVisionTargetRadius, meter_t{ySum / targetVectors.size()});
 
     // Iterate to find optimal center
-    units::meter_t shiftDist = kVisionTargetRadius / 2.0;
-    units::meter_t minResidual = calcResidual(kVisionTargetRadius, targetVectors, cameraToHub);
+    meter_t shiftDist = kVisionTargetRadius / 2.0;
+    meter_t minResidual = calcResidual(kVisionTargetRadius, targetVectors, cameraToHub);
 
     int n = 0;
 
     while (n < maxAttempts) {
         vector<frc::Translation2d> translations;
-        translations.push_back(Translation2d(shiftDist, units::meter_t{0.0}));
-        translations.push_back(Translation2d(-shiftDist, units::meter_t{0.0}));
-        translations.push_back(Translation2d(units::meter_t{0.0},shiftDist));
-        translations.push_back(Translation2d(units::meter_t{0.0},-shiftDist));
+        translations.push_back(Translation2d(shiftDist, meter_t{0.0}));
+        translations.push_back(Translation2d(-shiftDist, meter_t{0.0}));
+        translations.push_back(Translation2d(meter_t{0.0},shiftDist));
+        translations.push_back(Translation2d(meter_t{0.0},-shiftDist));
         frc::Translation2d bestPoint = cameraToHub;
         bool centerIsBest = true;
 
         // Check all adjacent positions
         for (int i = 0; i < translations.size(); i++) 
         {
-            units::meter_t residual =
+            meter_t residual =
                 calcResidual(kVisionTargetRadius, targetVectors, cameraToHub + (translations[i]));
             if (residual < minResidual) {
                 bestPoint = cameraToHub + (translations[i]);
@@ -263,14 +252,14 @@ bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors, units:
     return false;
 }
 
- units::meter_t VisionSubsystem::calcResidual(units::meter_t radius, vector<frc::Translation2d> points, frc::Translation2d center)
+ meter_t VisionSubsystem::calcResidual(meter_t radius, vector<frc::Translation2d> points, frc::Translation2d center)
 {
     double residual = 0.0;
     for (int i = 0; i < points.size(); i++) {
       double diff = (double) (points[i].Distance(center) - radius);
       residual += diff * diff;
     }
-    return units::meter_t{residual};
+    return meter_t{residual};
 }
 
 double VisionSubsystem::GetHubAngle()

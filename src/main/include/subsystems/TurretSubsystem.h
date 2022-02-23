@@ -11,6 +11,7 @@ using namespace ctre::phoenix::motorcontrol::can;
 
 #include "Constants.h"
 #include "common/Util.h"
+#include "common/DebugFlag.h"
 #include "Gyro.h"
 
 class TurretSubsystem : public frc2::SubsystemBase
@@ -69,4 +70,6 @@ private:
     double m_currentAngle;
     /// Gyro to determine field relative angles, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
+
+    DebugFlag   m_dbgLogTurns{"TurretLogTurn", false};
 };
