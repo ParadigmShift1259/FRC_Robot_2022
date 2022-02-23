@@ -89,9 +89,7 @@ void TurretSubsystem::SetZeroAngle()
 
 void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)
 {
-    // safeguard
-    //angle = Util::ZeroTo360Degs(angle);
-    // Turret is not set if desired angle is within the deadzone area
+    // Clamp the desired angle to the physical limits 
     if (angle >= minAngle && angle <= maxAngle)
         m_currentAngle = angle;
     else if (angle < minAngle)
@@ -124,10 +122,11 @@ void TurretSubsystem::TurnToField(double desiredAngle)
 void TurretSubsystem::TurnToRelative(double angle, double minAngle, double maxAngle)
 {   
     double desiredAngle = TicksToDegrees(m_turretmotor.GetSelectedSensorPosition());
-    //printf("delta angle %.3f encoder %.3f current cmd %.3f\n", angle, desiredAngle, m_currentAngle);
-    //angle = Util::ZeroTo360Degs(angle);
+    if (m_dbgLogTurns)
+    {
+        printf("delta angle %.3f encoder %.3f current cmd %.3f\n", angle, desiredAngle, m_currentAngle);
+    }
     desiredAngle += angle;
-    //desiredAngle = Util::ZeroTo360Degs(desiredAngle);
     TurnTo(desiredAngle, minAngle, maxAngle);
 }
 
@@ -158,19 +157,13 @@ void TurretSubsystem::SetNewPIDValues()
 
 double TurretSubsystem::TicksToDegrees(double ticks)
 {
-    // double rev = ticks / kTicksPerRev;
-    // double turretrev = rev * kMotorRevPerRev;
-    // return turretrev * kDegreesPerRev;
-    return -ticks * 90.0 / 8132.0;
+    return ticks * 90.0 / 8132.0;
 }
 
 
 double TurretSubsystem::DegreesToTicks(double degrees)
 {
-    // double turretrev = degrees / kDegreesPerRev;
-    // double rev = turretrev / kMotorRevPerRev;
-    // return rev * kTicksPerRev;
-    return -degrees * 8132.0 / 90.0;    // Empirically measured 8132 ticks in 90 degree swing of turret
+    return degrees * 8132.0 / 90.0;    // Empirically measured 8132 ticks in 90 degree swing of turret
 }
 
 double TurretSubsystem::GetCurrentAngle()

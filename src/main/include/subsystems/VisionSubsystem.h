@@ -19,9 +19,11 @@
 
 #include "Gyro.h"
 #include "TurretSubsystem.h"
+#include "common/DebugFlag.h"
 
 using namespace std;
 using namespace frc;
+using namespace units;
 using namespace VisionConstants;
 
 class VisionSubsystem : public frc2::SubsystemBase
@@ -45,9 +47,9 @@ public:
     /// \param on        Boolean where true = LED on
     void SetLED(bool on);
 
-    units::meter_t calcResidual(units::meter_t radius, vector<frc::Translation2d> points, frc::Translation2d center);
+    meter_t calcResidual(meter_t radius, vector<Translation2d> points, Translation2d center);
 
-    bool FitCircle(vector<frc::Translation2d> targetVectors, units::meter_t precision, int maxAttempts);
+    bool FitCircle(vector<Translation2d> targetVectors, meter_t precision, int maxAttempts);
 
     double GetHubAngle();
 
@@ -63,23 +65,25 @@ private:
     shared_ptr<nt::NetworkTable> m_networktable;
     bool m_led;
 
-    double m_tx;
-    double m_ty;
     int m_consecNoTargets;
     bool m_validTarget;
     double m_smoothedRange;
-    frc::Pose2d m_robotPose;
+    Pose2d m_robotPose;
     vector<double> m_averageDistance;
     vector<double> m_averageAngle;
     photonlib::PhotonCamera camera{"gloworm"};
     //std::vector<std::pair<double, double>> m_centerPoints;
-    frc::Translation2d m_cameraToHub;
-    units::inch_t kCameraHeight;
-    units::inch_t kCurrTargetHeight;
-    units::degree_t kCameraPitch;
-    units::degree_t kTargetPitch;
+    Translation2d m_cameraToHub;
+    inch_t kCameraHeight;
+    inch_t kCurrTargetHeight;
+    degree_t kCameraPitch;
+    degree_t kTargetPitch;
 
     /// Gyro to determine field relative angles, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
     TurretSubsystem *m_turret;
+
+    DebugFlag   m_dbgLogInvalid{"VisLogInvalid", false};
+    DebugFlag   m_dbgLogTargetData{"VisLogTargetData", false};
+    DebugFlag   m_dbgUseUseVisionForTurret{"UseVisionForTurret", false};
 };
