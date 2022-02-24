@@ -69,6 +69,7 @@ public:
 
     void ZeroDrive();
     void TurretSetZeroAngle() { m_turret.SetZeroAngle(); }
+    void GyroSetZeroHeading() { m_gyro.ZeroHeading(); }
 
     enum AutoPath {kEx1, kEx2, kEx3, kEx4, kEx5};
     frc2::Command *GetAutonomousCommand(AutoPath path);

@@ -84,17 +84,12 @@ void HomeTarget::Execute()
 
     double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), meter_t(2.0)).to<double>();
 
-    // Quintic regression calculated 3/27
-    // https://mycurvefit.com/
-    //y=11.20831-0.2645223*x+0.002584349*x^{2}-0.00001250923*x^{3}+2.986403\cdot10^{-8}*x^{4}-2.81104\cdot10^{-11}*x^{5}
-    //double hoodangle = 11.20831 - 0.2645223 * distance + 0.002584349 * pow(distance, 2) - 0.00001250923 * pow(distance, 3) + 2.986403E-8 * pow(distance, 4) - 2.81104E-11 * pow(distance, 5);
-    
     // Servo Pos    Measured Angle  Complement
     // 0.0	        50 deg          90 - 50 = 40
     // 0.4	        40 deg          90 - 40 = 50
     degree_t initAngle = m_calculation.GetInitAngle();
     double hoodangle = (initAngle.to<double>() - 40.0) * 0.04;
-    hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
+    //hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
 
     std::cout << "Init Angle: "<< initAngle.to<double>() << std::endl;
     std::cout << "Hood servo set: "<< hoodangle << std::endl;

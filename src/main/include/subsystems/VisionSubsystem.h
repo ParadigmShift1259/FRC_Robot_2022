@@ -85,5 +85,5 @@ private:
 
     DebugFlag   m_dbgLogInvalid{"VisLogInvalid", false};
     DebugFlag   m_dbgLogTargetData{"VisLogTargetData", false};
-    DebugFlag   m_dbgUseUseVisionForTurret{"UseVisionForTurret", false};
+    DebugFlag   m_dbgUseUseVisionForTurret{"UseVisionForTurret", true};
 };

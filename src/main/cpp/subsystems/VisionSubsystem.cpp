@@ -123,6 +123,8 @@ void VisionSubsystem::Periodic()
         }
     }
 
+    SmartDashboard::PutNumber("VisionDistance: ", GetHubDistance(false));
+
     static int turretCmdHoldoff = 0;
 
     if (m_dbgUseUseVisionForTurret)
@@ -140,7 +142,7 @@ void VisionSubsystem::Periodic()
     }
     else
     {
-        m_turret->TurnToRelative(0.0);
+        m_turret->TurnToField(0.0);
     }
 
     if (willPrint)

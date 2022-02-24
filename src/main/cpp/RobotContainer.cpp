@@ -31,15 +31,14 @@ RobotContainer::RobotContainer()
 
     SmartDashboard::PutNumber("fudge", 0.0);
     SmartDashboard::PutBoolean("UseFudgeFactor", false);
-    SmartDashboard::PutBoolean("UseLut", true);
-    SmartDashboard::PutBoolean("UseVisionForTurret", true);
+    SmartDashboard::PutBoolean("UseLut", false);
     SmartDashboard::PutBoolean("UseKnownDist", false);
     SmartDashboard::PutNumber("KnownDist", 10.0);
     SmartDashboard::PutBoolean("SupressFlywheel", false);
 }
 
 void RobotContainer::Periodic() {
-    //SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
+    SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
     // SmartDashboard::PutData("DriveSS", &m_drive);
     // SmartDashboard::PutData("FlywheelSS", &m_flywheel);
     // SmartDashboard::PutData("HoodSS", &m_hood);
@@ -128,6 +127,7 @@ void RobotContainer::ConfigureButtonBindings()
                 m_transfer.SetFeeder(0.0);
                 m_transfer.SetTransfer(0.0);
                 m_turret.SetZeroAngle();
+                m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
               },
              {&m_transfer}
          )

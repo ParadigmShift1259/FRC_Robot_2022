@@ -24,9 +24,8 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.Config_kP(0, kP, kTimeout);
     m_turretmotor.Config_kI(0, kI, kTimeout);
     m_turretmotor.Config_kD(0, kD, kTimeout);
-    m_turretmotor.Config_kF(0, 0.270, kTimeout);
-//    m_turretmotor.Config_kF(0, 0.135, kTimeout);
-    m_turretmotor.Config_IntegralZone(0, 100.0);
+    m_turretmotor.Config_kF(0, kF, kTimeout);
+    m_turretmotor.Config_IntegralZone(0, 1000.0);
     m_turretmotor.ConfigMaxIntegralAccumulator(0, 50000.0);
     m_turretmotor.SetIntegralAccumulator(0.0, 0);
     m_turretmotor.ConfigMotionSCurveStrength(1.0);
@@ -51,10 +50,17 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     //m_turretmotor.Set(ControlMode::PercentOutput, 0.1);
     m_currentAngle = kStartingPositionDegrees;
 
+
 #ifdef TUNE_TURRET_PID
     frc::SmartDashboard::PutNumber("TurretP", kP);
     frc::SmartDashboard::PutNumber("TurretI", kI);
     frc::SmartDashboard::PutNumber("TurretD", kD);
+    frc::SmartDashboard::PutNumber("TurretF", kF);
+
+    frc::SmartDashboard::PutNumber("TurretIzone", 1000.0);
+    frc::SmartDashboard::PutNumber("TurretCruiseV", DegreesToTicks(20.0));
+    frc::SmartDashboard::PutNumber("TurretAccel", DegreesToTicks(10.0));
+    frc::SmartDashboard::PutNumber("TurretScurve", 1.0);
 #endif
 }
 
@@ -79,6 +85,19 @@ void TurretSubsystem::Periodic()
     m_turretmotor.Config_kP(0, p, kTimeout);
     m_turretmotor.Config_kI(0, i, kTimeout);
     m_turretmotor.Config_kD(0, d, kTimeout);
+    m_turretmotor.Config_kF(0, kF, kTimeout);
+
+    double f = frc::SmartDashboard::GetNumber("TurretF", kF);
+    double iZone = frc::SmartDashboard::GetNumber("TurretIzone", 1000.0);
+    double cruiseV = frc::SmartDashboard::GetNumber("TurretCruiseV", DegreesToTicks(20.0));
+    double accel = frc::SmartDashboard::GetNumber("TurretAccel", DegreesToTicks(10.0));
+    double sCurve = frc::SmartDashboard::GetNumber("TurretScurve", 1.0);
+
+    m_turretmotor.Config_IntegralZone(0, iZone);
+    m_turretmotor.ConfigMotionSCurveStrength(sCurve);
+    m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(cruiseV), kTimeout);  // encoder ticks per 100ms 
+    m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(accel), kTimeout);     // encoder ticks per 100ms per sec
+
     m_turretmotor.SetIntegralAccumulator(0.0, 0);
 #endif
 }
@@ -114,11 +133,13 @@ void TurretSubsystem::TurnToRobot(double robotAngle)
 void TurretSubsystem::TurnToField(double desiredAngle)
 {
     // safeguard
-    desiredAngle = Util::ZeroTo360Degs(desiredAngle);
-    double gyroAngle = Util::ZeroTo360Degs(m_gyro->GetHeading());
+    //desiredAngle = Util::ZeroTo360Degs(desiredAngle);
+    //double gyroAngle = Util::ZeroTo360Degs(m_gyro->GetHeading());
+    double gyroAngle = m_gyro->GetHeading();
     // The difference between the field and robot is the desired angle to set relative to the robot
     double angle = gyroAngle - desiredAngle;
-    TurnToRobot(Util::ZeroTo360Degs(angle));
+    //TurnToRobot(Util::ZeroTo360Degs(angle));
+    TurnTo(angle);
 }
 
 void TurretSubsystem::TurnToRelative(double angle, double minAngle, double maxAngle)

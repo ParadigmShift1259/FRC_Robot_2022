@@ -35,7 +35,8 @@ constexpr auto cargoRotInertia = 2.0 / 3.0 * cargoMass * cargoRadius * cargoRadi
 
 constexpr auto rotInertiaRatio = flywheelRotInertia / cargoRotInertia;
 
-constexpr dimensionless_t linearRegSlope = 0.874;
+constexpr dimensionless_t linearRegSlope = 0.9;
+//constexpr dimensionless_t linearRegSlope = 0.874;
 constexpr auto linearRegConst = radians_per_second_t (12.7);
 
 constexpr degree_t maxAngle = degree_t(50.0);

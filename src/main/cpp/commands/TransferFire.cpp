@@ -35,15 +35,17 @@ void TransferFire::Execute()
 
     if (*m_firing)
     {
+        //m_transfer->SetFeeder(kFeederSpeedFiring);
         m_transfer->SetFeeder(kSpeedFiring);
-        if (m_timer.Get().to<double>() <= kTimePassed) {
+        if (m_timer.Get().to<double>() <= kTimePassed)
+        {
             m_transfer->SetTransfer(kSpeedFiring);
-    }        
+        }        
     }
     else
     {
-        m_transfer->SetTransfer(0);
-        m_transfer->SetFeeder(0);
+        m_transfer->SetTransfer(0.0);
+        m_transfer->SetFeeder(0.0);
     }
 
     frc::SmartDashboard::PutBoolean("TEST_READY_TO_FIRE", *m_turretready);

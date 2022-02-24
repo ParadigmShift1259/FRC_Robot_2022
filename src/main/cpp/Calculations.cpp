@@ -11,7 +11,7 @@
 using namespace units;
 
 Calculations::Calculations() {
-  m_heightAboveHub = foot_t(9.0);
+  m_heightAboveHub = foot_t(12.0);
   m_heightRobot = foot_t(3.5);
   m_heightTarget = foot_t(8.67);
   m_xTarget = foot_t(2.0);
@@ -21,7 +21,7 @@ Calculations::Calculations() {
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_25(3);
 
   propMap0_10.insert(std::make_pair("Min", nt::Value::MakeDouble(0.0)));
-  propMap0_10.insert(std::make_pair("Max", nt::Value::MakeDouble(10.0)));
+  propMap0_10.insert(std::make_pair("Max", nt::Value::MakeDouble(16.0)));
   propMap0_10.insert(std::make_pair("Block increment", nt::Value::MakeDouble(1.0 / 12.0)));
 
   propMap0_4.insert(std::make_pair("Min", nt::Value::MakeDouble(0.0)));
@@ -155,7 +155,7 @@ meters_per_second_t Calculations::CalcInitVel()
   // m_xInput = foot_t(frc::SmartDashboard::GetNumber("FloorHubDistance", 0.0));
   // m_xTarget = foot_t(frc::SmartDashboard::GetNumber("TargetXDistance", 0.0));
 
-  // m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(0.0));
+  //m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(10.0));
   // m_heightTarget = foot_t(m_heightTargetEntry.GetDouble(0.0));
   // m_heightRobot = foot_t(m_heightRobotEntry.GetDouble(0.0));
   // m_xInput = foot_t(m_xFloorDistanceEntry.GetDouble(0.0));

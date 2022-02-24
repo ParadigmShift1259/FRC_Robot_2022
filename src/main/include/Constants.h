@@ -318,13 +318,14 @@ namespace TransferConstants
     constexpr int kTransferInputChannel = 1;
 
     constexpr double kFeederSpeed = 0.5;
+    constexpr double kFeederSpeedFiring = 0.8;
     constexpr double kSpeedFiring = 0.7;
     constexpr double kTransferSpeedIntaking = 0.500;
 
     // Time to go from 0 to full throttle
     constexpr double kTransferRampRate = 0.75;
 
-    constexpr double kTimePassed = 0.25;
+    constexpr double kTimePassed = 0.150;
     constexpr double kTimeLaunch = 1.50;
 
     constexpr double kTimeout = 30.0;
@@ -342,7 +343,8 @@ namespace TurretConstants
     // constexpr double kD = 10.0;
     constexpr double kP = 0.05;
     constexpr double kI = 0.001;
-    constexpr double kD = 0.0;
+    constexpr double kD = 0.5;
+    constexpr double kF = 0.235;
 
     constexpr double kMinOut = 0;
     constexpr double kMaxOut = 1.0; //0.900;
