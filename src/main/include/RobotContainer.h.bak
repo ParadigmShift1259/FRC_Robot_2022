@@ -62,9 +62,6 @@ public:
     void Periodic();
 
     void ZeroDrive();
-    void TurretSetZeroAngle() { m_turret.SetZeroAngle(); }
-    void GyroSetZeroHeading() { m_gyro.ZeroHeading(); }
-
     enum AutoPath {kEx1, kEx2, kEx3, kEx4};
     frc2::Command *GetAutonomousCommand(AutoPath path);
 
@@ -91,8 +88,6 @@ private:
     HoodSubsystem m_hood;
 
     //bool m_fieldRelative = true;
-    double m_overrideAngle = 0.0;
-
     bool m_turretready = false;
     bool m_firing = false;
     bool m_finished = false;

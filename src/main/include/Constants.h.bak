@@ -160,14 +160,8 @@ namespace AutoConstants
 {
     using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
 
-    // constexpr auto kMaxSpeed = meters_per_second_t(1.0);
-    // constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
-
-    constexpr auto kMaxSpeed = meters_per_second_t(3.0);
-    constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.0);
-
-    //constexpr auto kMaxSpeed = meters_per_second_t(3.75);
-    //constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.5);
+    constexpr auto kMaxSpeed = meters_per_second_t(3.75);
+    constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.5);
     constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi * 6.0);
     constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi * 6.0);
 
@@ -180,7 +174,7 @@ namespace AutoConstants
 
     extern const frc::TrapezoidProfile<radians>::Constraints kThetaControllerConstraints;
 }  // namespace AutoConstants
-
+#define DualJoysticks;
 namespace OIConstants
 {
     constexpr double kDeadzoneX = 0.015;
@@ -200,7 +194,6 @@ namespace OIConstants
 // Vision Subsystem Constants
 namespace VisionConstants
 {
-    constexpr int kVisionFailLimit = 5;
     // 6/30/21
     // Limelight X Offset: -0.04
     // Mounting angle of the limelight, in degrees
@@ -217,22 +210,6 @@ namespace VisionConstants
 
     constexpr double kMinHoneDistance = 130;
     constexpr double kMaxHoneDistance = 260;
-
-    constexpr double kRangeSmoothing = 0.7;
-
-    constexpr units::meter_t kFieldLength = 648.0_in;
-    constexpr units::meter_t kFieldWidth = 324.0_in;
-    constexpr units::meter_t kHangarLength = 128.75_in;
-    constexpr units::meter_t kHangarWidth = 116.0_in;
-
-    //constexpr frc::Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
-
-    constexpr units::meter_t kVisionTargetDiameter = 53.375_in;
-    constexpr units::meter_t kVisionTargetHeight = 77.5_in;
-
-    constexpr units::meter_t kVisionTargetRadius = kVisionTargetDiameter / 2; //Should be meters type
-    constexpr units::meter_t kMaxTargetSpread = 1.1 * kVisionTargetRadius;
-
 }
 
 // Flywheel Subsystem constants
@@ -324,16 +301,12 @@ namespace TurretConstants
 {
     constexpr double kMotorPort = 11;   //!< Turret CAN ID (TalonSRX)
 
-    //constexpr double kP = 0.30114;
-    //constexpr double kI = 0.00035;
-    //constexpr double kD = 19.6;
-    constexpr double kP = 0.05;
-    constexpr double kI = 0.001;
-    constexpr double kD = 0.5;
-    constexpr double kF = 0.235;
+    constexpr double kP = 0.30114;
+    constexpr double kI = 0.00035;
+    constexpr double kD = 19.6;
 
     constexpr double kMinOut = 0;
-    constexpr double kMaxOut = 1.0; //0.900;
+    constexpr double kMaxOut = 0.700;
 
     constexpr double kTimeout = 30;
     constexpr double kInverted = true;
@@ -355,10 +328,10 @@ namespace TurretConstants
     constexpr double kRadiansPerRev = wpi::numbers::pi * 2.0;
 
     // Offset of origin point of turret angle and robot angle, in degrees. Robot 0 is forward
-    constexpr double kTurretToRobotAngleOffset = 0.0;
+    constexpr double kTurretToRobotAngleOffset = -45;
     // Maximum rotation of the turret relative to the turret, in degrees
-    constexpr double kMinAngle = -60.0;
-    constexpr double kMaxAngle = 60.0;
+    constexpr double kMinAngle = 0;
+    constexpr double kMaxAngle = 90;
     // Range of angle allowed for auto targeting by default
     constexpr double kMinAutoAngle = 25;
     constexpr double kMaxAutoAngle = 65;
@@ -366,9 +339,8 @@ namespace TurretConstants
     constexpr double kMaxAutoRelAngle = 20;
 
     // initial configured angle of the turret relative to the turret, in degrees
-    constexpr double kStartingPositionDegrees = 0.0;
+    constexpr double kStartingPositionDegrees = 45;
 }
-
 //Hood Subsystem Constants
 namespace HoodConstants
 {

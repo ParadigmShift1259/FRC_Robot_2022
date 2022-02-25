@@ -12,7 +12,7 @@
 RobotContainer::RobotContainer()
     : m_gyro()
     , m_drive(&m_gyro)
-    , m_vision(&m_gyro, &m_turret)
+    , m_vision()
     , m_flywheel()
 {
     m_fieldRelative = false;
@@ -27,38 +27,18 @@ RobotContainer::RobotContainer()
     frc::SmartDashboard::PutData("Auto Path", &m_chooser);
 }
 
-void RobotContainer::Periodic() {
-    SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
-    // SmartDashboard::PutData("DriveSS", &m_drive);
-    // SmartDashboard::PutData("FlywheelSS", &m_flywheel);
-    // SmartDashboard::PutData("HoodSS", &m_hood);
-    // SmartDashboard::PutData("IntakeSS", &m_intake);
-    // SmartDashboard::PutData("TransferSS", &m_transfer);
-    // SmartDashboard::PutData("TurretSS", &m_turret);
-    // SmartDashboard::PutData("VisionSS", &m_vision);
-    SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
-    m_drive.Periodic();
-    //m_flywheel.Periodic();
-}
+void RobotContainer::Periodic() {}
 
 void RobotContainer::SetDefaultCommands()
 {
-#define USE_DRIVE	// Comment this define out when robot in on top of battery cart
-#ifdef USE_DRIVE
     m_drive.SetDefaultCommand(frc2::RunCommand(
         [this] {
             // up is xbox joystick y pos
             // left is xbox joystick x pos
             /// X and Y are deadzoned twice - once individually with very small values, then another with a pinwheel deadzone
-
-            auto xInput = m_primaryController.GetLeftY() * -1.0;    // The x robot axis is driven from the Y joystick axis
-            auto yInput = m_primaryController.GetLeftX() * -1.0;
-
-            xInput = Util::Deadzone(xInput, OIConstants::kDeadzoneX);
-            yInput = Util::Deadzone(yInput, OIConstants::kDeadzoneY);
-            auto magnitude = sqrt(pow(xInput, 2.0) + pow(yInput, 2.0));
-            if (Util::Deadzone(magnitude, OIConstants::kDeadzoneXY) == 0)
-            {
+            auto xInput = Util::Deadzone(m_primaryController.GetLeftY() * -1.0, OIConstants::kDeadzoneX);
+            auto yInput = Util::Deadzone(m_primaryController.GetLeftX() * -1.0, OIConstants::kDeadzoneY);
+            if (Util::Deadzone(sqrt(pow(xInput, 2) + pow(yInput, 2)), OIConstants::kDeadzoneXY) == 0) {
                 xInput = 0;
                 yInput = 0;
             }
@@ -67,13 +47,11 @@ void RobotContainer::SetDefaultCommands()
 
             m_drive.Drive(units::meters_per_second_t(xInput * AutoConstants::kMaxSpeed),
                             units::meters_per_second_t(yInput * AutoConstants::kMaxSpeed),
-                            //units::angular_velocity::radians_per_second_t(rotInput),
                             units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
                             m_fieldRelative);
         },
         {&m_drive}
     ));
-#endif
     // m_flywheel.SetDefaultCommand(
     //     frc2::RunCommand(
     //         [this] {
