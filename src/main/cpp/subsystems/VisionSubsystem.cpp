@@ -234,26 +234,24 @@ frc::Translation2d VisionSubsystem::FitCircle(vector<frc::Translation2d> targetV
 
     int n = 0;
 
-    while (n < maxAttempts) {
-        vector<frc::Translation2d> translations;
-        translations.push_back(Translation2d(shiftDist, meter_t{0.0}));
-        translations.push_back(Translation2d(-shiftDist, meter_t{0.0}));
-        translations.push_back(Translation2d(meter_t{0.0},shiftDist));
-        translations.push_back(Translation2d(meter_t{0.0},-shiftDist));
+    while (n < maxAttempts) 
+    {
+        frc::Translation2d translation = Translation2d(shiftDist, meter_t{0.0});
         frc::Translation2d bestPoint = cameraToHub;
         bool centerIsBest = true;
 
         // Check all adjacent positions
-        for (int i = 0; i < translations.size(); i++) 
+        for (int i = 0; i < 4; i++) 
         {
             meter_t residual =
-                calcResidual(kVisionTargetRadius, targetVectors, cameraToHub + (translations[i]));
+                calcResidual(kVisionTargetRadius, targetVectors, cameraToHub + translation);
             if (residual < minResidual) {
-                bestPoint = cameraToHub + (translations[i]);
+                bestPoint = cameraToHub + (translation);
                 minResidual = residual;
                 centerIsBest = false;
                 break;
             }
+            translation = translation.RotateBy(frc::Rotation2d(i * degree_t{90}));
         }
         // Decrease shift, exit, or continue
         if (centerIsBest) {
