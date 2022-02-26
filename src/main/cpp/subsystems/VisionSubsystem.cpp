@@ -82,7 +82,8 @@ void VisionSubsystem::Periodic()
 
         if (targetVectors.size() >= 3)
         {
-            if (FitCircle(targetVectors, meter_t{0.01}, 20) != frc::Translation2d())
+            frc::Translation2d cameraToHub = FitCircle(targetVectors, meter_t{0.01}, 20);
+            if (cameraToHub != frc::Translation2d())
             {
                 if (m_smoothedRange > 0)
                     m_smoothedRange = kRangeSmoothing * m_smoothedRange + (1 - kRangeSmoothing) * GetHubDistance(false);
@@ -90,8 +91,8 @@ void VisionSubsystem::Periodic()
                     m_smoothedRange = GetHubDistance(false);
                 m_consecNoTargets = 0;
                 m_validTarget = true;
-                double distToHub = GetHubDistance(false);
-                double hubAngle = GetHubAngle();
+                double distToHub = (double)cameraToHub.Norm();
+                double hubAngle = atan2((double)cameraToHub.Y(), (double)cameraToHub.X());;
                 double angleTurret = m_turret->GetCurrentAngle();
                 double angleToHub = m_gyro->GetHeading() + angleTurret - hubAngle;
                 Translation2d displacement = Translation2d(meter_t{(cos(angleToHub) * distToHub)}, meter_t{(sin(angleToHub) * distToHub)});
