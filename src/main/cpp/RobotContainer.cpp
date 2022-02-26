@@ -49,32 +49,32 @@ void RobotContainer::Periodic() {
     SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
     m_drive.Periodic();
     //m_flywheel.Periodic();
-    static int direction = 0;
-    if(direction == 1)
-    {
-        if(m_turret.GetCurrentAngle() > 48)
-        {
-            direction = -1;
-            m_turret.TurnTo(-50);
-            std::cout << "Reversing" << "\n";
-        }
-    }
-    else if (direction == -1)
-    {
-        if(m_turret.GetCurrentAngle() < -48)
-        {
-            direction = 1;
-            m_turret.TurnTo(50);
-            std::cout << "Going Forward" << "\n";
-        }
-    }
-    else
-    {
-        // first time only
-        direction = 1;
-        m_turret.TurnTo(60);
-        std::cout << "Initial" << "\n";
-    }
+    // static int direction = 0;
+    // if(direction == 1)
+    // {
+    //     if(m_turret.GetCurrentAngle() > 48)
+    //     {
+    //         direction = -1;
+    //         m_turret.TurnTo(-50);
+    //         std::cout << "Reversing" << "\n";
+    //     }
+    // }
+    // else if (direction == -1)
+    // {
+    //     if(m_turret.GetCurrentAngle() < -48)
+    //     {
+    //         direction = 1;
+    //         m_turret.TurnTo(50);
+    //         std::cout << "Going Forward" << "\n";
+    //     }
+    // }
+    // else
+    // {
+    //     // first time only
+    //     direction = 1;
+    //     m_turret.TurnTo(60);
+    //     std::cout << "Initial" << "\n";
+    // }
 
   //  m_turret.TurnTo(direction * 60);
 }
@@ -150,10 +150,10 @@ void RobotContainer::ConfigureButtonBindings()
      JoystickButton(&m_secondaryController, xbox::kX).WhenReleased(
          InstantCommand(    
              [this] { 
-                auto s = SmartDashboard::GetNumber("servo override", 0.0);
-                m_hood.Set(s);
-                // m_transfer.SetFeeder(0.0);
-                // m_transfer.SetTransfer(0.0);
+                // auto s = SmartDashboard::GetNumber("servo override", 0.0);
+                // m_hood.Set(s);
+                m_transfer.SetFeeder(0.0);
+                m_transfer.SetTransfer(0.0);
                 // m_turret.SetZeroAngle();
                 // m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
               },
@@ -214,7 +214,7 @@ void RobotContainer::ConfigureButtonBindings()
     //     TransferPrepare(&m_transfer, true).WithTimeout(TransferConstants::kMaxTransferTime)
     // );
 
-    JoystickButton(&m_secondaryController, xbox::kB).WhenHeld(IntakeRelease(&m_intake));
+    JoystickButton(&m_secondaryController, xbox::kB).WhenHeld(IntakeRelease(*this));
     JoystickButton(&m_secondaryController, xbox::kBack).WhenHeld(Unjam(&m_transfer, &m_intake));    
 
     // JoystickButton(&m_primaryController, xbox::kA).WhenPressed(

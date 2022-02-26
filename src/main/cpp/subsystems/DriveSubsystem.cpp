@@ -83,6 +83,12 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro)
     m_rotationalInput = true;
     m_StateHist.reserve(10000);
     m_StateHist.clear(); // clear() does not delatocate memory
+
+    // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_3_PwmInputs0, 10);
+    // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_4_PwmInputs1, 10);
+    // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_5_PwmInputs2, 10);
+    // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_6_PwmInputs3, 10);
+
 }
 
 void DriveSubsystem::Periodic()

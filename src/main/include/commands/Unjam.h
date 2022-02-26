@@ -13,6 +13,7 @@ public:
     explicit Unjam(TransferSubsystem* transfer, IntakeSubsystem* intake);
 
     void Execute() override;
+    void End(bool bInterrupted) override;
 
  private:
     TransferSubsystem* m_transfer;
