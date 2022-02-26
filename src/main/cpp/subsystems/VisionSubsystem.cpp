@@ -286,7 +286,7 @@ double VisionSubsystem::GetHubAngle()
 
 double VisionSubsystem::GetHubDistance(bool smoothed)
 {
-    if (smoothed)
+    if (smoothed && m_smoothedRange > 0)
         return m_smoothedRange;
 
     return (double) m_cameraToHub.Norm();
