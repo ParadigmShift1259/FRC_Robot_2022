@@ -3,22 +3,8 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <iostream>
 
-HomeTarget::HomeTarget(   frc::XboxController* controller
-                        , FlywheelSubsystem* flywheel
-                        , TurretSubsystem* turret
-                        , HoodSubsystem* hood
-                        , VisionSubsystem& vision
-                        , bool* turretready
-                        , bool* firing
-                        , bool* finished)
-    : m_controller(controller)
-    , m_flywheel(flywheel)
-    , m_turret(turret)
-    , m_hood(hood)
-    , m_turretready(turretready)
-    , m_vision(vision)
-    , m_firing(firing)
-    , m_finished(finished)
+HomeTarget::HomeTarget(frc::XboxController *controller, FlywheelSubsystem *flywheel, TurretSubsystem *turret, HoodSubsystem *hood, VisionSubsystem &vision, bool *turretready, bool *firing, bool *finished)
+    : m_controller(controller), m_flywheel(flywheel), m_turret(turret), m_hood(hood), m_turretready(turretready), m_vision(vision), m_firing(firing), m_finished(finished)
 {
     AddRequirements({flywheel, turret, hood});
     *m_turretready = false;
@@ -37,8 +23,8 @@ void HomeTarget::Execute()
 {
     // Homes flywheel, turret, and hood to the right angles through a formula
     SmartDashboard::PutBoolean("TEST_VIS_ACTIVE", m_vision.GetValidTarget());
-    
-    double distance = m_vision.GetHubDistance(true);
+
+    double distance = m_vision.GetHubDistance(true) - meter_t(foot_t(2.0)).to<double>();
 
     bool bUseKnownDist = SmartDashboard::GetBoolean("UseKnownDist", false);
     if (bUseKnownDist)
@@ -46,26 +32,17 @@ void HomeTarget::Execute()
         distance = SmartDashboard::GetNumber("KnownDist", 10.0);
     }
 
-
-    //if (std::isnan(distance))
+    // if (std::isnan(distance))
     if (distance != distance)
     {
         distance = 5.0;
     }
 
-    const std::map<double, double> distCompensation = 
-    {
-         std::make_pair(6.0 * 12.0, 1100.0)
-        ,std::make_pair(8.0 * 12.0, 1200.0)
-        ,std::make_pair(10.0 * 12.0, 1400.0)
-        ,std::make_pair(12.0 * 12.0, 1650.0)
-        ,std::make_pair(14.0 * 12.0, 1750.0)
-        ,std::make_pair(16.0 * 12.0, 1900.0)
-        ,std::make_pair(18.0 * 12.0, 2100.0)
-        ,std::make_pair(20.0 * 12.0, 2100.0)
-    };
+    const std::map<double, double> distCompensation =
+        {
+            std::make_pair(6.0 * 12.0, 1100.0), std::make_pair(8.0 * 12.0, 1200.0), std::make_pair(10.0 * 12.0, 1400.0), std::make_pair(12.0 * 12.0, 1650.0), std::make_pair(14.0 * 12.0, 1750.0), std::make_pair(16.0 * 12.0, 1900.0), std::make_pair(18.0 * 12.0, 2100.0), std::make_pair(20.0 * 12.0, 2100.0)};
     auto it = distCompensation.lower_bound(distance / 12.0);
-    
+
     double offset = 100.0 * distance / 12.0;
 
     bool bUseLut = SmartDashboard::GetBoolean("UseLut", true);
@@ -79,10 +56,10 @@ void HomeTarget::Execute()
     if (bUseFudgeFactor)
     {
         fudge = SmartDashboard::GetNumber("fudge", 100.0);
-        offset += fudge;      
+        offset += fudge;
     }
 
-    double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), foot_t(3.0)).to<double>();
+    double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), foot_t(2.0)).to<double>();
 
     // Servo Pos    Measured Angle  Complement
     // 0.0	        50 deg          90 - 50 = 40
@@ -90,9 +67,14 @@ void HomeTarget::Execute()
     degree_t initAngle = m_calculation.GetInitAngle();
     // double hoodangle = (initAngle.to<double>() - 40.0) * 0.04;
     double x = initAngle.to<double>();
-    // double hoodangle = 0.819 - 0.0555 * x + 0.000936 * x * x;
-    // double hoodangle = 0.719 - 0.0555 * x + 0.000936 * x * x;
-    double hoodangle = 0.33 - 0.0317 * x + 0.000816 * x * x;
+    // double hoodangle = 0.33 - 0.0317 * x + 0.000816 * x * x;
+    // double c = SmartDashboard::GetNumber("Hoodangle Constant", 0.33);
+    double c = SmartDashboard::GetNumber("Hoodangle Constant", 0.0317);
+    double hoodangle = 0.33 - c * x + 0.000816 * x * x;
+    if (hoodangle != hoodangle)
+    {
+        hoodangle = 0.33 - 0.0317 * x + 0.000816 * x * x;
+    }
     hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
 
     // std::cout << "Init Angle: "<< initAngle.to<double>() << std::endl;
@@ -104,16 +86,17 @@ void HomeTarget::Execute()
     SmartDashboard::PutNumber("Distance: ", distance);
     SmartDashboard::PutNumber("Flywheel RPM ", flywheelspeed);
     SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
+    SmartDashboard::PutNumber("Hoodangle Constant", c);
 
     if (!m_vision.GetValidTarget() && !bUseKnownDist)
         return;
 
-    //double angleOverride = 0;
-    // double turretXRot = m_controller->GetY(frc::GenericHID::kRightHand) * -1.0;
-    // double turretYRot = m_controller->GetX(frc::GenericHID::kRightHand);
+    // double angleOverride = 0;
+    //  double turretXRot = m_controller->GetY(frc::GenericHID::kRightHand) * -1.0;
+    //  double turretYRot = m_controller->GetX(frc::GenericHID::kRightHand);
 
-    //double turretXRot = m_controller->GetRightY() * -1.0;
-    //double turretYRot = m_controller->GetRightX();
+    // double turretXRot = m_controller->GetRightY() * -1.0;
+    // double turretYRot = m_controller->GetRightX();
 
     // if (m_controller->GetBumperPressed(GenericHID::JoystickHand::kRightHand)) {
     //     flywheelspeed = FlywheelConstants::kTrenchRPM;
@@ -123,18 +106,18 @@ void HomeTarget::Execute()
     //         turretYRot = 0;
     //     }
     //     double rotPosition = atan2f(turretYRot, turretXRot);
-    //     rotPosition *= 360.0/Math::kTau; 
+    //     rotPosition *= 360.0/Math::kTau;
     //     m_turret->TurnToRobot(rotPosition);
     // }
     // else {
-        //angleOverride = turretXRot * TurretConstants::kMaxOverrideAngle;
-//        m_turret->TurnToRelative(-1.0 * m_vision.GetHubAngle() * 180.0 / wpi::numbers::pi         + angleOverride);
+    // angleOverride = turretXRot * TurretConstants::kMaxOverrideAngle;
+    //        m_turret->TurnToRelative(-1.0 * m_vision.GetHubAngle() * 180.0 / wpi::numbers::pi         + angleOverride);
     // }
 
-    //flywheelspeed *= FlywheelConstants::kHomingRPMMultiplier;
-    //if (*m_firing)
-    //    flywheelspeed *= FlywheelConstants::kFiringRPMMultiplier;
-    
+    // flywheelspeed *= FlywheelConstants::kHomingRPMMultiplier;
+    // if (*m_firing)
+    //     flywheelspeed *= FlywheelConstants::kFiringRPMMultiplier;
+
     m_hood->Set(hoodangle);
     m_flywheel->SetRPM(flywheelspeed);
 
@@ -152,7 +135,7 @@ void HomeTarget::Execute()
     //     }
     // }
     // // if at position, set turret ready to true
-    // else 
+    // else
     if (m_flywheel->IsAtRPM())
     {
         *m_turretready = true;
@@ -165,7 +148,8 @@ bool HomeTarget::IsFinished()
     return *m_turretready;
 }
 
-void HomeTarget::End(bool interrupted) {
+void HomeTarget::End(bool interrupted)
+{
     //*m_finished = false;
     // m_flywheel->SetRPM(FlywheelConstants::kIdleRPM);
     // m_hood->Set(HoodConstants::kMax);
