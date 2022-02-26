@@ -142,7 +142,8 @@ void VisionSubsystem::Periodic()
     }
     else
     {
-        m_turret->TurnToField(0.0);
+        //m_turret->TurnToField(0.0);
+        
     }
 
     if (willPrint)

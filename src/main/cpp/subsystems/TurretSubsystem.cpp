@@ -97,6 +97,11 @@ void TurretSubsystem::Periodic()
     m_turretmotor.ConfigMotionSCurveStrength(sCurve);
     m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(cruiseV), kTimeout);  // encoder ticks per 100ms 
     m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(accel), kTimeout);     // encoder ticks per 100ms per sec
+    m_turretmotor.ConfigForwardSoftLimitThreshold(5595);
+    m_turretmotor.ConfigReverseSoftLimitThreshold(-5595);
+    m_turretmotor.ConfigForwardSoftLimitEnable(true);
+    m_turretmotor.ConfigReverseSoftLimitEnable(true);
+
 
     m_turretmotor.SetIntegralAccumulator(0.0, 0);
 #endif
@@ -183,7 +188,7 @@ double TurretSubsystem::TicksToDegrees(double ticks)
     // double rev = ticks / kTicksPerRev;
     // double turretrev = rev * kMotorRevPerRev;
     // return turretrev * kDegreesPerRev;
-    return ticks * 90.0 / 8132.0;
+    return ticks * 90.0 / 6606.0;
 }
 
 
@@ -192,7 +197,7 @@ double TurretSubsystem::DegreesToTicks(double degrees)
     // double turretrev = degrees / kDegreesPerRev;
     // double rev = turretrev / kMotorRevPerRev;
     // return rev * kTicksPerRev;
-    return degrees * 8132.0 / 90.0;    // Empirically measured 8132 ticks in 90 degree swing of turret
+    return degrees * 6606.0 / 90.0;    // Empirically measured 6606 ticks in 90 degree swing of turret
 }
 
 double TurretSubsystem::GetCurrentAngle()
