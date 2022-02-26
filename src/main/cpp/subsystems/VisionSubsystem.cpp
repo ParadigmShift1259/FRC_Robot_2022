@@ -141,10 +141,10 @@ void VisionSubsystem::Periodic()
                 m_turret->TurnToRelative(hubAngle * 1);
                 turretCmdHoldoff = 10;
             }
-            else
-            {
-                m_turret->TurnToRelative(0.0);
-            }
+            // else
+            // {
+            //     m_turret->TurnToRelative(0.0);
+            // }
         }
 #endif // def USE_VISION_FOR_TURRET
 
