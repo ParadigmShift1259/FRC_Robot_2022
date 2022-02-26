@@ -264,27 +264,31 @@ frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
     auto& lastOdoState = m_StateHist.back();
     auto& firstOdoState = m_StateHist.front();
     int State1Idx, State2Idx;
-    if(lastOdoState.t - timestamp < timestamp - firstOdoState.t)
+    if (firstOdoState.t < timestamp && timestamp < lastOdoState.t)
     {
-        int i = m_StateHist.size() - 2;
-        while(m_StateHist[i].t >= timestamp && i >= 0)
-            i--;
-        State1Idx = i;
-        State2Idx = i+1;
+        if(lastOdoState.t - timestamp < timestamp - firstOdoState.t)
+        {
+            int i = m_StateHist.size() - 2;
+            while(m_StateHist[i].t >= timestamp && i >= 0)
+                i--;
+            State1Idx = i;
+            State2Idx = i+1;
+        }
+        else
+        {
+            int i = 1;
+            while(m_StateHist[i].t <= timestamp && i < m_StateHist.size() - 1)
+                i++;
+            State1Idx = i - 1;
+            State2Idx = i;
+        }
+        vector<frc::Trajectory::State> neighboringStates;
+        neighboringStates.push_back(m_StateHist[State1Idx]);
+        neighboringStates.push_back(m_StateHist[State2Idx]);
+        frc::Trajectory trajectory = Trajectory(neighboringStates);
+        return trajectory.Sample(timestamp).pose;
     }
-    else
-    {
-        int i = 1;
-        while(m_StateHist[i].t <= timestamp && i < m_StateHist.size() - 1)
-            i++;
-        State1Idx = i - 1;
-        State2Idx = i;
-    }
-    vector<frc::Trajectory::State> neighboringStates;
-    neighboringStates.push_back(m_StateHist[State1Idx]);
-    neighboringStates.push_back(m_StateHist[State2Idx]);
-    frc::Trajectory trajectory = Trajectory(neighboringStates);
-    return trajectory.Sample(timestamp).pose;
+    return lastOdoState.pose;
 }
 
 double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
