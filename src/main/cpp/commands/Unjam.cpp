@@ -16,3 +16,10 @@ void Unjam::Execute() {
     m_transfer->SetFeeder(-1.0 * kFeederSpeed);
     m_intake->Set(kReleaseHigh);
 }
+
+void Unjam::End(bool bInterrupted)
+{
+    m_transfer->SetTransfer(0.0);
+    m_transfer->SetFeeder(0.);
+    m_intake->Set(0.0);
+}
