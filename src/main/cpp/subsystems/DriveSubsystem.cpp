@@ -81,20 +81,33 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro)
 
     m_lastHeading = 0;
     m_rotationalInput = true;
+    m_StateHist.reserve(10000);
+    m_StateHist.clear(); // clear() does not delatocate memory
 }
 
 void DriveSubsystem::Periodic()
 {
-    m_odometry.Update(m_gyro->GetHeadingAsRot2d()
-                    , m_frontLeft.GetState()
-                    , m_frontRight.GetState()
-                    , m_rearLeft.GetState()
-                    , m_rearRight.GetState());
-
     m_frontLeft.Periodic();
     m_frontRight.Periodic();
     m_rearRight.Periodic();
     m_rearLeft.Periodic();
+    m_odometry.Update(m_gyro->GetHeadingAsRot2d()
+                , m_frontLeft.GetState()
+                , m_frontRight.GetState()
+                , m_rearLeft.GetState()
+                , m_rearRight.GetState());
+
+    frc::Pose2d pose = m_odometry.GetPose();
+    frc::Trajectory::State state;
+    state.t = m_timer.GetFPGATimestamp();
+    state.pose = pose;
+	auto& prevState = m_StateHist.back();
+    state.velocity = (pose - prevState.pose).Translation().Norm() / (state.t - prevState.t);
+    state.acceleration = (state.velocity - prevState.velocity) / (state.t - prevState.t);
+    m_velocity = (double)state.velocity;
+    m_acceleration = (double)state.acceleration;
+
+    m_StateHist.push_back(state);
 }
 
 void DriveSubsystem::RotationDrive(meters_per_second_t xSpeed

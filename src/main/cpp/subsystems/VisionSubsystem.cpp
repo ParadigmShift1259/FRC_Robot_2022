@@ -52,7 +52,8 @@ void VisionSubsystem::Periodic()
             kTargetPitch = degree_t{targets[i].GetPitch()};
             meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
                 kCameraHeight, kCurrTargetHeight, kCameraPitch, kTargetPitch);
-            targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
+            if (!(kTargetPitch > units::degree_t{24}) && !(kTargetPitch < units::degree_t{-9}))
+                targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
         }
 
         //find the center of the vision tape targets
@@ -91,7 +92,7 @@ void VisionSubsystem::Periodic()
                 m_validTarget = true;
                 double distToHub = GetHubDistance(false);
                 double hubAngle = GetHubAngle();
-                double angleTurret = m_turret->GetCurrentAngle(); // FIX THIS!!!!!!
+                double angleTurret = m_turret->GetCurrentAngle();
                 double angleToHub = m_gyro->GetHeading() + angleTurret - hubAngle;
                 Translation2d displacement = Translation2d(meter_t{(cos(angleToHub) * distToHub)}, meter_t{(sin(angleToHub) * distToHub)});
                 Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
@@ -99,7 +100,7 @@ void VisionSubsystem::Periodic()
                 Pose2d cameraPose = Pose2d(kHubCenter-displacement, m_gyro->GetHeadingAsRot2d() + turretRot);
                 Translation2d turretCenterToRobotCenter = Translation2d(inch_t{2.25}, inch_t{0});
                 Translation2d camToTurretCenter = Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
-                Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{-m_turret->GetCurrentAngle()}); // FIX THIS!!!!!!
+                Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{-m_turret->GetCurrentAngle()});
                 m_robotPose = cameraPose.TransformBy(camreaTransform);
             }
             else

@@ -23,6 +23,8 @@
 
 #include "Constants.h"
 #include "SwerveModule.h"
+#include <vector>
+#include <frc/trajectory/Trajectory.h>
 
 // Uncomment to directly set states to each module
 //#define MANUAL_MODULE_STATES
@@ -167,4 +169,8 @@ private:
     double m_lastHeading;
     /// Whether or not rotation input was provided, used for @ref HeadingDrive
     bool m_rotationalInput;
+    Timer m_timer;
+    vector<frc::Trajectory::State> m_StateHist;
+    double m_velocity;
+    double m_acceleration;
 };
