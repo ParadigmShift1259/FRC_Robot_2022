@@ -4,7 +4,8 @@
 
 #include "Robot.h"
 
-#include <frc/smartdashboard/SmartDashboard.h>
+//#include <frc/smartdashboard/SmartDashboard.h>
+#include <frc/shuffleboard/Shuffleboard.h>
 #include <frc2/command/CommandScheduler.h>
 
 void Robot::RobotInit() {}
@@ -27,7 +28,10 @@ void Robot::RobotPeriodic() {
  * can use it to reset any subsystem information you want to clear when the
  * robot is disabled.
  */
-void Robot::DisabledInit() {}
+void Robot::DisabledInit()
+{
+  Shuffleboard::StopRecording();
+}
 
 void Robot::DisabledPeriodic() {}
 
@@ -45,7 +49,11 @@ void Robot::AutonomousInit() {
 
 void Robot::AutonomousPeriodic() {}
 
-void Robot::TeleopInit() {
+void Robot::TeleopInit()
+{
+  Shuffleboard::SetRecordingFileNameFormat("Team1259NetTblData${date}_${time}");
+  Shuffleboard::StartRecording();
+
   m_container.TurretSetZeroAngle();
   m_container.GyroSetZeroHeading();
   // This makes sure that the autonomous stops running when

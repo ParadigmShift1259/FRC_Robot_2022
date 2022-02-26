@@ -112,13 +112,21 @@ void RobotContainer::SetDefaultCommands()
         {&m_drive}
     ));
 #endif
-    // m_flywheel.SetDefaultCommand(
-    //     frc2::RunCommand(
-    //         [this] {
-    //             m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
-    //         }, {&m_flywheel}
-    //     )
-    // );
+    m_flywheel.SetDefaultCommand(
+        frc2::RunCommand(
+            [this] {
+                m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
+            }, {&m_flywheel}
+        )
+    );
+
+    m_climber.SetDefaultCommand(
+        frc2::RunCommand(
+            [this] {
+                m_climber.Run(0.0);
+            }, {&m_climber}
+        )
+    );    
 }
 
 void RobotContainer::ConfigureButtonBindings()
@@ -193,6 +201,7 @@ void RobotContainer::ConfigureButtonBindings()
     );
 
     JoystickButton(&m_primaryController, xbox::kX).WhenPressed(&m_zeroHeading);
+    JoystickButton(&m_primaryController, xbox::kBack).WhileHeld(&m_climb);
 
     // JoystickButton(&m_secondaryController, xbox::kRightBumper).WhenPressed(
     //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, m_vision,

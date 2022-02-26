@@ -255,6 +255,11 @@ Pose2d DriveSubsystem::GetPose()
     return m_odometry.GetPose();
 }
 
+Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
+{
+    return m_odometry.GetPose();    // TODO search status hist
+}
+
 double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
 {
     double dutyCycleAndPeriod[2];

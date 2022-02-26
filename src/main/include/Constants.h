@@ -381,3 +381,12 @@ namespace HoodConstants
     /// The fixed hood to fire in the trench given very heavy defense
     constexpr double kTrenchPosition = 0.223;
 }
+
+// Climber Subsystem constants
+namespace ClimberConstants
+{
+    constexpr double kMotorCanId = 15;          // Climber CAN ID TalonSRX
+    constexpr double kMotorReverseConstant = -1;
+    //constexpr double kMotorSpeed = 0.9;
+    constexpr double kMotorSpeed = 0.3;
+}
