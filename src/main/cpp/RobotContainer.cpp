@@ -12,7 +12,7 @@
 RobotContainer::RobotContainer()
     : m_gyro()
     , m_drive(&m_gyro)
-    , m_vision(&m_gyro, &m_turret)
+    , m_vision(&m_gyro, m_turret, *this)
     , m_flywheel()
 {
     m_fieldRelative = false;

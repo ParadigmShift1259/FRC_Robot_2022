@@ -37,6 +37,8 @@
 #include "Gyro.h"
 #include "common/SwerveControllerCommand2.h"
 
+#include "IOdometry.h"
+
 #include "ISubsysAccess.h"
 #include "subsystems/DriveSubsystem.h"
 #include "subsystems/FlywheelSubsystem.h"
@@ -61,7 +63,7 @@
 using namespace pathplanner;
 using SwerveCtrlCmd = frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules>;
 
-class RobotContainer : public ISubsysAccess
+class RobotContainer : public ISubsysAccess, public IOdometry
 {
 public:
     RobotContainer();

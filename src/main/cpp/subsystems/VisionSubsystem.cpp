@@ -4,13 +4,14 @@
 #include <vector>
 #include <photonlib/PhotonUtils.h>
 
-VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem *turret) 
+VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, IOdometry& odometry) 
  : m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
  , m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("gloworm"))
  , m_led(true)
  , m_validTarget(false)
  , m_gyro(gyro)
  , m_turret(turret)
+ , m_odometry(odometry)
 {
     SetLED(true);
     m_averageDistance.reserve(3);
@@ -93,7 +94,7 @@ void VisionSubsystem::Periodic()
                 m_validTarget = true;
                 double distToHub = (double)cameraToHub.Norm();
                 double hubAngle = atan2((double)cameraToHub.Y(), (double)cameraToHub.X());;
-                double angleTurret = m_turret->GetCurrentAngle();
+                double angleTurret = m_turret.GetCurrentAngle();
                 double angleToHub = m_gyro->GetHeading() + angleTurret - hubAngle;
                 Translation2d displacement = Translation2d(meter_t{(cos(angleToHub) * distToHub)}, meter_t{(sin(angleToHub) * distToHub)});
                 Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
@@ -101,16 +102,14 @@ void VisionSubsystem::Periodic()
                 Pose2d cameraPose = Pose2d(kHubCenter-displacement, m_gyro->GetHeadingAsRot2d() + turretRot);
                 Translation2d turretCenterToRobotCenter = Translation2d(inch_t{2.25}, inch_t{0});
                 Translation2d camToTurretCenter = Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
-                Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{-m_turret->GetCurrentAngle()});
+                Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{-m_turret.GetCurrentAngle()});
                 m_robotPose = cameraPose.TransformBy(camreaTransform);  // where vision thinks robot was when image was captured (e.g. latency)
                 
-                auto& lastOdoState = m_StateHist.back();
+                auto& lastOdoState = m_odometry.GetStateHist().back();
                 Timer timer;
                 units::time::second_t visionTimestamp = timer.GetFPGATimestamp() - result.GetLatency();
-                frc::Pose2d visionPose = GetPose(lastOdoState.t - visionTimestamp);
+                frc::Pose2d visionPose = m_odometry.GetPose(lastOdoState.t - visionTimestamp);
                 frc::Transform2d translation = Transform2d(lastOdoState.pose, visionPose);
-
-                
             }
             else
             {
@@ -148,13 +147,13 @@ void VisionSubsystem::Periodic()
         else if (m_validTarget)
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
-            m_turret->TurnToRelative(hubAngle * 1);
+            m_turret.TurnToRelative(hubAngle * 1);
             turretCmdHoldoff = 5;  // limit turret command rate due to vision lag
         }
     }
     else
     {
-        //m_turret->TurnToField(0.0);
+        //m_turret.TurnToField(0.0);
         
     }
 

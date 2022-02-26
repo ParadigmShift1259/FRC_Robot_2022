@@ -1,6 +1,11 @@
 
 #pragma once
 
+#include "Constants.h"
+#include "../IOdometry.h"
+
+#include <subsystems/TurretSubsystem.h>
+
 #include <frc2/command/SubsystemBase.h>
 #include <frc/geometry/Pose2d.h>
 
@@ -18,7 +23,6 @@
 #include "common/Util.h"
 
 #include "Gyro.h"
-#include "TurretSubsystem.h"
 #include "common/DebugFlag.h"
 
 using namespace std;
@@ -29,7 +33,7 @@ using namespace VisionConstants;
 class VisionSubsystem : public frc2::SubsystemBase
 {
 public:
-    VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem *turret);
+    VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, IOdometry& odometry);
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
@@ -81,7 +85,8 @@ private:
 
     /// Gyro to determine field relative angles, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
-    TurretSubsystem *m_turret;
+    TurretSubsystem& m_turret;
+    IOdometry& m_odometry;
 
     DebugFlag   m_dbgLogInvalid{"VisLogInvalid", false};
     DebugFlag   m_dbgLogTargetData{"VisLogTargetData", false};
