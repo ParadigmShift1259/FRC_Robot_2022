@@ -34,6 +34,11 @@ void VisionSubsystem::Periodic()
     if (counter % 25 == 0)
         willPrint = true;
 
+    constexpr Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
+    constexpr Translation2d turretCenterToRobotCenter = Translation2d(inch_t{2.25}, inch_t{0});
+    constexpr Translation2d camToTurretCenter = Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
+    Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{-m_turret->GetCurrentAngle()});
+
     camera.SetLEDMode(photonlib::LEDMode::kDefault);
 
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
@@ -96,21 +101,18 @@ void VisionSubsystem::Periodic()
                 double angleTurret = m_turret->GetCurrentAngle();
                 double angleToHub = m_gyro->GetHeading() + angleTurret - hubAngle;
                 Translation2d displacement = Translation2d(meter_t{(cos(angleToHub) * distToHub)}, meter_t{(sin(angleToHub) * distToHub)});
-                Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
                 Rotation2d turretRot = Rotation2d(radian_t{angleTurret});
                 Pose2d cameraPose = Pose2d(kHubCenter-displacement, m_gyro->GetHeadingAsRot2d() + turretRot);
-                Translation2d turretCenterToRobotCenter = Translation2d(inch_t{2.25}, inch_t{0});
-                Translation2d camToTurretCenter = Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
-                Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{-m_turret->GetCurrentAngle()});
-                m_robotPose = cameraPose.TransformBy(camreaTransform);  // where vision thinks robot was when image was captured (e.g. latency)
+                auto RobotvisionPose = cameraPose.TransformBy(camreaTransform);  // where vision thinks robot was when image was captured (e.g. latency)
                 
+                // Use wheel odo to correct RobotvisionPose for movement since image was captured
                 auto& lastOdoState = m_StateHist.back();
                 Timer timer;
                 units::time::second_t visionTimestamp = timer.GetFPGATimestamp() - result.GetLatency();
-                frc::Pose2d visionPose = GetPose(lastOdoState.t - visionTimestamp);
-                frc::Transform2d translation = Transform2d(lastOdoState.pose, visionPose);
-
-                
+                frc::Pose2d delayedOdoPose = GetPose(lastOdoState.t - visionTimestamp);
+                frc::Transform2d transformation = Transform2d(lastOdoState.pose, delayedOdoPose);
+                m_robotPose = RobotvisionPose.TransformBy(transformation);              
+                m_cameraToHub = kHubCenter - m_robotPose.TransformBy(-camreaTransform).Translation();
             }
             else
             {
@@ -130,9 +132,10 @@ void VisionSubsystem::Periodic()
         {
             m_validTarget = false;
             m_smoothedRange = 0;
+            auto& lastOdoState = m_StateHist.back();
+            m_robotPose = lastOdoState.Pose();
+            m_cameraToHub = kHubCenter - m_robotPose.TransformBy(-camreaTransform).Translation();
         }
-
-
     }
 
     SmartDashboard::PutNumber("VisionDistance: ", GetHubDistance(false));
@@ -256,7 +259,6 @@ frc::Translation2d VisionSubsystem::FitCircle(vector<frc::Translation2d> targetV
         if (centerIsBest) {
             shiftDist /= 2.0;
             if (shiftDist < precision) {
-                //m_cameraToHub = cameraToHub;
                 return cameraToHub;
             }
         } else {
