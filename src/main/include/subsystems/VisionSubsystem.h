@@ -29,7 +29,7 @@ using namespace VisionConstants;
 class VisionSubsystem : public frc2::SubsystemBase
 {
 public:
-    VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem *turret);
+    VisionSubsystem(Gyro2 *gyro, TurretSubsystem *turret);
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
@@ -80,7 +80,7 @@ private:
     degree_t kTargetPitch;
 
     /// Gyro to determine field relative angles, from @ref RobotContainer
-    Team1259::Gyro *m_gyro;
+    Gyro2 *m_gyro;
     TurretSubsystem *m_turret;
 
     DebugFlag   m_dbgLogInvalid{"VisLogInvalid", false};

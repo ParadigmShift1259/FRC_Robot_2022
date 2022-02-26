@@ -39,6 +39,7 @@ void RobotContainer::Periodic() {
     SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
     m_drive.Periodic();
     //m_flywheel.Periodic();
+    m_turret.TurnTo(90);
 }
 
 void RobotContainer::SetDefaultCommands()

@@ -327,13 +327,14 @@ namespace TurretConstants
     //constexpr double kP = 0.30114;
     //constexpr double kI = 0.00035;
     //constexpr double kD = 19.6;
-    constexpr double kP = 0.05;
-    constexpr double kI = 0.001;
-    constexpr double kD = 0.5;
-    constexpr double kF = 0.235;
+    constexpr double kP = 0.00;
+    constexpr double kI = 0.000;
+    constexpr double kD = 0.0;
+    constexpr double kF = 0.058; // 1023 * (.25 - .25) / (3000 - 1250)
+    constexpr double kNominal = 0.13; // percent output to un-stall from stopped (FF y-intercept)
 
     constexpr double kMinOut = 0;
-    constexpr double kMaxOut = 1.0; //0.900;
+    constexpr double kMaxOut = 0.4; //0.900;
 
     constexpr double kTimeout = 30;
     constexpr double kInverted = true;
