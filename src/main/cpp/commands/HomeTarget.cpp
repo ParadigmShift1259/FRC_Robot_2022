@@ -66,23 +66,24 @@ void HomeTarget::Execute()
     };
     auto it = distCompensation.lower_bound(distance / 12.0);
     
-    double offset = 100.0 * distance / 12.0;
+    // double offset = 100.0 * distance / 12.0;
 
-    bool bUseLut = SmartDashboard::GetBoolean("UseLut", true);
-    if (bUseLut && it != distCompensation.end())
-    {
-        offset = it->second;
-    }
+    // bool bUseLut = SmartDashboard::GetBoolean("UseLut", true);
+    // if (bUseLut && it != distCompensation.end())
+    // {
+    //     offset = it->second;
+    // }
 
-    bool bUseFudgeFactor = SmartDashboard::GetBoolean("UseFudgeFactor", true);
-    double fudge = 0.0;
-    if (bUseFudgeFactor)
-    {
-        fudge = SmartDashboard::GetNumber("fudge", 100.0);
-        offset += fudge;      
-    }
+    // bool bUseFudgeFactor = SmartDashboard::GetBoolean("UseFudgeFactor", true);
+    // double fudge = 0.0;
+    // if (bUseFudgeFactor)
+    // {
+    //     fudge = SmartDashboard::GetNumber("fudge", 100.0);
+    //     offset += fudge;      
+    // }
 
-    double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), meter_t(2.0)).to<double>();
+    double flywheelspeed = m_calculation.CalcInitRPMs(meter_t(distance), foot_t(3.0)).to<double>();
+//    double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), meter_t(2.0)).to<double>();
 
     // Quintic regression calculated 3/27
     // https://mycurvefit.com/

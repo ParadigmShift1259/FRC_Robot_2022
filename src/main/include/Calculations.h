@@ -24,15 +24,18 @@ using namespace units;
 /// Ballistics/Physics constants
 constexpr auto gravity = meters_per_second_squared_t(9.81);
 constexpr kilogram_t flywheelMass = pound_t(5.0);
-//?constexpr kilogram_t flywheelMass = pound_t(4.7);
+//constexpr kilogram_t flywheelMass = pound_t(4.7);
 
 constexpr meter_t flywheelRadius = 2.0_in;
-constexpr auto flywheelRotInertia =  0.5 * flywheelMass * flywheelRadius * flywheelRadius;
+constexpr scalar_t flywheelRotInertiaFrac = 1.0 / 2.0;
+constexpr auto flywheelRotInertia = flywheelRotInertiaFrac * flywheelMass * flywheelRadius * flywheelRadius;
 
 constexpr kilogram_t cargoMass = ounce_t(9.5);
 constexpr meter_t cargoRadius = inch_t(4.75);
-constexpr auto cargoRotInertia = 2.0 / 3.0 * cargoMass * cargoRadius * cargoRadius;
+constexpr scalar_t cargoRotInertiaFrac = 2.0 / 3.0;
+constexpr auto cargoRotInertia = cargoRotInertiaFrac * cargoMass * cargoRadius * cargoRadius;
 
+constexpr auto massRatio = flywheelMass / cargoMass;
 constexpr auto rotInertiaRatio = flywheelRotInertia / cargoRotInertia;
 
 constexpr dimensionless_t linearRegSlope = 0.874;
