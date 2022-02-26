@@ -82,19 +82,23 @@ void HomeTarget::Execute()
         offset += fudge;      
     }
 
-    double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), meter_t(2.0)).to<double>();
+    double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), foot_t(3.0)).to<double>();
 
     // Servo Pos    Measured Angle  Complement
     // 0.0	        50 deg          90 - 50 = 40
     // 0.4	        40 deg          90 - 40 = 50
     degree_t initAngle = m_calculation.GetInitAngle();
-    double hoodangle = (initAngle.to<double>() - 40.0) * 0.04;
-    //hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
+    // double hoodangle = (initAngle.to<double>() - 40.0) * 0.04;
+    double x = initAngle.to<double>();
+    // double hoodangle = 0.819 - 0.0555 * x + 0.000936 * x * x;
+    // double hoodangle = 0.719 - 0.0555 * x + 0.000936 * x * x;
+    double hoodangle = 0.33 - 0.0317 * x + 0.000816 * x * x;
+    hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
 
-    std::cout << "Init Angle: "<< initAngle.to<double>() << std::endl;
-    std::cout << "Hood servo set: "<< hoodangle << std::endl;
-    std::cout << "Distance: "<< distance << std::endl;
-    std::cout << "Flywheel RPM "<< flywheelspeed << std::endl;
+    // std::cout << "Init Angle: "<< initAngle.to<double>() << std::endl;
+    // std::cout << "Hood servo set: "<< hoodangle << std::endl;
+    // std::cout << "Distance: "<< distance << std::endl;
+    // std::cout << "Flywheel RPM "<< flywheelspeed << std::endl;
     SmartDashboard::PutNumber("Init Angle: ", initAngle.to<double>());
     SmartDashboard::PutNumber("Hood servo set: ", hoodangle);
     SmartDashboard::PutNumber("Distance: ", distance);
@@ -149,7 +153,7 @@ void HomeTarget::Execute()
     // }
     // // if at position, set turret ready to true
     // else 
-    if (m_flywheel->IsAtRPMPositive())
+    if (m_flywheel->IsAtRPM())
     {
         *m_turretready = true;
     }
@@ -158,7 +162,6 @@ void HomeTarget::Execute()
 
 bool HomeTarget::IsFinished()
 {
-    // SmartDashboard::PutBoolean("TEST_FIRE_FINISIHED", *m_finished);
     return *m_turretready;
 }
 

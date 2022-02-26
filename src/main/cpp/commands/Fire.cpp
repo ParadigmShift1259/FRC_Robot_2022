@@ -18,7 +18,7 @@ Fire::Fire( frc::XboxController* controller
   , m_firing(firing)
   , m_finished(finished)
 {
-  printf("Secondary Y firing\n");
+  // printf("Secondary Y firing\n");
 
   // Both two run parallel, but the second has a delay hack through boolean pointers
   AddCommands(

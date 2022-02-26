@@ -22,6 +22,6 @@ void HoodSubsystem::Periodic()
 
 void HoodSubsystem::Set(double position) 
 {
-    std::cout << "Servo position " << position; 
+    // std::cout << "Servo position " << position; 
     m_servo.Set(position);
 }

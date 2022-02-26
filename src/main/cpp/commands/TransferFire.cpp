@@ -58,6 +58,7 @@ bool TransferFire::IsFinished() {
 
 void TransferFire::End(bool interrupted) {
     *m_finished = true;
+    frc::SmartDashboard::PutBoolean("TEST_FIRE_FINISIHED", *m_finished);
     *m_firing = false;
     m_timer.Stop();
     m_transfer->SetFeeder(0);

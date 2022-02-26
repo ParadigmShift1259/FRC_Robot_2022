@@ -259,7 +259,7 @@ void DriveSubsystem::ResetRelativeToAbsolute()
 void DriveSubsystem::WheelsForward()
 {
     static SwerveModuleState zeroState { 0_mps, 0_deg };
-    printf("DriveSubsystem::WheelsForward() called");
+    // printf("DriveSubsystem::WheelsForward() called");
     m_frontLeft.SetDesiredState(zeroState);
     m_frontRight.SetDesiredState(zeroState);
     m_rearRight.SetDesiredState(zeroState);

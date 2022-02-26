@@ -11,10 +11,11 @@
 using namespace units;
 
 Calculations::Calculations() {
-  m_heightAboveHub = foot_t(12.0);
+  m_heightAboveHub = foot_t(9.0);
   m_heightRobot = foot_t(3.5);
   m_heightTarget = foot_t(8.67);
   m_xTarget = foot_t(2.0);
+
 
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_10(3);
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_4(3);
@@ -204,11 +205,8 @@ revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t ta
   
   CalcInitVel();
 
-  auto aValue = flywheelRotInertia * (linearRegSlope - 1.0) * (linearRegSlope + linearRegSlope * rotInertiaRatio - rotInertiaRatio + 1);
-  auto bValue = 2 * flywheelRotInertia * linearRegConst * (linearRegSlope + linearRegSlope * rotInertiaRatio - rotInertiaRatio);
-  auto cValue = flywheelRotInertia * linearRegConst / radian_t (1.0) * linearRegConst / radian_t (1.0) * (rotInertiaRatio + 1.0) + cargoMass * m_velInit * m_velInit;
+  m_rotVelInit = radian_t(1.0) * m_velInit / flywheelRadius * (2.0 + (cargoRotInertiaFrac + 1.0) / (flywheelRotInertiaFrac * massRatio));
   
-  m_rotVelInit = QuadraticFormula(aValue.to<double>(), bValue.to<double>(), cValue.to<double>(), (bool)true);
   m_rpmInit = m_rotVelInit;
 
   m_initRpmEntry.SetDouble(m_rpmInit.to<double>());
