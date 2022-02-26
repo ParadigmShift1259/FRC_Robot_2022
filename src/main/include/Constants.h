@@ -207,6 +207,11 @@ namespace OIConstants
 // Vision Subsystem Constants
 namespace VisionConstants
 {
+ 
+    // constexpr frc::Translation2d kHubCenter = frc::Translation2d(kFieldLength/2, kFieldWidth/2);
+    // constexpr frc::Translation2d turretCenterToRobotCenter = frc::Translation2d(inch_t{2.25}, inch_t{0});
+    // constexpr frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
+ 
     constexpr int kVisionFailLimit = 5;
     // 6/30/21
     // Limelight X Offset: -0.04
@@ -380,4 +385,13 @@ namespace HoodConstants
 
     /// The fixed hood to fire in the trench given very heavy defense
     constexpr double kTrenchPosition = 0.223;
+}
+
+// Climber Subsystem constants
+namespace ClimberConstants
+{
+    constexpr double kMotorCanId = 15;          // Climber CAN ID TalonSRX
+    constexpr double kMotorReverseConstant = -1;
+    //constexpr double kMotorSpeed = 0.9;
+    constexpr double kMotorSpeed = 0.3;
 }

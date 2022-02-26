@@ -108,7 +108,9 @@ public:
     /// \return The pose.
     Pose2d GetPose();
 
-    Pose2d GetPose(units::time::second_t timestamp);
+    /// Returns the previous estimated pose of the robot at the given timestamp.
+    /// \return The pose.
+    Pose2d GetPose(units::time::second_t timestamp) const;
 
     /// Converts PWM input on the CANifier to a pulse width
     /// \param pwmChannel The PWM channel to pass in
@@ -124,6 +126,8 @@ public:
 
     /// Resync all relative NEO turn encoders to the absolute encoders
     void ResetRelativeToAbsolute();
+
+    const vector<frc::Trajectory::State>& GetStateHist() const { return m_StateHist; }
 
     /// The kinematics object converts inputs into 4 individual swerve module turn angle and wheel speeds
     SwerveDriveKinematics<kNumSwerveModules> kDriveKinematics{

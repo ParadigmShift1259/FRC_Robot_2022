@@ -37,9 +37,12 @@
 #include "Gyro.h"
 #include "common/SwerveControllerCommand2.h"
 
+#include "IOdometry.h"
+
 #include "ISubsysAccess.h"
 #include "subsystems/DriveSubsystem.h"
 #include "subsystems/FlywheelSubsystem.h"
+#include "subsystems/ClimberSubsystem.h"
 
 #include "commands/TransferFirstBall.h"
 #include "commands/TransferSecondBall.h"
@@ -60,7 +63,7 @@
 using namespace pathplanner;
 using SwerveCtrlCmd = frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules>;
 
-class RobotContainer : public ISubsysAccess
+class RobotContainer : public ISubsysAccess, public IOdometry
 {
 public:
     RobotContainer();
@@ -83,6 +86,11 @@ public:
     TransferSubsystem&   GetTransfer() override { return m_transfer; };
     TurretSubsystem&     GetTurret() override { return m_turret; };
     VisionSubsystem&     GetVision() override { return m_vision; };    
+
+    Pose2d GetPose() { return m_drive.GetPose(); }
+    Pose2d GetPose(units::time::second_t timestamp) const { return m_drive.GetPose(timestamp); }
+    const vector<frc::Trajectory::State>& GetStateHist() const { return m_drive.GetStateHist(); }
+
 private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();
@@ -102,10 +110,12 @@ private:
     TransferSubsystem m_transfer;
     TurretSubsystem m_turret = TurretSubsystem(&m_gyro);
     HoodSubsystem m_hood;
+    ClimberSubsystem m_climber;
 
     frc2::InstantCommand m_setFieldRelative{[this] { m_fieldRelative = true; }, {}};
     frc2::InstantCommand m_clearFieldRelative{[this] { m_fieldRelative = false; }, {}};
     frc2::InstantCommand m_zeroHeading{[this] { m_gyro.ZeroHeading(); }, {}};
+    frc2::InstantCommand m_climb{[this] { m_climber.Run(ClimberConstants::kMotorSpeed); }, {&m_climber} };
     
     double m_overrideAngle = 0.0;
 

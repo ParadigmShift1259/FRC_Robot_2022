@@ -4,13 +4,14 @@
 #include <vector>
 #include <photonlib/PhotonUtils.h>
 
-VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem *turret) 
+VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, IOdometry& odometry) 
  : m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
  , m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("gloworm"))
  , m_led(true)
  , m_validTarget(false)
  , m_gyro(gyro)
  , m_turret(turret)
+ , m_odometry(odometry)
 {
     SetLED(true);
     m_averageDistance.reserve(3);
@@ -34,16 +35,17 @@ void VisionSubsystem::Periodic()
     if (counter % 25 == 0)
         willPrint = true;
 
-    constexpr Translation2d kHubCenter = Translation2d(kFieldLength/2, kFieldWidth/2);
-    constexpr Translation2d turretCenterToRobotCenter = Translation2d(inch_t{2.25}, inch_t{0});
-    constexpr Translation2d camToTurretCenter = Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
-    Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{-m_turret->GetCurrentAngle()});
+    double angleTurret = m_turret.GetCurrentAngle();
+    frc::Translation2d kHubCenter = frc::Translation2d(kFieldLength/2, kFieldWidth/2);  // TO DO make a constant
+    frc::Translation2d turretCenterToRobotCenter = frc::Translation2d(inch_t{2.25}, inch_t{0});   // TO DO make a constant
+    frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
+    frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{-angleTurret});
 
     camera.SetLEDMode(photonlib::LEDMode::kDefault);
 
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
     bool validTarget = result.HasTargets();
-    vector<Translation2d> targetVectors;
+    vector<frc::Translation2d> targetVectors;
     if (validTarget)
     {
         auto targets = result.GetTargets();
@@ -71,7 +73,7 @@ void VisionSubsystem::Periodic()
         }
         double xMean = xTotal/targetVectors.size();
         double yMean = yTotal/targetVectors.size();
-        Translation2d averageTarget = Translation2d(meter_t{xMean}, meter_t{yMean});
+        frc::Translation2d averageTarget = Translation2d(meter_t{xMean}, meter_t{yMean});
 
         //Throw out outliers
         for (int i = 0; i < targetVectors.size(); i++)
@@ -98,21 +100,20 @@ void VisionSubsystem::Periodic()
                 m_validTarget = true;
                 double distToHub = (double)cameraToHub.Norm();
                 double hubAngle = atan2((double)cameraToHub.Y(), (double)cameraToHub.X());;
-                double angleTurret = m_turret->GetCurrentAngle();
                 double angleToHub = m_gyro->GetHeading() + angleTurret - hubAngle;
-                Translation2d displacement = Translation2d(meter_t{(cos(angleToHub) * distToHub)}, meter_t{(sin(angleToHub) * distToHub)});
+                frc::Translation2d displacement = frc::Translation2d(meter_t{(cos(angleToHub) * distToHub)}, meter_t{(sin(angleToHub) * distToHub)});
                 Rotation2d turretRot = Rotation2d(radian_t{angleTurret});
                 Pose2d cameraPose = Pose2d(kHubCenter-displacement, m_gyro->GetHeadingAsRot2d() + turretRot);
                 auto RobotvisionPose = cameraPose.TransformBy(camreaTransform);  // where vision thinks robot was when image was captured (e.g. latency)
                 
                 // Use wheel odo to correct RobotvisionPose for movement since image was captured
-                auto& lastOdoState = m_StateHist.back();
+                auto& lastOdoState = m_odometry.GetStateHist().back();
                 Timer timer;
                 units::time::second_t visionTimestamp = timer.GetFPGATimestamp() - result.GetLatency();
-                frc::Pose2d delayedOdoPose = GetPose(lastOdoState.t - visionTimestamp);
+                frc::Pose2d delayedOdoPose = m_odometry.GetPose(lastOdoState.t - visionTimestamp);
                 frc::Transform2d transformation = Transform2d(lastOdoState.pose, delayedOdoPose);
                 m_robotPose = RobotvisionPose.TransformBy(transformation);              
-                m_cameraToHub = kHubCenter - m_robotPose.TransformBy(-camreaTransform).Translation();
+                m_cameraToHub = kHubCenter - m_robotPose.TransformBy(camreaTransform.Inverse()).Translation();
             }
             else
             {
@@ -132,9 +133,8 @@ void VisionSubsystem::Periodic()
         {
             m_validTarget = false;
             m_smoothedRange = 0;
-            auto& lastOdoState = m_StateHist.back();
-            m_robotPose = lastOdoState.Pose();
-            m_cameraToHub = kHubCenter - m_robotPose.TransformBy(-camreaTransform).Translation();
+            m_robotPose = m_odometry.GetPose();
+            m_cameraToHub = kHubCenter - m_robotPose.TransformBy(camreaTransform.Inverse()).Translation();
         }
     }
 
@@ -151,13 +151,13 @@ void VisionSubsystem::Periodic()
         else if (m_validTarget)
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
-            m_turret->TurnToRelative(hubAngle * 1);
+            m_turret.TurnToRelative(hubAngle * 1);
             turretCmdHoldoff = 5;  // limit turret command rate due to vision lag
         }
     }
     else
     {
-        //m_turret->TurnToField(0.0);
+        //m_turret.TurnToField(0.0);
         
     }
 
@@ -226,7 +226,7 @@ frc::Translation2d VisionSubsystem::FitCircle(vector<frc::Translation2d> targetV
         xSum += (double) targetVectors[i].X();
         ySum += (double) targetVectors[i].Y();
     }
-    frc::Translation2d cameraToHub = Translation2d(meter_t{xSum / targetVectors.size()} + kVisionTargetRadius, meter_t{ySum / targetVectors.size()});
+    frc::Translation2d cameraToHub = frc::Translation2d(meter_t{xSum / targetVectors.size()} + kVisionTargetRadius, meter_t{ySum / targetVectors.size()});
 
     // Iterate to find optimal center
     meter_t shiftDist = kVisionTargetRadius / 2.0;

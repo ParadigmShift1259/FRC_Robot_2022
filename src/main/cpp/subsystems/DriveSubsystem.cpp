@@ -259,7 +259,7 @@ Pose2d DriveSubsystem::GetPose()
     return m_odometry.GetPose();
 }
 
-frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp)
+frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
 {
     auto& lastOdoState = m_StateHist.back();
     auto& firstOdoState = m_StateHist.front();
