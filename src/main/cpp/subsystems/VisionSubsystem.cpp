@@ -82,7 +82,7 @@ void VisionSubsystem::Periodic()
 
         if (targetVectors.size() >= 3)
         {
-            if (FitCircle(targetVectors, meter_t{0.01}, 20))
+            if (FitCircle(targetVectors, meter_t{0.01}, 20) != frc::Translation2d())
             {
                 if (m_smoothedRange > 0)
                     m_smoothedRange = kRangeSmoothing * m_smoothedRange + (1 - kRangeSmoothing) * GetHubDistance(false);
@@ -101,7 +101,15 @@ void VisionSubsystem::Periodic()
                 Translation2d turretCenterToRobotCenter = Translation2d(inch_t{2.25}, inch_t{0});
                 Translation2d camToTurretCenter = Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
                 Transform2d camreaTransform = Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{-m_turret->GetCurrentAngle()});
-                m_robotPose = cameraPose.TransformBy(camreaTransform);
+                m_robotPose = cameraPose.TransformBy(camreaTransform);  // where vision thinks robot was when image was captured (e.g. latency)
+                
+                auto& lastOdoState = m_StateHist.back();
+                Timer timer;
+                units::time::second_t visionTimestamp = timer.GetFPGATimestamp() - result.GetLatency();
+                frc::Pose2d visionPose = GetPose(lastOdoState.t - visionTimestamp);
+                frc::Transform2d translation = Transform2d(lastOdoState.pose, visionPose);
+
+                
             }
             else
             {
@@ -122,6 +130,8 @@ void VisionSubsystem::Periodic()
             m_validTarget = false;
             m_smoothedRange = 0;
         }
+
+
     }
 
     SmartDashboard::PutNumber("VisionDistance: ", GetHubDistance(false));
@@ -171,6 +181,7 @@ void VisionSubsystem::Periodic()
     // SmartDashboard::PutNumber("D_V_Angle", m_horizontalangle);
 }
 
+
 bool VisionSubsystem::GetValidTarget()
 {
     return m_validTarget;
@@ -202,7 +213,7 @@ void VisionSubsystem::SetLED(bool on)
 }
 
 
-bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors, meter_t precision, int maxAttempts)
+frc::Translation2d VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors, meter_t precision, int maxAttempts)
 {
     double xSum = 0.0;
     double ySum = 0.0;
@@ -244,8 +255,8 @@ bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors, meter_
         if (centerIsBest) {
             shiftDist /= 2.0;
             if (shiftDist < precision) {
-                m_cameraToHub = cameraToHub;
-                return true;
+                //m_cameraToHub = cameraToHub;
+                return cameraToHub;
             }
         } else {
             cameraToHub = bestPoint;
@@ -253,8 +264,8 @@ bool VisionSubsystem::FitCircle(vector<frc::Translation2d> targetVectors, meter_
 
         n++;
     }
-    // failed
-    return false;
+    // failed - returns 0 translation
+    return Translation2d();
 }
 
  meter_t VisionSubsystem::calcResidual(meter_t radius, vector<frc::Translation2d> points, frc::Translation2d center)

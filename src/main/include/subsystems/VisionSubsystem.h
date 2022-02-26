@@ -49,7 +49,7 @@ public:
 
     meter_t calcResidual(meter_t radius, vector<Translation2d> points, Translation2d center);
 
-    bool FitCircle(vector<Translation2d> targetVectors, meter_t precision, int maxAttempts);
+    frc::Translation2d FitCircle(vector<Translation2d> targetVectors, meter_t precision, int maxAttempts);
 
     double GetHubAngle();
 
