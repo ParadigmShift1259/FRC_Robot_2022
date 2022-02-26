@@ -38,11 +38,11 @@ TurretSubsystem::TurretSubsystem(Gyro2 *gyro)
     //m_turretmotor.ConfigClosedloopRamp()
     //m_turretmotor.ConfigAllowableClosedloopError(0, DegreesToTicks(kDegreePIDStopRange), kTimeout);
     m_turretmotor.ConfigAllowableClosedloopError(0, 30.0, kTimeout);    // Approx 90 ticks per degree
-    m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(1.0), kTimeout);  // encoder ticks per 100ms 
-    m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(1.0), kTimeout);     // encoder ticks per 100ms per sec
+    m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(kMMCruiseVel/10), kTimeout);  // encoder ticks per 100ms 
+    m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(kMMAccel/10), kTimeout);     // encoder ticks per 100ms per sec
 
     m_turretmotor.SetSelectedSensorPosition(DegreesToTicks(kStartingPositionDegrees), 0, kTimeout);
-    m_turretmotor.ConfigForwardSoftLimitThreshold(9000, kTimeout);
+    m_turretmotor.ConfigForwardSoftLimitThreshold(11000, kTimeout);
     m_turretmotor.ConfigForwardSoftLimitEnable(true, kTimeout);
     m_turretmotor.ConfigReverseSoftLimitThreshold(-9000, kTimeout);
     m_turretmotor.ConfigReverseSoftLimitEnable(true, kTimeout);
@@ -63,8 +63,8 @@ TurretSubsystem::TurretSubsystem(Gyro2 *gyro)
     frc::SmartDashboard::PutNumber("TurretF", kF);
 
     frc::SmartDashboard::PutNumber("TurretIzone", 1000.0);
-    frc::SmartDashboard::PutNumber("TurretCruiseV", DegreesToTicks(20.0));
-    frc::SmartDashboard::PutNumber("TurretAccel", DegreesToTicks(10.0));
+    frc::SmartDashboard::PutNumber("TurretCruiseV", kMMCruiseVel);
+    frc::SmartDashboard::PutNumber("TurretAccel", kMMAccel);
     frc::SmartDashboard::PutNumber("TurretScurve", 1.0);
 #endif
 }
@@ -84,26 +84,26 @@ void TurretSubsystem::Periodic()
      frc::SmartDashboard::PutNumber("IntegralAccumulator", m_turretmotor.GetIntegralAccumulator());
 
 #ifdef TUNE_TURRET_PID
+    double f = frc::SmartDashboard::GetNumber("TurretF", 0);
     double p = frc::SmartDashboard::GetNumber("TurretP", 0);
     double i = frc::SmartDashboard::GetNumber("TurretI", 0);
     double d = frc::SmartDashboard::GetNumber("TurretD", 0);
+    m_turretmotor.Config_kF(0, f, kTimeout);
     m_turretmotor.Config_kP(0, p, kTimeout);
     m_turretmotor.Config_kI(0, i, kTimeout);
     m_turretmotor.Config_kD(0, d, kTimeout);
-    m_turretmotor.Config_kF(0, kF, kTimeout);
 
-    double f = frc::SmartDashboard::GetNumber("TurretF", kF);
-    double iZone = frc::SmartDashboard::GetNumber("TurretIzone", 1000.0);
-    double cruiseV = frc::SmartDashboard::GetNumber("TurretCruiseV", DegreesToTicks(20.0));
-    double accel = frc::SmartDashboard::GetNumber("TurretAccel", DegreesToTicks(10.0));
-    double sCurve = frc::SmartDashboard::GetNumber("TurretScurve", 1.0);
+    double iZone = frc::SmartDashboard::GetNumber("TurretIzone", 0);
+    double cruiseV = frc::SmartDashboard::GetNumber("TurretCruiseV", 0);
+    double accel = frc::SmartDashboard::GetNumber("TurretAccel", 0);
+    double sCurve = frc::SmartDashboard::GetNumber("TurretScurve", 1);
 
     m_turretmotor.Config_IntegralZone(0, iZone);
     m_turretmotor.ConfigMotionSCurveStrength(sCurve);
-    m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(cruiseV), kTimeout);  // encoder ticks per 100ms 
-    m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(accel), kTimeout);     // encoder ticks per 100ms per sec
+    m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(cruiseV/10), kTimeout);  // encoder ticks per 100ms 
+    m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(accel/10), kTimeout);     // encoder ticks per 100ms per sec
 
-    m_turretmotor.SetIntegralAccumulator(0.0, 0);
+    // m_turretmotor.SetIntegralAccumulator(0.0, 0);
 #endif
 }
 
@@ -198,9 +198,15 @@ double TurretSubsystem::DegreesToTicks(double degrees)
     // double rev = turretrev / kMotorRevPerRev;
     // return rev * kTicksPerRev;
     return degrees * 11000 / 90.0;    // Empirically measured 8132 ticks in 90 degree swing of turret
+    // 11000 / 90
 }
+
+// double TurretSubsystem::GetCurrentComandedAngle()
+// {
+//     return m_currentAngle;
+// }
 
 double TurretSubsystem::GetCurrentAngle()
 {
-    return m_currentAngle;
+    return TicksToDegrees(m_turretmotor.GetSelectedSensorPosition(0));
 }

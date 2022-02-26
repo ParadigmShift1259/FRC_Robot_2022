@@ -327,18 +327,19 @@ namespace TurretConstants
     //constexpr double kP = 0.30114;
     //constexpr double kI = 0.00035;
     //constexpr double kD = 19.6;
-    constexpr double kP = 0.00;
-    constexpr double kI = 0.000;
+    constexpr double kP = 0.1;
+    constexpr double kI = 0.0003;
     constexpr double kD = 0.0;
-    constexpr double kF = 0.058; // 1023 * (.25 - .25) / (3000 - 1250)
+    constexpr double kF = 0.1; //0.058; // 1023 * (.25 - .25) / (3000 - 1250)
     constexpr double kNominal = 0.13; // percent output to un-stall from stopped (FF y-intercept)
-
+    constexpr double kMMCruiseVel = 90; // deg per sec 
+    constexpr double kMMAccel = 180; // deg per sec^2
     constexpr double kMinOut = 0;
     constexpr double kMaxOut = 0.4; //0.900;
 
     constexpr double kTimeout = 30;
-    constexpr double kInverted = true;
-    constexpr double kSensorPhase = true;
+    constexpr bool kInverted = false;
+    constexpr bool kSensorPhase = true;
 
     constexpr double kMaxOverrideAngle = 5.0; //10.0;
 
@@ -359,7 +360,7 @@ namespace TurretConstants
     constexpr double kTurretToRobotAngleOffset = 0.0;
     // Maximum rotation of the turret relative to the turret, in degrees
     constexpr double kMinAngle = -60.0;
-    constexpr double kMaxAngle = 60.0;
+    constexpr double kMaxAngle = 90.0;
     // Range of angle allowed for auto targeting by default
     constexpr double kMinAutoAngle = 25;
     constexpr double kMaxAutoAngle = 65;
