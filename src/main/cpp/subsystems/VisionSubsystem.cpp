@@ -126,7 +126,7 @@ void VisionSubsystem::Periodic()
                 frc::Transform2d transformation;
                 m_robotPose = RobotvisionPose.TransformBy(transformation);              
                 m_cameraToHub = kHubCenter - m_robotPose.TransformBy(camreaTransform).Translation();
-                //m_cameraToHub = m_robotPose.TransformBy(camreaTransform.Inverse()).Translation() - kHubCenter;
+                m_cameraToHub = m_cameraToHub.RotateBy(Rotation2d(radian_t{Util::DegreesToRadians(-m_gyro->GetHeading()) - angleTurret}));
 
                 printf("compensated camera pose: x %.3f y %.3f\n", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
 
@@ -173,7 +173,7 @@ void VisionSubsystem::Periodic()
         else if (m_validTarget)
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
-            //m_turret.TurnToRelative(hubAngle * 1);
+            m_turret.TurnToRelative(hubAngle * 1);
             turretCmdHoldoff = 5;  // limit turret command rate due to vision lag
             AdjustHood();
         }
