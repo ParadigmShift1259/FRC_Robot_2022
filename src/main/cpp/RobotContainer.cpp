@@ -12,7 +12,7 @@
 RobotContainer::RobotContainer()
     : m_gyro()
     , m_drive(&m_gyro)
-    , m_vision(&m_gyro, m_turret, *this)
+    , m_vision(&m_gyro, m_turret, m_hood, *this)
     , m_flywheel()
 {
     m_fieldRelative = false;
@@ -32,8 +32,6 @@ RobotContainer::RobotContainer()
     SmartDashboard::PutNumber("fudge", 0.0);
     SmartDashboard::PutBoolean("UseFudgeFactor", false);
     SmartDashboard::PutBoolean("UseLut", false);
-    SmartDashboard::PutBoolean("UseKnownDist", false);
-    SmartDashboard::PutNumber("KnownDist", 10.0);
     SmartDashboard::PutBoolean("SupressFlywheel", false);
 }
 
@@ -158,12 +156,18 @@ void RobotContainer::ConfigureButtonBindings()
      JoystickButton(&m_secondaryController, xbox::kX).WhenReleased(
          InstantCommand(    
              [this] { 
-                // auto s = SmartDashboard::GetNumber("servo override", 0.0);
-                // m_hood.Set(s);
-                m_transfer.SetFeeder(0.0);
-                m_transfer.SetTransfer(0.0);
-                // m_turret.SetZeroAngle();
-                // m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
+                if (m_dbgSeroTest)
+                {
+                    auto s = SmartDashboard::GetNumber("servo override", 0.0);
+                    m_hood.Set(s);
+                }
+                else
+                {
+                    m_transfer.SetFeeder(0.0);
+                    m_transfer.SetTransfer(0.0);
+                    // m_turret.SetZeroAngle();
+                    // m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
+                }
               },
              {&m_transfer}
          )

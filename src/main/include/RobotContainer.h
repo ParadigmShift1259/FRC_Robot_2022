@@ -122,4 +122,6 @@ private:
     bool m_turretready = false;
     bool m_firing = false;
     bool m_finished = false;
+
+    DebugFlag   m_dbgSeroTest{"ServoTest", false};
 };

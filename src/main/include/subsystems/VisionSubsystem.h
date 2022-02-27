@@ -4,8 +4,6 @@
 #include "Constants.h"
 #include "../IOdometry.h"
 
-#include <subsystems/TurretSubsystem.h>
-
 #include <frc2/command/SubsystemBase.h>
 #include <frc/geometry/Pose2d.h>
 
@@ -23,7 +21,10 @@
 #include "common/Util.h"
 
 #include "Gyro.h"
+#include "TurretSubsystem.h"
+#include "HoodSubsystem.h"
 #include "common/DebugFlag.h"
+#include "Calculations.h"
 
 using namespace std;
 using namespace frc;
@@ -33,7 +34,7 @@ using namespace VisionConstants;
 class VisionSubsystem : public frc2::SubsystemBase
 {
 public:
-    VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, IOdometry& odometry);
+    VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, HoodSubsystem& hood, IOdometry& odometry);
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
@@ -64,6 +65,8 @@ protected:
     /// \param degrees Degrees to convert
     double DegreesToRadians(double degrees);
 
+    void AdjustHood();
+
 private:    
     shared_ptr<nt::NetworkTable> m_dashboard;
     shared_ptr<nt::NetworkTable> m_networktable;
@@ -87,6 +90,8 @@ private:
     Team1259::Gyro *m_gyro;
     TurretSubsystem& m_turret;
     IOdometry& m_odometry;
+    HoodSubsystem& m_hood;
+  	Calculations m_calculation;
 
     DebugFlag   m_dbgLogInvalid{"VisLogInvalid", false};
     DebugFlag   m_dbgLogTargetData{"VisLogTargetData", false};

@@ -4,7 +4,14 @@
 #include <iostream>
 
 HomeTarget::HomeTarget(frc::XboxController *controller, FlywheelSubsystem *flywheel, TurretSubsystem *turret, HoodSubsystem *hood, VisionSubsystem &vision, bool *turretready, bool *firing, bool *finished)
-    : m_controller(controller), m_flywheel(flywheel), m_turret(turret), m_hood(hood), m_turretready(turretready), m_vision(vision), m_firing(firing), m_finished(finished)
+    : m_controller(controller)
+    , m_flywheel(flywheel)
+    , m_turret(turret)
+    , m_hood(hood)
+    , m_turretready(turretready)
+    , m_vision(vision)
+    , m_firing(firing)
+    , m_finished(finished)
 {
     AddRequirements({flywheel, turret, hood});
     *m_turretready = false;
@@ -24,13 +31,11 @@ void HomeTarget::Execute()
     // Homes flywheel, turret, and hood to the right angles through a formula
     SmartDashboard::PutBoolean("TEST_VIS_ACTIVE", m_vision.GetValidTarget());
 
-    double distance = m_vision.GetHubDistance(true) - meter_t(foot_t(2.0)).to<double>();
+    if (!m_vision.GetValidTarget())
+        return;
 
-    bool bUseKnownDist = SmartDashboard::GetBoolean("UseKnownDist", false);
-    if (bUseKnownDist)
-    {
-        distance = SmartDashboard::GetNumber("KnownDist", 10.0);
-    }
+
+    double distance = m_vision.GetHubDistance(true) - meter_t(foot_t(2.0)).to<double>();
 
     // if (std::isnan(distance))
     if (distance != distance)
@@ -59,6 +64,12 @@ void HomeTarget::Execute()
         offset += fudge;
     }
 
+    // Try to hit close in shots
+    if (distance <= 2.5)
+    {
+        offset -= 330;
+    }
+
     double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), foot_t(2.0)).to<double>();
 
     // Servo Pos    Measured Angle  Complement
@@ -76,6 +87,7 @@ void HomeTarget::Execute()
         hoodangle = 0.33 - 0.0317 * x + 0.000816 * x * x;
     }
     hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
+    m_hood->Set(hoodangle);
 
     // std::cout << "Init Angle: "<< initAngle.to<double>() << std::endl;
     // std::cout << "Hood servo set: "<< hoodangle << std::endl;
@@ -87,9 +99,6 @@ void HomeTarget::Execute()
     SmartDashboard::PutNumber("Flywheel RPM ", flywheelspeed);
     SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
     SmartDashboard::PutNumber("Hoodangle Constant", c);
-
-    if (!m_vision.GetValidTarget() && !bUseKnownDist)
-        return;
 
     // double angleOverride = 0;
     //  double turretXRot = m_controller->GetY(frc::GenericHID::kRightHand) * -1.0;
@@ -118,7 +127,6 @@ void HomeTarget::Execute()
     // if (*m_firing)
     //     flywheelspeed *= FlywheelConstants::kFiringRPMMultiplier;
 
-    m_hood->Set(hoodangle);
     m_flywheel->SetRPM(flywheelspeed);
 
     SmartDashboard::PutBoolean("D_FIRE_AT_RPM", m_flywheel->IsAtRPM());
