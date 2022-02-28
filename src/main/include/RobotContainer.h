@@ -22,7 +22,7 @@
 #include <frc2/command/PIDCommand.h>
 #include <frc2/command/RunCommand.h>
 #include <frc2/command/SequentialCommandGroup.h>
-#include <frc2/command/ParallelRaceGroup.h>
+#include <frc2/command/ParallelCommandGroup.h>
 #include <frc2/command/SwerveControllerCommand.h>
 
 #include <frc/geometry/Translation2d.h>
@@ -74,10 +74,10 @@ public:
     void TurretSetZeroAngle() { m_turret.SetZeroAngle(); }
     void GyroSetZeroHeading() { m_gyro.ZeroHeading(); }
 
-    enum AutoPath {kEx1, kEx2, kEx3, kEx4, kEx5};
-    frc2::Command *GetAutonomousCommand(AutoPath path);
+    enum EAutoPath {kEx1, kEx2, kEx3, kEx4, kEx5};
+    frc2::Command *GetAutonomousCommand(EAutoPath path);
 
-    frc::SendableChooser<AutoPath> m_chooser;
+    frc::SendableChooser<EAutoPath> m_chooser;
 
     HoodSubsystem&       GetHood() override { return m_hood; };
     IntakeSubsystem&     GetIntake() override { return m_intake; };
@@ -95,6 +95,7 @@ public:
 private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();
+    frc2::SequentialCommandGroup* GetAutoPathCmd(string pathName, bool primaryPath);
     SwerveCtrlCmd GetSwerveCommandPath(string pathName, bool primaryPath);
     frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
     void PrintTrajectory(frc::Trajectory& trajectory);
@@ -114,6 +115,7 @@ private:
     ClimberSubsystem m_climber;
 
     frc2::InstantCommand m_setFieldRelative{[this] { m_fieldRelative = true; }, {}};
+    frc2::InstantCommand m_clearFieldRelative{[this] { m_fieldRelative = false; }, {}};
     frc2::InstantCommand m_toggleMaxDriveSpeed
     {[this]
         { 
@@ -122,10 +124,8 @@ private:
             m_maxRotSpeed = m_bLowSpeedDriving ? kSlowDriveAngularSpeed : kDriveAngularSpeed;
             m_drive.SetMaxDriveSpeed(m_bLowSpeedDriving ? kSlowDriveSpeed : kDriveSpeed);
         },
-        {}
+        {&m_drive}
     };
-
-    frc2::InstantCommand m_clearFieldRelative{[this] { m_fieldRelative = false; }, {}};
     frc2::InstantCommand m_zeroHeading{[this] { m_gyro.ZeroHeading(); }, {}};
     frc2::InstantCommand m_climb{[this] { m_climber.Run(ClimberConstants::kMotorSpeed); }, {&m_climber} };
     
