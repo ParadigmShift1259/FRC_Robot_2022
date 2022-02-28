@@ -31,6 +31,7 @@ void Robot::RobotPeriodic() {
 void Robot::DisabledInit()
 {
   Shuffleboard::StopRecording();
+  m_container.TurretSetZeroAngle();
 }
 
 void Robot::DisabledPeriodic() {}
@@ -56,6 +57,8 @@ void Robot::TeleopInit()
 
   m_container.TurretSetZeroAngle();
   m_container.GyroSetZeroHeading();
+  //m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 120_in, kFieldWidth/2, frc::Rotation2d())); // 10 feet in front of hub
+
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove

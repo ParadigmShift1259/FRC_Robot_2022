@@ -19,8 +19,7 @@
 
 class Fire : public frc2::CommandHelper<frc2::SequentialCommandGroup, Fire> {
 public:
-    Fire( frc::XboxController* controller
-        , FlywheelSubsystem* flywheel
+    Fire( FlywheelSubsystem* flywheel
         , TurretSubsystem* turret
         , HoodSubsystem* hood
         , TransferSubsystem* transfer
@@ -28,6 +27,7 @@ public:
         , bool* m_turretready
         , bool* m_firing
         , bool* m_finished
+        , GetYvelocityCallback yVelocityCb
         , double launchtime = TransferConstants::kTimeLaunch);
 
     //void Execute() override;

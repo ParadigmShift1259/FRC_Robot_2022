@@ -33,9 +33,11 @@ RobotContainer::RobotContainer()
     SmartDashboard::PutBoolean("UseFudgeFactor", false);
     SmartDashboard::PutBoolean("UseLut", false);
     SmartDashboard::PutBoolean("SupressFlywheel", false);
+    SmartDashboard::PutBoolean("LowSpeedDriveing", m_bLowSpeedDriving);
 }
 
-void RobotContainer::Periodic() {
+void RobotContainer::Periodic()
+{
     SmartDashboard::PutNumber("Gyro", m_gyro.GetHeading());
     // SmartDashboard::PutData("DriveSS", &m_drive);
     // SmartDashboard::PutData("FlywheelSS", &m_flywheel);
@@ -46,7 +48,7 @@ void RobotContainer::Periodic() {
     // SmartDashboard::PutData("VisionSS", &m_vision);
     SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
     m_drive.Periodic();
-    //m_flywheel.Periodic();
+
     // static int direction = 0;
     // if(direction == 1)
     // {
@@ -73,8 +75,6 @@ void RobotContainer::Periodic() {
     //     m_turret.TurnTo(60);
     //     std::cout << "Initial" << "\n";
     // }
-
-  //  m_turret.TurnTo(direction * 60);
 }
 
 void RobotContainer::SetDefaultCommands()
@@ -103,8 +103,7 @@ void RobotContainer::SetDefaultCommands()
 
             m_drive.Drive(units::meters_per_second_t(xInput * AutoConstants::kMaxSpeed),
                             units::meters_per_second_t(yInput * AutoConstants::kMaxSpeed),
-                            //units::angular_velocity::radians_per_second_t(rotInput),
-                            units::angular_velocity::radians_per_second_t(rotInput * DriveConstants::kDriveAngularSpeed.to<double>()),
+                            units::angular_velocity::radians_per_second_t(rotInput * m_maxRotSpeed.to<double>()),
                             m_fieldRelative);
         },
         {&m_drive}
@@ -138,9 +137,12 @@ void RobotContainer::ConfigureButtonBindings()
     JoystickButton(&m_primaryController, xbox::kLeftBumper).WhenPressed(&m_setFieldRelative);
     JoystickButton(&m_primaryController, xbox::kLeftBumper).WhenReleased(&m_clearFieldRelative);
 
+    // Toggle slow speed driving for strafe shot
+    JoystickButton(&m_primaryController, xbox::kRightBumper).WhenPressed(&m_toggleMaxDriveSpeed);
+
     JoystickButton(&m_secondaryController, xbox::kY).WhenPressed(
-        Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, m_vision,
-             &m_turretready, &m_firing, &m_finished)
+
+        Fire(&m_flywheel, &m_turret, &m_hood, &m_transfer, m_vision, &m_turretready, &m_firing, &m_finished, [this]() { return GetYvelovity(); } )
     );
 
     JoystickButton(&m_secondaryController, xbox::kX).WhenPressed(
@@ -267,19 +269,41 @@ void RobotContainer::ZeroDrive()
 
 frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 {
+
+//    frc2::ParallelCommandGroup pcg;
+//    pcg.AddCommands(
+//                               std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
+//                             , std::move(frc2::SequentialCommandGroup(
+//                                   std::move(GetSwerveCommandPath("ball1", true))
+//                                 , std::move(frc2::WaitCommand(0.2_s))
+//                                 , std::move(frc2::InstantCommand(
+//                                     [this]() {
+//                                         ZeroDrive();
+//                                     }, {}
+//                                   ))
+//                                 )                
+//                               )
+//                           );
+
     switch(path)
     {
         case kEx1:
-            // return new frc2::SequentialCommandGroup(
-            //     std::move(GetSwerveCommandPath("ball1", true)),
-            //     frc2::InstantCommand(
-            //         [this]() {
-            //             ZeroDrive();
-            //         }, {}
-            //     )
-            //     // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
-            // );
-            return nullptr;
+            return new frc2::SequentialCommandGroup(
+                  std::move(IntakeIngest(m_intake))
+                , std::move(GetSwerveCommandPath("ball1", true))
+                , std::move(frc2::WaitCommand(0.2_s))
+                , std::move(frc2::InstantCommand([this]() { ZeroDrive(); }, {} ) )                
+                , std::move(Fire( &m_flywheel
+                                , &m_turret
+                                , &m_hood
+                                , &m_transfer
+                                , m_vision
+                                , &m_turretready
+                                , &m_firing
+                                , &m_finished
+                                , [this]() { return GetYvelovity(); }
+                                , TransferConstants::kTimeLaunch))
+            );
 
         case kEx2:
             return new frc2::SequentialCommandGroup(
@@ -294,8 +318,18 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
         case kEx3:
             return new frc2::SequentialCommandGroup(
-                std::move(GetSwerveCommandPath("ball3", true)),
-                frc2::InstantCommand(
+                  std::move(GetSwerveCommandPath("ball3", true))
+                , std::move(Fire( &m_flywheel
+                                , &m_turret
+                                , &m_hood
+                                , &m_transfer
+                                , m_vision
+                                , &m_turretready
+                                , &m_firing
+                                , &m_finished
+                                , [this]() { return GetYvelovity(); }
+                                , TransferConstants::kTimeLaunch))
+                , frc2::InstantCommand(
                     [this]() {
                         ZeroDrive();
                     }, {}
@@ -305,20 +339,11 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
 
         case kEx4:
             return new frc2::SequentialCommandGroup(
-                frc2::InstantCommand(
-                    [this]() {
-                        m_intake.Set(IntakeConstants::kIngestHigh);
-                    }, {}
-                )                  
+                  std::move(IntakeIngest(m_intake))
                 , std::move(GetSwerveCommandPath("ball1", true))
-                , frc2::WaitCommand(0.1_s)
-                , frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )                
-                , std::move(Fire(&m_secondaryController
-                                , &m_flywheel
+                , std::move(frc2::WaitCommand(0.1_s))
+                , std::move(frc2::InstantCommand([this]() { ZeroDrive(); }, {} ) )                
+                , std::move(Fire( &m_flywheel
                                 , &m_turret
                                 , &m_hood
                                 , &m_transfer
@@ -326,16 +351,12 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_turretready
                                 , &m_firing
                                 , &m_finished
+                                , [this]() { return GetYvelovity(); }
                                 , TransferConstants::kTimeLaunch))
                 , std::move(GetSwerveCommandPath("ball2&3", false))
-                , frc2::WaitCommand(0.1_s)
-                , frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )  
-                , std::move(Fire(&m_secondaryController
-                                , &m_flywheel
+                , std::move(frc2::WaitCommand(0.1_s))
+                , std::move(frc2::InstantCommand([this]() { ZeroDrive(); }, {} ) )                
+                , std::move(Fire( &m_flywheel
                                 , &m_turret
                                 , &m_hood
                                 , &m_transfer
@@ -343,16 +364,12 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_turretready
                                 , &m_firing
                                 , &m_finished
+                                , [this]() { return GetYvelovity(); }
                                 , TransferConstants::kTimeLaunch))
                 , std::move(GetSwerveCommandPath("ball4", false))
-                , frc2::WaitCommand(0.1_s)
-                , frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )  
-                , std::move(Fire(&m_secondaryController
-                                , &m_flywheel
+                , std::move(frc2::WaitCommand(0.1_s))
+                , std::move(frc2::InstantCommand([this]() { ZeroDrive(); }, {} ) )                
+                , std::move(Fire( &m_flywheel
                                 , &m_turret
                                 , &m_hood
                                 , &m_transfer
@@ -360,18 +377,10 @@ frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
                                 , &m_turretready
                                 , &m_firing
                                 , &m_finished
+                                , [this]() { return GetYvelovity(); }
                                 , TransferConstants::kTimeLaunch))
-                , frc2::WaitCommand(0.1_s)
-                , frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )  
-                // frc2::InstantCommand(
-                //     [this]() {
-                //         ZeroDrive();
-                //     }, {}
-                // )
+                , std::move(frc2::WaitCommand(0.1_s))
+                , std::move(frc2::InstantCommand([this]() { ZeroDrive(); }, {} ) )                
             );
 
         // case kEx5:
@@ -482,7 +491,7 @@ SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(string pathName, bool primary
     );
 
     // Reset odometry to the starting pose of the trajectory
-    if(primaryPath)
+    if (primaryPath)
         m_drive.ResetOdometry(trajectory.InitialPose());
 
     return swerveControllerCommand;

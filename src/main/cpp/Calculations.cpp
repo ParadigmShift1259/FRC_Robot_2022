@@ -10,13 +10,8 @@
 
 using namespace units;
 
-Calculations::Calculations() {
-  m_heightAboveHub = foot_t(9.0);
-  m_heightRobot = foot_t(3.5);
-  m_heightTarget = foot_t(8.67);
-  m_xTarget = foot_t(2.0);
-
-
+Calculations::Calculations()
+{
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_10(3);
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_4(3);
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_25(3);

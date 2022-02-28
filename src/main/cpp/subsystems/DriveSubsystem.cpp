@@ -114,11 +114,7 @@ void DriveSubsystem::Periodic()
     m_acceleration = (double)state.acceleration;
 
     m_StateHist.push_back(state);
-
-
-    
 }
-
 
 void DriveSubsystem::RotationDrive(meters_per_second_t xSpeed
                                 , meters_per_second_t ySpeed
@@ -211,9 +207,12 @@ void DriveSubsystem::Drive(meters_per_second_t xSpeed
     else
         chassisSpeeds = ChassisSpeeds{xSpeed, ySpeed, rot};
 
+    m_yVelocity = chassisSpeeds.vy;
+    
     auto states = kDriveKinematics.ToSwerveModuleStates(chassisSpeeds);
 
-    kDriveKinematics.DesaturateWheelSpeeds(&states, kDriveSpeed);
+    SmartDashboard::PutNumber("MaxSpeed", m_maxDriveSpeed.to<double>());
+    kDriveKinematics.DesaturateWheelSpeeds(&states, m_maxDriveSpeed);
     
     #ifdef MANUAL_MODULE_STATES
     states[kFrontLeft].angle = Rotation2d(radian_t(SmartDashboard::GetNumber("T_D_MFL", 0.0)));
@@ -273,6 +272,7 @@ frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
                 i--;
             State1Idx = i;
             State2Idx = i+1;
+            //printf("searching odo hist from back...  ");
         }
         else
         {
@@ -281,14 +281,30 @@ frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
                 i++;
             State1Idx = i - 1;
             State2Idx = i;
+            //printf("searching odo hist from front...  ");
         }
-        vector<frc::Trajectory::State> neighboringStates;
-        neighboringStates.push_back(m_StateHist[State1Idx]);
-        neighboringStates.push_back(m_StateHist[State2Idx]);
-        frc::Trajectory trajectory = Trajectory(neighboringStates);
-        return trajectory.Sample(timestamp).pose;
+        //printf("returning odo state # %d of %d total\n", State1Idx, m_StateHist.size()-1);
+        m_StateHist[State1Idx].pose;    
+        m_StateHist[State2Idx].pose;
+        units::time::second_t T1 = m_StateHist[State1Idx].t;
+        units::time::second_t T2 = m_StateHist[State2Idx].t;
+        double x = (double) ((timestamp-T1) / (T2-T1)); 
+        units::meter_t X = m_StateHist[State1Idx].pose.X();
+        units::meter_t Y = m_StateHist[State1Idx].pose.Y();
+        units::radian_t theta = m_StateHist[State1Idx].pose.Rotation().Radians();
+
+        X += x * (m_StateHist[State2Idx].pose.X() - m_StateHist[State1Idx].pose.X());
+        Y += x * (m_StateHist[State2Idx].pose.Y() - m_StateHist[State1Idx].pose.Y());
+        theta += x * (m_StateHist[State2Idx].pose.Rotation().Radians() - m_StateHist[State1Idx].pose.Rotation().Radians());
+        return frc::Pose2d(X, Y, frc::Rotation2d(theta));
+
+        // vector<frc::Trajectory::State> neighboringStates;
+        // neighboringStates.push_back(m_StateHist[State1Idx]);
+        // neighboringStates.push_back(m_StateHist[State2Idx]);
+        // frc::Trajectory trajectory = Trajectory(neighboringStates);
+        // return trajectory.Sample(timestamp).pose;
     }
-    return lastOdoState.pose;
+    return m_odometry.GetPose();
 }
 
 double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)

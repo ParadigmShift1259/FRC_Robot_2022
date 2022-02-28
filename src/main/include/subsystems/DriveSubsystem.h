@@ -127,6 +127,9 @@ public:
     /// Resync all relative NEO turn encoders to the absolute encoders
     void ResetRelativeToAbsolute();
 
+    void SetMaxDriveSpeed(meters_per_second_t maxDriveSpeed) { m_maxDriveSpeed = maxDriveSpeed; }
+    meters_per_second_t GetYvelocity() const { return m_yVelocity; }
+
     const vector<frc::Trajectory::State>& GetStateHist() const { return m_StateHist; }
 
     /// The kinematics object converts inputs into 4 individual swerve module turn angle and wheel speeds
@@ -179,4 +182,6 @@ private:
     vector<frc::Trajectory::State> m_StateHist;
     double m_velocity;
     double m_acceleration;
+    meters_per_second_t m_maxDriveSpeed { kDriveSpeed };
+    meters_per_second_t m_yVelocity {0.0};
 };

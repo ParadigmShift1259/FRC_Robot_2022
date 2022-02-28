@@ -133,7 +133,7 @@ void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)
 void TurretSubsystem::TurnToRobot(double robotAngle)
 {
     double angle = robotAngle - kTurretToRobotAngleOffset;
-    TurnTo(Util::ZeroTo360Degs(angle));
+    TurnTo(angle);
 }
 
 void TurretSubsystem::TurnToField(double desiredAngle)

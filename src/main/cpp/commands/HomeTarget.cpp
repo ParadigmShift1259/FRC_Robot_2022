@@ -3,15 +3,24 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <iostream>
 
-HomeTarget::HomeTarget(frc::XboxController *controller, FlywheelSubsystem *flywheel, TurretSubsystem *turret, HoodSubsystem *hood, VisionSubsystem &vision, bool *turretready, bool *firing, bool *finished)
-    : m_controller(controller)
-    , m_flywheel(flywheel)
+units::meter_t kHubOffsetRimToCenter = units::foot_t(2.0);
+
+HomeTarget::HomeTarget(   FlywheelSubsystem *flywheel
+                        , TurretSubsystem *turret
+                        , HoodSubsystem *hood
+                        , VisionSubsystem &vision
+                        , bool *turretready
+                        , bool *firing
+                        , bool *finished
+                        , GetYvelocityCallback yVelocityCb)
+    : m_flywheel(flywheel)
     , m_turret(turret)
     , m_hood(hood)
     , m_turretready(turretready)
     , m_vision(vision)
     , m_firing(firing)
     , m_finished(finished)
+    , m_yVelocityCb(yVelocityCb)
 {
     AddRequirements({flywheel, turret, hood});
     *m_turretready = false;
@@ -35,7 +44,7 @@ void HomeTarget::Execute()
         return;
 
 
-    double distance = m_vision.GetHubDistance(true) - meter_t(foot_t(2.0)).to<double>();
+    double distance = m_vision.GetHubDistance(true) - kHubOffsetRimToCenter.to<double>();
 
     // if (std::isnan(distance))
     if (distance != distance)
@@ -70,7 +79,8 @@ void HomeTarget::Execute()
         offset -= 330;
     }
 
-    double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), foot_t(2.0)).to<double>();
+    revolutions_per_minute_t flywheelspeedInPRM = revolutions_per_minute_t(offset) + m_calculation.CalcInitRPMs(meter_t(distance), kHubOffsetRimToCenter);
+    double flywheelspeed = flywheelspeedInPRM.to<double>();
 
     // Servo Pos    Measured Angle  Complement
     // 0.0	        50 deg          90 - 50 = 40
@@ -100,54 +110,17 @@ void HomeTarget::Execute()
     SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
     SmartDashboard::PutNumber("Hoodangle Constant", c);
 
-    // double angleOverride = 0;
-    //  double turretXRot = m_controller->GetY(frc::GenericHID::kRightHand) * -1.0;
-    //  double turretYRot = m_controller->GetX(frc::GenericHID::kRightHand);
-
-    // double turretXRot = m_controller->GetRightY() * -1.0;
-    // double turretYRot = m_controller->GetRightX();
-
-    // if (m_controller->GetBumperPressed(GenericHID::JoystickHand::kRightHand)) {
-    //     flywheelspeed = FlywheelConstants::kTrenchRPM;
-    //     hoodangle = HoodConstants::kTrenchPosition;
-    //     if (Util::Deadzone(sqrt(pow(turretXRot, 2) + pow(turretYRot, 2)), OIConstants::kDeadzoneAbsRot) == 0) {
-    //         turretXRot = 0;
-    //         turretYRot = 0;
-    //     }
-    //     double rotPosition = atan2f(turretYRot, turretXRot);
-    //     rotPosition *= 360.0/Math::kTau;
-    //     m_turret->TurnToRobot(rotPosition);
-    // }
-    // else {
-    // angleOverride = turretXRot * TurretConstants::kMaxOverrideAngle;
-    //        m_turret->TurnToRelative(-1.0 * m_vision.GetHubAngle() * 180.0 / wpi::numbers::pi         + angleOverride);
-    // }
-
-    // flywheelspeed *= FlywheelConstants::kHomingRPMMultiplier;
-    // if (*m_firing)
-    //     flywheelspeed *= FlywheelConstants::kFiringRPMMultiplier;
-
     m_flywheel->SetRPM(flywheelspeed);
 
     SmartDashboard::PutBoolean("D_FIRE_AT_RPM", m_flywheel->IsAtRPM());
     SmartDashboard::PutBoolean("D_FIRE_AT_SET", m_turret->isAtSetpoint());
     SmartDashboard::PutNumber("Hood Angle:", hoodangle);
 
-    // if running manual trench fire
-    // if (m_controller->GetBumper(GenericHID::JoystickHand::kRightHand))
-    // {
-    //     // if call to launch
-    //     if (m_controller->GetYButtonPressed())
-    //     {
-    //         *m_turretready = true;
-    //     }
-    // }
-    // // if at position, set turret ready to true
-    // else
-    if (m_flywheel->IsAtRPM())
+    if (m_flywheel->IsAtRPM() && m_yVelocityCb() <= kSlowDriveSpeed.to<double>())
     {
         *m_turretready = true;
     }
+
     frc::SmartDashboard::PutBoolean("TEST_READY_TO_FIRE", *m_turretready);
 }
 

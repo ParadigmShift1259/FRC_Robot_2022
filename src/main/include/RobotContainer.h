@@ -79,8 +79,6 @@ public:
 
     frc::SendableChooser<AutoPath> m_chooser;
 
-    //DriveSubsystem&      GetDrive() override { return m_drive; };
-    //FlywheelSubsystem&   GetFlywheel() override { return m_flywheel; };
     HoodSubsystem&       GetHood() override { return m_hood; };
     IntakeSubsystem&     GetIntake() override { return m_intake; };
     TransferSubsystem&   GetTransfer() override { return m_transfer; };
@@ -90,6 +88,9 @@ public:
     Pose2d GetPose() { return m_drive.GetPose(); }
     Pose2d GetPose(units::time::second_t timestamp) const { return m_drive.GetPose(timestamp); }
     const vector<frc::Trajectory::State>& GetStateHist() const { return m_drive.GetStateHist(); }
+    void ResetOdometry(frc::Pose2d pose) { m_drive.ResetOdometry(pose); }
+
+    double GetYvelovity() { return m_drive.GetYvelocity().to<double>(); }
 
 private:
     void SetDefaultCommands();
@@ -113,6 +114,17 @@ private:
     ClimberSubsystem m_climber;
 
     frc2::InstantCommand m_setFieldRelative{[this] { m_fieldRelative = true; }, {}};
+    frc2::InstantCommand m_toggleMaxDriveSpeed
+    {[this]
+        { 
+            m_bLowSpeedDriving = !m_bLowSpeedDriving;
+            SmartDashboard::PutBoolean("LowSpeedDriveing", m_bLowSpeedDriving);
+            m_maxRotSpeed = m_bLowSpeedDriving ? kSlowDriveAngularSpeed : kDriveAngularSpeed;
+            m_drive.SetMaxDriveSpeed(m_bLowSpeedDriving ? kSlowDriveSpeed : kDriveSpeed);
+        },
+        {}
+    };
+
     frc2::InstantCommand m_clearFieldRelative{[this] { m_fieldRelative = false; }, {}};
     frc2::InstantCommand m_zeroHeading{[this] { m_gyro.ZeroHeading(); }, {}};
     frc2::InstantCommand m_climb{[this] { m_climber.Run(ClimberConstants::kMotorSpeed); }, {&m_climber} };
@@ -122,6 +134,8 @@ private:
     bool m_turretready = false;
     bool m_firing = false;
     bool m_finished = false;
+    bool m_bLowSpeedDriving = false;
+    radians_per_second_t m_maxRotSpeed { kDriveAngularSpeed };
 
     DebugFlag   m_dbgSeroTest{"ServoTest", false};
 };

@@ -69,13 +69,13 @@ class Calculations
   second_t m_timeTwo = second_t(0.0);
   second_t m_timeTotal = second_t(0.0);
 
-  meter_t m_heightAboveHub = meter_t(0.0);
-  meter_t m_heightRobot = meter_t(0.0);
-  meter_t m_heightTarget = meter_t(0.0);
+  meter_t m_heightAboveHub = foot_t(9.0);
+  meter_t m_heightRobot = foot_t(3.5);
+  meter_t m_heightTarget = foot_t(8.67);
   meter_t m_heightMax = meter_t(0.0);
 
   meter_t m_xInput = meter_t(0.0);
-  meter_t m_xTarget = meter_t(0.0);
+  meter_t m_xTarget = foot_t(0.0);
 
   meters_per_second_t m_velXInit = meters_per_second_t (0.0);
   meters_per_second_t m_velYInit = meters_per_second_t(0.0);
@@ -92,9 +92,9 @@ class Calculations
   nt::NetworkTableEntry m_xFloorDistanceEntry;
   nt::NetworkTableEntry m_xTargetDistanceEntry;
 
+
   nt::NetworkTableEntry m_initVelEntry;
   nt::NetworkTableEntry m_initAngleEntry;
   nt::NetworkTableEntry m_initRpmEntry;
   nt::NetworkTableEntry m_setpointEntry;
-
 };

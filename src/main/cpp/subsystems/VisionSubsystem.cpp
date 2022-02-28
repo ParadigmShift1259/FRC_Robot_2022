@@ -4,6 +4,8 @@
 #include <vector>
 #include <photonlib/PhotonUtils.h>
 
+units::meter_t kVisionHubOffsetRimToCenter = units::foot_t(2.0);
+
 VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, HoodSubsystem& hood, IOdometry& odometry) 
  : m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
  , m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("gloworm"))
@@ -29,19 +31,21 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
 //void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name, nt::NetworkTableEntry entry, std::shared_ptr<nt::Value> value, int flags))
 void VisionSubsystem::Periodic()
 {
+    static Timer timer;
+    units::time::second_t visionTimestamp = timer.GetFPGATimestamp();
+
     static unsigned counter = 0; 
     counter++;
     bool bLogInvalid = m_dbgLogInvalid;
     bool willPrint = false;
+
     if (counter % 25 == 0)
         willPrint = true;
 
-    double angleTurret = Util::DegreesToRadians(m_turret.GetCurrentAngle());
+    
     const frc::Translation2d kHubCenter = frc::Translation2d(kFieldLength/2, kFieldWidth/2);  // TO DO make a constant
     const frc::Translation2d turretCenterToRobotCenter = frc::Translation2d(inch_t{2.25}, inch_t{0});   // TO DO make a constant
-    frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
-    frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{angleTurret});
-
+ 
     camera.SetLEDMode(photonlib::LEDMode::kDefault);
 
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
@@ -93,49 +97,46 @@ void VisionSubsystem::Periodic()
             frc::Translation2d cameraToHub = FitCircle(targetVectors, meter_t{0.01}, 20);
             if (cameraToHub != frc::Translation2d())
             {
-                if (m_smoothedRange > 0)
-                    m_smoothedRange = kRangeSmoothing * m_smoothedRange + (1 - kRangeSmoothing) * GetHubDistance(false);
-                else
-                    m_smoothedRange = GetHubDistance(false);
                 m_consecNoTargets = 0;
                 m_validTarget = true;
-
-                printf("camera pose from circle fit: x %.3f y %.3f    ", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
-
+                // cameraToHub is the vector from cam to hub IN CAMERA-RELATIVE COORDINATE SYSTEM!
+                // printf("camera pose from circle fit: x %.3f y %.3f    ", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
 #define USE_ODO_COMPENSATION
 #ifdef USE_ODO_COMPENSATION
-                double distToHub = (double)cameraToHub.Norm();
-                double hubAngle = atan2((double)cameraToHub.Y(), (double)cameraToHub.X());;
-                double angleToHub = Util::DegreesToRadians(m_gyro->GetHeading()) + angleTurret + hubAngle;
-                frc::Translation2d displacement = frc::Translation2d(meter_t{(cos(angleToHub) * distToHub)}, meter_t{(sin(angleToHub) * distToHub)});
+                visionTimestamp = visionTimestamp - result.GetLatency();
+                frc::Pose2d delayedOdoPose = m_odometry.GetPose(visionTimestamp);
+                
+                double angleTurret = Util::DegreesToRadians(m_turret.GetCurrentAngle()); // TO DO keep history of turret angle and use that instead of current turrent angle
+                Rotation2d fieldToCamAngle = delayedOdoPose.Rotation() + Rotation2d(radian_t{angleTurret});  // TO DO keep history of turret angle and use that instead of current turrent angle
+                frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
+                frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{angleTurret});
 
-                Rotation2d turretRot = Rotation2d(radian_t{Util::DegreesToRadians(m_gyro->GetHeading()) + angleTurret});
-                Pose2d cameraPose = Pose2d(kHubCenter - displacement, turretRot);
-                // Rotation2d turretRot = Rotation2d(radian_t{angleTurret});
-                // Pose2d cameraPose = Pose2d(kHubCenter - displacement, m_gyro->GetHeadingAsRot2d() + turretRot);
+                Pose2d cameraPose = Pose2d(kHubCenter - cameraToHub.RotateBy(fieldToCamAngle), fieldToCamAngle); // field relative cam pose
                 auto RobotvisionPose = cameraPose.TransformBy(camreaTransform.Inverse());  // where vision thinks robot was when image was captured (e.g. latency)
                 // printf("camera pose x %.3f y %.3f theta %.3f   ", cameraPose.X().to<double>(), cameraPose.Y().to<double>(), cameraPose.Rotation().Degrees().to<double>());
                 // printf("robot pose x %.3f y %.3f theta %.3f   ", RobotvisionPose.X().to<double>(), RobotvisionPose.Y().to<double>(), RobotvisionPose.Rotation().Degrees().to<double>());
 
                 // Use wheel odo to correct RobotvisionPose for movement since image was captured
-                auto& lastOdoState = m_odometry.GetStateHist().back();
-                Timer timer;
-                units::time::second_t visionTimestamp = timer.GetFPGATimestamp() - result.GetLatency();
-                frc::Pose2d delayedOdoPose = m_odometry.GetPose(lastOdoState.t - visionTimestamp);
-                //frc::Transform2d transformation = Transform2d(lastOdoState.pose, delayedOdoPose);
-                frc::Transform2d transformation;
-                m_robotPose = RobotvisionPose.TransformBy(transformation);              
+                frc::Pose2d lastOdoState = m_odometry.GetPose(); // auto& lastOdoState = m_odometry.GetStateHist().back();  
+                // frc::Transform2d compenstaion = Transform2d(lastOdoState.pose, delayedOdoPose);
+                frc::Transform2d compenstaion; // zero transform for testing
+                m_robotPose = RobotvisionPose.TransformBy(compenstaion);              
                 m_cameraToHub = kHubCenter - m_robotPose.TransformBy(camreaTransform).Translation();
-                m_cameraToHub = m_cameraToHub.RotateBy(Rotation2d(radian_t{Util::DegreesToRadians(-m_gyro->GetHeading()) - angleTurret}));
+                m_cameraToHub = m_cameraToHub.RotateBy(-fieldToCamAngle); // transform from field-relative back to cam-relative
 
+                // printf("latency ms: %.1f delayed odo pose: x %.3f y %.3f   ", 1000*result.GetLatency().to<double>(), delayedOdoPose.X().to<double>(), delayedOdoPose.Y().to<double>());
+                printf("latency ms: %.1f compenstaion: x %.3f y %.3f    ", 1000*result.GetLatency().to<double>(), compenstaion.X().to<double>(), compenstaion.Y().to<double>());
                 printf("compensated camera pose: x %.3f y %.3f\n", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
-
 #else
                 m_cameraToHub = cameraToHub;
                 printf("camera pose x %.3f y %.3f\n", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
 
 #endif  // def USE_ODO_COMPENSATION
-
+                // do Hub distance smoothing
+                if (m_smoothedRange > 0)
+                    m_smoothedRange = kRangeSmoothing * m_smoothedRange + (1 - kRangeSmoothing) * GetHubDistance(false);
+                else
+                    m_smoothedRange = GetHubDistance(false);
             }
             else
             {
@@ -154,9 +155,14 @@ void VisionSubsystem::Periodic()
         if (m_consecNoTargets >= kVisionFailLimit)
         {
             m_validTarget = false;
-            m_smoothedRange = 0;
+            // m_smoothedRange = 0;
             m_robotPose = m_odometry.GetPose();
+            double angleTurret = Util::DegreesToRadians(m_turret.GetCurrentAngle());
+            frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
+            frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{angleTurret});
+            frc::Rotation2d fieldToCamAngle = m_robotPose.Rotation() + frc::Rotation2d(units::radian_t{angleTurret});  // TO DO keep history of turret angle and use that instead of current turrent angle    
             m_cameraToHub = kHubCenter - m_robotPose.TransformBy(camreaTransform.Inverse()).Translation();
+            m_cameraToHub = m_cameraToHub.RotateBy(-fieldToCamAngle); // transform from field-relative back to cam-relative
         }
     }
 
@@ -170,19 +176,18 @@ void VisionSubsystem::Periodic()
         {
             turretCmdHoldoff--;
         }
-        else if (m_validTarget)
+        else //if (m_validTarget)
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
             m_turret.TurnToRelative(hubAngle * 1);
-            turretCmdHoldoff = 5;  // limit turret command rate due to vision lag
+            turretCmdHoldoff = 0;  // limit turret command rate due to vision lag
             AdjustHood();
         }
     }
-    else
-    {
-        //m_turret.TurnToField(0.0);
-        
-    }
+    // else
+    // {
+    //     m_turret.TurnToField(0.0);
+    // }
 
     if (willPrint)
     {
@@ -317,20 +322,19 @@ double VisionSubsystem::GetHubDistance(bool smoothed)
 
 void VisionSubsystem::AdjustHood()
 {
-    // Servo Pos    Measured Angle  Complement
-    // 0.0	        50 deg          90 - 50 = 40
-    // 0.4	        40 deg          90 - 40 = 50
-    degree_t initAngle = m_calculation.GetInitAngle();
-    // double hoodangle = (initAngle.to<double>() - 40.0) * 0.04;
-    double x = initAngle.to<double>();
-    // double hoodangle = 0.33 - 0.0317 * x + 0.000816 * x * x;
-    // double c = SmartDashboard::GetNumber("Hoodangle Constant", 0.33);
-    double c = SmartDashboard::GetNumber("Hoodangle Constant", 0.0317);
-    double hoodangle = 0.33 - c * x + 0.000816 * x * x;
-    if (hoodangle != hoodangle)
+    double distance = (GetHubDistance(true));
+    if (distance > 0)
     {
-        hoodangle = 0.33 - 0.0317 * x + 0.000816 * x * x;
+        m_calculation.CalcInitRPMs(meter_t(distance), kVisionHubOffsetRimToCenter);
+        degree_t initAngle = m_calculation.GetInitAngle();
+        double x = initAngle.to<double>();
+        double c = SmartDashboard::GetNumber("Hoodangle Constant", 0.0317);
+        double hoodangle = 0.33 - c * x + 0.000816 * x * x;
+        if (hoodangle != hoodangle)
+        {
+            hoodangle = 0.33 - 0.0317 * x + 0.000816 * x * x;
+        }
+        hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
+        m_hood.Set(hoodangle);
     }
-    hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
-    m_hood.Set(hoodangle);
 }

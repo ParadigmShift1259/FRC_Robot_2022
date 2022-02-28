@@ -36,7 +36,9 @@ namespace DriveConstants
     /// \name Teleop Drive Constraints
     // constexpr auto kDriveSpeed = meters_per_second_t(1.5);
     constexpr auto kDriveSpeed = meters_per_second_t(3.5);
+    constexpr auto kSlowDriveSpeed = meters_per_second_t(0.8);
     constexpr auto kDriveAngularSpeed = radians_per_second_t(wpi::numbers::pi * 2.0);
+    constexpr auto kSlowDriveAngularSpeed = radians_per_second_t(wpi::numbers::pi / 2.0);
 
     /// \name CAN bus IDs
     ///@{
@@ -81,7 +83,7 @@ namespace DriveConstants
     // Record values, enter below, then redeploy
     // All gears should face outwards
 
-    //#define OFFSET_CONSTANTS_ZERO // Define this for callbrating the offsets
+    // #define OFFSET_CONSTANTS_ZERO // Define this for callbrating the offsets
     #ifdef OFFSET_CONSTANTS_ZERO
     //============================================LEAVE THESE ZEROES COMMENTED OUT!!!
     constexpr double kFrontLeftOffset   = 0.0;
@@ -91,10 +93,10 @@ namespace DriveConstants
     //===============================================================================
     #else
     // Offsets updated on 2022 Feb 21 after Sussex
-    constexpr double kFrontLeftOffset   = 1776.0;
-    constexpr double kFrontRightOffset  = 2537.0;
-    constexpr double kRearRightOffset   = 907.0;
-    constexpr double kRearLeftOffset    = 2685.0;
+    constexpr double kFrontLeftOffset   = 1791;
+    constexpr double kFrontRightOffset  = 2509.0;
+    constexpr double kRearRightOffset   = 904.0;
+    constexpr double kRearLeftOffset    = 2649.0;
     #endif
 
     // Pulse Width per rotation is not equal for all encoders. Some are 0 - 3865, some are 0 - 4096
@@ -170,8 +172,8 @@ namespace AutoConstants
     // constexpr auto kMaxSpeed = meters_per_second_t(1.0);
     // constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
 
-    constexpr auto kMaxSpeed = meters_per_second_t(3.0);
-    constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.0);
+    constexpr auto kMaxSpeed = meters_per_second_t(2.0);
+    constexpr auto kMaxAcceleration = meters_per_second_squared_t(3.0);
 
     //constexpr auto kMaxSpeed = meters_per_second_t(3.75);
     //constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.5);
@@ -207,7 +209,6 @@ namespace OIConstants
 // Vision Subsystem Constants
 namespace VisionConstants
 {
- 
     // constexpr frc::Translation2d kHubCenter = frc::Translation2d(kFieldLength/2, kFieldWidth/2);
     // constexpr frc::Translation2d turretCenterToRobotCenter = frc::Translation2d(inch_t{2.25}, inch_t{0});
     // constexpr frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
@@ -244,7 +245,6 @@ namespace VisionConstants
 
     constexpr units::meter_t kVisionTargetRadius = kVisionTargetDiameter / 2; //Should be meters type
     constexpr units::meter_t kMaxTargetSpread = 1.1 * kVisionTargetRadius;
-
 }
 
 // Flywheel Subsystem constants

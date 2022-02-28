@@ -12,16 +12,20 @@
 
 #include "Calculations.h"
 
+#include <functional>
+
+using GetYvelocityCallback = std::function<double()>;
+
 class HomeTarget : public frc2::CommandHelper<frc2::CommandBase, HomeTarget> {
 public:
-    explicit HomeTarget(  frc::XboxController* controller
-                        , FlywheelSubsystem* flywheel
+    explicit HomeTarget(  FlywheelSubsystem* flywheel
                         , TurretSubsystem* turret
                         , HoodSubsystem* hood
                         , VisionSubsystem& vision
                         , bool* turretready
                         , bool* firing
-                        , bool* finished);
+                        , bool* finished
+                        , GetYvelocityCallback yVelocityCb);
 
     void Initialize() override;
     void Execute() override;
@@ -29,7 +33,6 @@ public:
     void End(bool interrupted) override;
 
 private:
-    frc::XboxController* m_controller;
     FlywheelSubsystem* m_flywheel;
     TurretSubsystem* m_turret;
     HoodSubsystem* m_hood;
@@ -37,5 +40,7 @@ private:
     bool* m_turretready;
     bool* m_firing;
     bool* m_finished;
+    GetYvelocityCallback m_yVelocityCb;
   	Calculations m_calculation;
+
 };
