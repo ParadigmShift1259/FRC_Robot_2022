@@ -20,11 +20,11 @@ RobotContainer::RobotContainer()
     ConfigureButtonBindings();
     SetDefaultCommands();
 
-    m_chooser.SetDefaultOption("Example 1", AutoPath::kEx1);
-    m_chooser.AddOption("Example 2", AutoPath::kEx2);
-    m_chooser.AddOption("Example 3", AutoPath::kEx3);
-    m_chooser.AddOption("Example 4", AutoPath::kEx4);
-    m_chooser.AddOption("Example 5", AutoPath::kEx5);
+    m_chooser.SetDefaultOption("Path 1", EAutoPath::kEx1);
+    m_chooser.AddOption("Path 2", EAutoPath::kEx2);
+    m_chooser.AddOption("Path 3", EAutoPath::kEx3);
+    m_chooser.AddOption("Path 4", EAutoPath::kEx4);
+    m_chooser.AddOption("Path 5", EAutoPath::kEx5);
     frc::SmartDashboard::PutData("Auto Path", &m_chooser);
 
     SmartDashboard::PutNumber("servo override", 0.0);
@@ -260,209 +260,65 @@ void RobotContainer::ConfigureButtonBindings()
     // );
 }
 
+const units::meters_per_second_t zeroMps{0.0};
+const units::radians_per_second_t zeroRadsPerSec{0.0};
+
 void RobotContainer::ZeroDrive()
 {
-    m_drive.Drive(units::meters_per_second_t(0.0),
-                units::meters_per_second_t(0.0),
-                units::radians_per_second_t(0.0), false);
+    m_drive.Drive(zeroMps, zeroMps, zeroRadsPerSec, false);
 }
 
-frc2::Command *RobotContainer::GetAutonomousCommand(AutoPath path)
+frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
 {
-
-//    frc2::ParallelCommandGroup pcg;
-//    pcg.AddCommands(
-//                               std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
-//                             , std::move(frc2::SequentialCommandGroup(
-//                                   std::move(GetSwerveCommandPath("ball1", true))
-//                                 , std::move(frc2::WaitCommand(0.2_s))
-//                                 , std::move(frc2::InstantCommand(
-//                                     [this]() {
-//                                         ZeroDrive();
-//                                     }, {}
-//                                   ))
-//                                 )                
-//                               )
-//                           );
-
-    switch(path)
+    switch (path)
     {
         case kEx1:
-            return new frc2::SequentialCommandGroup(
-                  std::move(IntakeIngest(m_intake))
-                , std::move(GetSwerveCommandPath("ball1", true))
-                , std::move(frc2::WaitCommand(0.2_s))
-                , std::move(frc2::InstantCommand([this]() { ZeroDrive(); }, {} ) )                
-                , std::move(Fire( &m_flywheel
-                                , &m_turret
-                                , &m_hood
-                                , &m_transfer
-                                , m_vision
-                                , &m_turretready
-                                , &m_firing
-                                , &m_finished
-                                , [this]() { return GetYvelovity(); }
-                                , TransferConstants::kTimeLaunch))
-            );
+            return GetAutoPathCmd("ball1", true);
 
         case kEx2:
-            return new frc2::SequentialCommandGroup(
-                std::move(GetSwerveCommandPath("ball2", true)),
-                frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
-            );
+            return GetAutoPathCmd("ball2&3", false);
 
         case kEx3:
-            return new frc2::SequentialCommandGroup(
-                  std::move(GetSwerveCommandPath("ball3", true))
-                , std::move(Fire( &m_flywheel
-                                , &m_turret
-                                , &m_hood
-                                , &m_transfer
-                                , m_vision
-                                , &m_turretready
-                                , &m_firing
-                                , &m_finished
-                                , [this]() { return GetYvelovity(); }
-                                , TransferConstants::kTimeLaunch))
-                , frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )
-                // Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, &m_vision, &m_turretready, &m_firing, &m_finished, 8.0)
-            );
+            return GetAutoPathCmd("ball4", false);
 
         case kEx4:
-            return new frc2::SequentialCommandGroup(
-                  std::move(IntakeIngest(m_intake))
-                , std::move(GetSwerveCommandPath("ball1", true))
-                , std::move(frc2::WaitCommand(0.1_s))
-                , std::move(frc2::InstantCommand([this]() { ZeroDrive(); }, {} ) )                
-                , std::move(Fire( &m_flywheel
-                                , &m_turret
-                                , &m_hood
-                                , &m_transfer
-                                , m_vision
-                                , &m_turretready
-                                , &m_firing
-                                , &m_finished
-                                , [this]() { return GetYvelovity(); }
-                                , TransferConstants::kTimeLaunch))
-                , std::move(GetSwerveCommandPath("ball2&3", false))
-                , std::move(frc2::WaitCommand(0.1_s))
-                , std::move(frc2::InstantCommand([this]() { ZeroDrive(); }, {} ) )                
-                , std::move(Fire( &m_flywheel
-                                , &m_turret
-                                , &m_hood
-                                , &m_transfer
-                                , m_vision
-                                , &m_turretready
-                                , &m_firing
-                                , &m_finished
-                                , [this]() { return GetYvelovity(); }
-                                , TransferConstants::kTimeLaunch))
-                , std::move(GetSwerveCommandPath("ball4", false))
-                , std::move(frc2::WaitCommand(0.1_s))
-                , std::move(frc2::InstantCommand([this]() { ZeroDrive(); }, {} ) )                
-                , std::move(Fire( &m_flywheel
-                                , &m_turret
-                                , &m_hood
-                                , &m_transfer
-                                , m_vision
-                                , &m_turretready
-                                , &m_firing
-                                , &m_finished
-                                , [this]() { return GetYvelovity(); }
-                                , TransferConstants::kTimeLaunch))
-                , std::move(frc2::WaitCommand(0.1_s))
-                , std::move(frc2::InstantCommand([this]() { ZeroDrive(); }, {} ) )                
+            return new frc2::SequentialCommandGroup
+            (
+                  std::move(*GetAutoPathCmd("ball1", true))
+                , std::move(*GetAutoPathCmd("ball2&3", false))
+                , std::move(*GetAutoPathCmd("ball4", false))    // TODO only one ball, will transfer cmd end?
             );
-
-        // case kEx5:
-        //     return new frc2::SequentialCommandGroup(
-        //         frc2::InstantCommand(
-        //             [this]() {
-        //                 m_intake.Set(IntakeConstants::kIngestHigh);
-        //             }, {}
-        //         )                  
-        //         , std::move(GetSwerveCommandPath("ball1", true))
-        //         , frc2::WaitCommand(0.1_s)
-        //         , frc2::InstantCommand(
-        //             [this]() {
-        //                 ZeroDrive();
-        //             }, {}
-        //         )                
-        //         , std::move(Fire(&m_secondaryController
-        //                         // , &m_flywheel
-        //                         // , &m_turret
-        //                         // , &m_hood
-        //                         // , &m_intake
-        //                         // , &m_transfer
-        //                         , &m_turretready
-        //                         , &m_firing
-        //                         , &m_finished
-        //                         , TransferConstants::kTimeLaunch))
-        //         , std::move(GetSwerveCommandPath("ball2&3", false))
-        //         , frc2::WaitCommand(0.1_s)
-        //         , frc2::InstantCommand(
-        //             [this]() {
-        //                 ZeroDrive();
-        //             }, {}
-        //         )  
-        //         , std::move(Fire(&m_secondaryController
-        //                         // , &m_flywheel
-        //                         // , &m_turret
-        //                         // , &m_hood
-        //                         // , &m_intake
-        //                         // , &m_transfer
-        //                         , &m_turretready
-        //                         , &m_firing
-        //                         , &m_finished
-        //                         , TransferConstants::kTimeLaunch))
-        //         , std::move(GetSwerveCommandPath("ball4", false))
-        //         , frc2::WaitCommand(0.1_s)
-        //         , frc2::InstantCommand(
-        //             [this]() {
-        //                 ZeroDrive();
-        //             }, {}
-        //         )  
-        //         , std::move(Fire(&m_secondaryController
-        //                         // , &m_flywheel
-        //                         // , &m_turret
-        //                         // , &m_hood
-        //                         // , &m_intake
-        //                         // , &m_transfer
-        //                         , &m_turretready
-        //                         , &m_firing
-        //                         , &m_finished
-        //                         , TransferConstants::kTimeLaunch))
-        //         , frc2::WaitCommand(0.1_s)
-        //         , frc2::InstantCommand(
-        //             [this]() {
-        //                 ZeroDrive();
-        //             }, {}
-        //         )  
-        //         // frc2::InstantCommand(
-        //         //     [this]() {
-        //         //         ZeroDrive();
-        //         //     }, {}
-        //         // )
-        //     );
 
         default:
-             return new frc2::SequentialCommandGroup(
-                frc2::InstantCommand(
-                    [this]() {
-                        ZeroDrive();
-                    }, {}
-                )
-            );
+            return new frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive});
     }
+}
+
+frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(string pathName, bool primaryPath)
+{
+    return new frc2::SequentialCommandGroup
+    (
+        frc2::ParallelCommandGroup
+        (
+              std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
+            , frc2::SequentialCommandGroup
+            (
+                  std::move(GetSwerveCommandPath(pathName, primaryPath))
+                , frc2::WaitCommand(0.1_s)
+                , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
+            )
+        )
+        , std::move(Fire( &m_flywheel
+                        , &m_turret
+                        , &m_hood
+                        , &m_transfer
+                        , m_vision
+                        , &m_turretready
+                        , &m_firing
+                        , &m_finished
+                        , [this]() { return GetYvelovity(); }
+                        , TransferConstants::kTimeLaunch))
+    );
 }
 
 SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(string pathName, bool primaryPath)
@@ -479,7 +335,7 @@ SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(string pathName, bool primary
 
     thetaController.EnableContinuousInput(units::radian_t(-wpi::numbers::pi), units::radian_t(wpi::numbers::pi));
 
-    frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules> swerveControllerCommand(
+    SwerveCtrlCmd swerveControllerCommand(
         trajectory,                                                             // frc::Trajectory
         [this]() { return m_drive.GetPose(); },                                 // std::function<frc::Pose2d()>
         m_drive.kDriveKinematics,                                               // frc::SwerveDriveKinematics<NumModules>
