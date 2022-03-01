@@ -95,8 +95,8 @@ public:
 private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();
-    frc2::SequentialCommandGroup* GetAutoPathCmd(string pathName, bool primaryPath);
-    SwerveCtrlCmd GetSwerveCommandPath(string pathName, bool primaryPath);
+    frc2::SequentialCommandGroup* GetAutoPathCmd(frc::Trajectory trajectory, bool primaryPath);
+    SwerveCtrlCmd GetSwerveCommandPath(frc::Trajectory trajectory, bool primaryPath);
     frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
     void PrintTrajectory(frc::Trajectory& trajectory);
 
@@ -142,4 +142,10 @@ private:
     radians_per_second_t m_maxRotSpeed { kDriveAngularSpeed };
 
     DebugFlag   m_dbgSeroTest{"ServoTest", false};
+    
+    
+    void BuildTrajectories(void);
+    Trajectory m_ball1Traj;
+    Trajectory m_ball23Traj;
+    Trajectory m_ball4Traj;
 };

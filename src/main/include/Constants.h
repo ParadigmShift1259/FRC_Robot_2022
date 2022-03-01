@@ -170,6 +170,8 @@ namespace AutoConstants
     using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
 
     constexpr auto kMaxSpeed = meters_per_second_t(1.0);
+    constexpr auto kIntakeDriveSpeed = meters_per_second_t(0.5);
+
     constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
 
     // constexpr auto kMaxSpeed = meters_per_second_t(2.0);
