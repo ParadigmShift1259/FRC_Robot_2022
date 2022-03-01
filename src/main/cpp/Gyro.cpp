@@ -23,6 +23,11 @@ void Gyro::ZeroHeading()
     m_gyro.SetFusedHeading(0.0, 0);
 }
 
+void Gyro::SetHeading(double heading)
+{
+    m_gyro.SetFusedHeading(heading * (kGyroReversed ? -1. : 1.), 0);
+}
+
 double Gyro::GetTurnRate()
 {
     double turnRates [3] = {0, 0, 0};

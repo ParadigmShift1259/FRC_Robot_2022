@@ -55,9 +55,9 @@ void Robot::TeleopInit()
   Shuffleboard::SetRecordingFileNameFormat("Team1259NetTblData${date}_${time}");
   Shuffleboard::StartRecording();
 
-  m_container.TurretSetZeroAngle();
-  m_container.GyroSetZeroHeading();
-  //m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 120_in, kFieldWidth/2, frc::Rotation2d())); // 10 feet in front of hub
+  // m_container.TurretSetZeroAngle();  // THIS SHOULD BE SET AT t=0 OF AUTO -- DON"T RESET IT
+  // m_container.GyroSetZeroHeading();  // THIS SHOULD BE SET AT t=0 OF AUTO -- DON"T RESET IT
+  // m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 120_in, kFieldWidth/2, frc::Rotation2d())); // test code: 10 feet in front of hub
 
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to
