@@ -438,7 +438,7 @@ void RobotContainer::BuildTrajectories(void)
     config.SetEndVelocity(AutoConstants::kIntakeDriveSpeed);
     config.AddConstraint(RectangularRegionConstraint(Translation2d{250_in, 0_in}, Translation2d{350_in, 50_in}, MaxVelocityConstraint{AutoConstants::kIntakeDriveSpeed}));
     m_ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1TrajWaypoints, config);
-
+    TrajectoryUtil::ToPathweaverJson(m_ball1Traj, "ball1Traj_WPIone-shot");
 
     // alternate piece-wise construction of path #1...
     vector<Pose2d> ball1TrajPt1Waypoints 
@@ -473,6 +473,7 @@ void RobotContainer::BuildTrajectories(void)
     Trajectory ball1TrajPt3 = frc::TrajectoryGenerator::GenerateTrajectory(ball1TrajPt1Waypoints, config);
 
     m_ball1Traj = ball1TrajPt1 + ball1TrajPt2 + ball1TrajPt3; // combine three Trajectory segments
+    TrajectoryUtil::ToPathweaverJson(m_ball1Traj, "ball1Traj_WPIpiece-wise");
 
     Trajectory ball1TrajRed = m_ball1Traj.TransformBy(Transform2d(Translation2d{72_in+18_in, 0_in}.RotateBy(69_deg), Rotation2d{180_deg}));
 }
