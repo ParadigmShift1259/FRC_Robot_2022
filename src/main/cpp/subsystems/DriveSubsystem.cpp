@@ -265,6 +265,7 @@ frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
     int State1Idx, State2Idx;
     if (firstOdoState.t < timestamp && timestamp < lastOdoState.t)
     {
+        // TO DO -- start searching from index interpolated between firstOdoState.t lastOdoState.t based on requested timestamp 
         if(lastOdoState.t - timestamp < timestamp - firstOdoState.t)
         {
             int i = m_StateHist.size() - 2;
