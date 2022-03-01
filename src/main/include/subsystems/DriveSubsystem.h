@@ -179,7 +179,7 @@ private:
     /// Whether or not rotation input was provided, used for @ref HeadingDrive
     bool m_rotationalInput;
     Timer m_timer;
-    vector<frc::Trajectory::State> m_StateHist;
+    vector<frc::Trajectory::State> m_StateHist;  // TO DO: change to new class derived from Trajectory::State with additional field for Turrent angle 
     double m_velocity;
     double m_acceleration;
     meters_per_second_t m_maxDriveSpeed { kDriveSpeed };
