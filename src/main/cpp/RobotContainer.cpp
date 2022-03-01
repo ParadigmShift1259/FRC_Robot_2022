@@ -206,7 +206,7 @@ void RobotContainer::ConfigureButtonBindings()
          )
     );
 
-    JoystickButton(&m_primaryController, xbox::kX).WhenPressed(&m_zeroHeading);
+    // JoystickButton(&m_primaryController, xbox::kX).WhenPressed(&m_zeroHeading);  REMOVED FOR GAME PLAY!
     JoystickButton(&m_primaryController, xbox::kBack).WhileHeld(&m_climb);
 #ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
     JoystickButton(&m_primaryController, xbox::kStart).WhileHeld(&m_windClimb);
@@ -352,7 +352,11 @@ SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(string pathName, bool primary
 
     // Reset odometry to the starting pose of the trajectory
     if (primaryPath)
+        {
+        // Init absolute gyro angle isn't required by ResetOdometry() but IS required due to directly reading the gyro elsewhere
+        m_gyro.SetHeading((double)trajectory.InitialPose().Rotation().Degrees()); 
         m_drive.ResetOdometry(trajectory.InitialPose());
+        }
 
     return swerveControllerCommand;
 }

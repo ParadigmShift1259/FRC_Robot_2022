@@ -27,6 +27,8 @@ public:
     /// Zeroes the heading of the robot.
     void ZeroHeading();
 
+    void SetHeading(double heading);
+
     /// Returns the turn rate of the robot.
     /// \return The turn rate of the robot, in degrees per second
     double GetTurnRate();
