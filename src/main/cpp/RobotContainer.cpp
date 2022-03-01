@@ -472,4 +472,6 @@ void RobotContainer::BuildTrajectories(void)
     Trajectory ball1TrajPt3 = frc::TrajectoryGenerator::GenerateTrajectory(ball1TrajPt1Waypoints, config);
 
     m_ball1Traj = ball1TrajPt1 + ball1TrajPt2 + ball1TrajPt3; // combine three Trajectory segments
+
+    Trajectory ball1TrajRed = m_ball1Traj.TransformBy(Transform2d(Translation2d{72_in+18_in, 0_in}.RotateBy(69_deg), Rotation2d{180_deg}));
 }
