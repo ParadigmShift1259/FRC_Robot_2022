@@ -24,6 +24,7 @@ RobotContainer::RobotContainer()
 
     ConfigureButtonBindings();
     SetDefaultCommands();
+    BuildTrajectories();
 
     m_chooser.SetDefaultOption("Path 1", EAutoPath::kEx1);
     m_chooser.AddOption("Path 2", EAutoPath::kEx2);
