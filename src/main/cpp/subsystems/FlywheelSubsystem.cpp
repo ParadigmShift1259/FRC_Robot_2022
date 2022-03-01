@@ -131,6 +131,12 @@ void FlywheelSubsystem::CalculateRPM()
 
     double FF = m_setpoint * 5.0 / 2400.0 + 0.317;
     constexpr int pidslot = 0;
+    bool bSupressFlywheel = SmartDashboard::GetBoolean("SupressFlywheel", false);
+
+    if (bSupressFlywheel)
+    {
+        FF = 0.0;
+    }
 
     SmartDashboard::PutNumber("FeedForward", FF);
     m_flywheelPID.SetReference(m_setpoint, CANSparkMax::ControlType::kVelocity, pidslot, FF);

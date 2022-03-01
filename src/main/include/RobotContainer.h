@@ -128,7 +128,11 @@ private:
     };
     frc2::InstantCommand m_zeroHeading{[this] { m_gyro.ZeroHeading(); }, {}};
     frc2::InstantCommand m_climb{[this] { m_climber.Run(ClimberConstants::kMotorSpeed); }, {&m_climber} };
-    
+#define CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
+#ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
+    frc2::InstantCommand m_windClimb{[this] { m_climber.Run(-1.0 * ClimberConstants::kMotorSpeed); }, {&m_climber} };
+#endif
+
     double m_overrideAngle = 0.0;
 
     bool m_turretready = false;

@@ -208,6 +208,9 @@ void RobotContainer::ConfigureButtonBindings()
 
     JoystickButton(&m_primaryController, xbox::kX).WhenPressed(&m_zeroHeading);
     JoystickButton(&m_primaryController, xbox::kBack).WhileHeld(&m_climb);
+#ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
+    JoystickButton(&m_primaryController, xbox::kStart).WhileHeld(&m_windClimb);
+#endif
 
     // JoystickButton(&m_secondaryController, xbox::kRightBumper).WhenPressed(
     //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, m_vision,
@@ -274,6 +277,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     {
         case kEx1:
             return GetAutoPathCmd("ball1", true);
+//            return GetAutoPathCmd("New New Path", true);
 
         case kEx2:
             return GetAutoPathCmd("ball2&3", false);
@@ -304,7 +308,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(string pathName, bo
             , frc2::SequentialCommandGroup
             (
                   std::move(GetSwerveCommandPath(pathName, primaryPath))
-                , frc2::WaitCommand(0.1_s)
+                //, frc2::WaitCommand(0.2_s)
                 , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
             )
         )
@@ -356,6 +360,7 @@ SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(string pathName, bool primary
 frc::Trajectory RobotContainer::convertPathToTrajectory(PathPlannerTrajectory path)
 {
     std::vector<frc::Trajectory::State> states;
+    double time = 0.0;
     for (double time = 0; time < path.getTotalTime().to<double>(); time += 0.02)
     {
         PathPlannerTrajectory::PathPlannerState state = path.sample(time * 1_s);
@@ -372,6 +377,21 @@ frc::Trajectory RobotContainer::convertPathToTrajectory(PathPlannerTrajectory pa
             curvature_t(0)
         });
     }
+
+    // time += 0.02;
+    // PathPlannerTrajectory::PathPlannerState state;
+    // states.push_back({
+    //     time * 1_s,
+    //     meters_per_second_t(0.0),
+    //     meters_per_second_squared_t(0.0), 
+    //     frc::Pose2d(
+    //         state.pose.X(),
+    //         state.pose.Y(),
+    //         state.holonomicRotation
+    //     ),
+    //     curvature_t(0)
+    // });
+
     return frc::Trajectory(states);
 }
 

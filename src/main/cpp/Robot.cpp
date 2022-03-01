@@ -40,7 +40,11 @@ void Robot::DisabledPeriodic() {}
  * This autonomous runs the autonomous command selected by your {@link
  * RobotContainer} class.
  */
-void Robot::AutonomousInit() {
+void Robot::AutonomousInit()
+{
+  m_container.TurretSetZeroAngle();
+  //m_container.GyroSetZeroHeading();
+
   m_autonomousCommand = m_container.GetAutonomousCommand(m_container.m_chooser.GetSelected());
 
   if (m_autonomousCommand != nullptr) {
@@ -56,7 +60,7 @@ void Robot::TeleopInit()
   Shuffleboard::StartRecording();
 
   m_container.TurretSetZeroAngle();
-  m_container.GyroSetZeroHeading();
+  //m_container.GyroSetZeroHeading();
   //m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 120_in, kFieldWidth/2, frc::Rotation2d())); // 10 feet in front of hub
 
   // This makes sure that the autonomous stops running when

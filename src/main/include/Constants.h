@@ -169,11 +169,11 @@ namespace AutoConstants
 {
     using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
 
-    // constexpr auto kMaxSpeed = meters_per_second_t(1.0);
-    // constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
+    constexpr auto kMaxSpeed = meters_per_second_t(1.0);
+    constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
 
-    constexpr auto kMaxSpeed = meters_per_second_t(2.0);
-    constexpr auto kMaxAcceleration = meters_per_second_squared_t(3.0);
+    // constexpr auto kMaxSpeed = meters_per_second_t(2.0);
+    // constexpr auto kMaxAcceleration = meters_per_second_squared_t(3.0);
 
     //constexpr auto kMaxSpeed = meters_per_second_t(3.75);
     //constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.5);
@@ -392,6 +392,5 @@ namespace ClimberConstants
 {
     constexpr double kMotorCanId = 15;          // Climber CAN ID TalonSRX
     constexpr double kMotorReverseConstant = -1;
-    //constexpr double kMotorSpeed = 0.9;
-    constexpr double kMotorSpeed = 0.3;
+    constexpr double kMotorSpeed = 1.0;
 }
