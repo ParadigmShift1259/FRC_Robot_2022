@@ -83,7 +83,7 @@ namespace DriveConstants
     // Record values, enter below, then redeploy
     // All gears should face outwards
 
-    // #define OFFSET_CONSTANTS_ZERO // Define this for callbrating the offsets
+    //#define OFFSET_CONSTANTS_ZERO // Define this for callbrating the offsets
     #ifdef OFFSET_CONSTANTS_ZERO
     //============================================LEAVE THESE ZEROES COMMENTED OUT!!!
     constexpr double kFrontLeftOffset   = 0.0;
@@ -93,10 +93,10 @@ namespace DriveConstants
     //===============================================================================
     #else
     // Offsets updated on 2022 Feb 21 after Sussex
-    constexpr double kFrontLeftOffset   = 1791;
-    constexpr double kFrontRightOffset  = 2509.0;
-    constexpr double kRearRightOffset   = 904.0;
-    constexpr double kRearLeftOffset    = 2649.0;
+    constexpr double kFrontLeftOffset   = 1785; //1791; 
+    constexpr double kFrontRightOffset  = 2525; ///2509.0;
+    constexpr double kRearRightOffset   = 901.0; //904.0;
+    constexpr double kRearLeftOffset    = 2646; // 2649.0;
     #endif
 
     // Pulse Width per rotation is not equal for all encoders. Some are 0 - 3865, some are 0 - 4096
@@ -169,7 +169,9 @@ namespace AutoConstants
 {
     using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
 
-    constexpr auto kMaxSpeed = meters_per_second_t(1.0);
+    constexpr auto kMaxSpeed = meters_per_second_t(2.0);
+    constexpr auto kIntakeDriveSpeed = meters_per_second_t(0.5);
+
     constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
 
     // constexpr auto kMaxSpeed = meters_per_second_t(2.0);
@@ -177,15 +179,21 @@ namespace AutoConstants
 
     //constexpr auto kMaxSpeed = meters_per_second_t(3.75);
     //constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.5);
-    constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi * 6.0);
-    constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi * 6.0);
 
-    constexpr double kPXController = 7.0;
-    constexpr double kDXController = 0.7;
-    constexpr double kPYController = 7.0;
-    constexpr double kDYController = 0.7;
-    constexpr double kPThetaController = 10.0;
-    constexpr double kDThetaController = 0.9;
+    constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi);
+    constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi);
+    // constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi * 6.0);
+    // constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi * 6.0);
+
+    constexpr double kPXController = 20; //7.0;
+    constexpr double kIXController = 1; 
+    constexpr double kDXController = 1; // 0.7;
+    constexpr double kPYController = kPXController; //7.0;
+    constexpr double kIYController = kIXController; 
+    constexpr double kDYController = kDXController; // 0.7;
+    constexpr double kPThetaController = 20; // 10.0;
+    constexpr double kIThetaController = 0; 
+    constexpr double kDThetaController = 1; // 0.9;
 
     extern const frc::TrapezoidProfile<radians>::Constraints kThetaControllerConstraints;
 }  // namespace AutoConstants
@@ -325,7 +333,7 @@ namespace TransferConstants
     constexpr double kFeederSpeed = 0.5;
     constexpr double kFeederSpeedFiring = 0.8;
     constexpr double kSpeedFiring = 0.7;
-    constexpr double kTransferSpeedIntaking = 0.65;
+    constexpr double kTransferSpeedIntaking = 0.7;
 
     // Time to go from 0 to full throttle
     constexpr double kTransferRampRate = 0.75;

@@ -1,1 +1,83 @@
-{"waypoints":[{"anchorPoint":{"x":7.597006915992828,"y":3.034400386446029},"prevControl":null,"nextControl":{"x":7.626293807306823,"y":2.409613371747444},"holonomicAngle":-111.8658038884854,"isReversal":false,"velOverride":null,"isLocked":false},{"anchorPoint":{"x":7.663403227162328,"y":1.698639696210442},"prevControl":{"x":7.667594083850321,"y":1.6980644805865999},"nextControl":{"x":7.659212370474335,"y":1.699214911834284},"holonomicAngle":-91.5296662524452,"isReversal":false,"velOverride":null,"isLocked":false},{"anchorPoint":{"x":7.800075386627643,"y":0.702885391534573},"prevControl":{"x":7.864155384704031,"y":0.6621072109405067},"nextControl":{"x":7.864155384704031,"y":0.6621072109405067},"holonomicAngle":-90.0,"isReversal":true,"velOverride":0.0,"isLocked":false},{"anchorPoint":{"x":6.4,"y":0.96},"prevControl":{"x":6.399490135232622,"y":0.9491075405872976},"nextControl":null,"holonomicAngle":55.09582084819616,"isReversal":false,"velOverride":0.0,"isLocked":false}],"maxVelocity":2.0,"maxAcceleration":3.0,"isReversed":null}
+{
+    "waypoints": [{
+            "anchorPoint": {
+                "x": 7.597006915992828,
+                "y": 3.034400386446029
+            },
+            "prevControl": null,
+            "nextControl": {
+                "x": 7.626293807306823,
+                "y": 2.409613371747444
+            },
+            "holonomicAngle": -111.8658038884854,
+            "isReversal": false,
+            "velOverride": null,
+            "isLocked": false
+        }, {
+            "anchorPoint": {
+                "x": 7.597006915992828,
+                "y": 2.8
+            },
+            "prevControl": null,
+            "nextControl": {
+                "x": 7.626293807306823,
+                "y": 2.409613371747444
+            },
+            "holonomicAngle": -111.8658038884854,
+            "isReversal": false,
+            "velOverride": null,
+            "isLocked": false
+        }, {
+            "anchorPoint": {
+                "x": 7.728624158081514,
+                "y": 1.5263146843161068
+            },
+            "prevControl": {
+                "x": 7.732815014769507,
+                "y": 1.5257394686922647
+            },
+            "nextControl": {
+                "x": 7.724433301393521,
+                "y": 1.526889899939949
+            },
+            "holonomicAngle": -91.5296662524452,
+            "isReversal": false,
+            "velOverride": null,
+            "isLocked": false
+        }, {
+            "anchorPoint": {
+                "x": 7.800075386627643,
+                "y": 0.702885391534573
+            },
+            "prevControl": {
+                "x": 7.864155384704031,
+                "y": 0.6621072109405067
+            },
+            "nextControl": {
+                "x": 7.864155384704031,
+                "y": 0.6621072109405067
+            },
+            "holonomicAngle": -90.0,
+            "isReversal": true,
+            "velOverride": 0.0,
+            "isLocked": false
+        }, {
+            "anchorPoint": {
+                "x": 6.4,
+                "y": 0.96
+            },
+            "prevControl": {
+                "x": 6.399490135232622,
+                "y": 0.9491075405872976
+            },
+            "nextControl": null,
+            "holonomicAngle": 55.09582084819616,
+            "isReversal": false,
+            "velOverride": 0.0,
+            "isLocked": false
+        }
+    ],
+    "maxVelocity": 2.0,
+    "maxAcceleration": 3.0,
+    "isReversed": null
+}

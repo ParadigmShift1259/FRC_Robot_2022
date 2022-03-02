@@ -37,9 +37,9 @@ public:
     VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, HoodSubsystem& hood, IOdometry& odometry);
 
     /// Will be called periodically whenever the CommandScheduler runs.
-//    void Periodic() override;
+    void Periodic() override;
 
-    void NTcallback(nt::NetworkTable* table, std::string_view name, nt::NetworkTableEntry entry, std::shared_ptr<nt::Value> value, int flags);
+    //void NTcallback(nt::NetworkTable* table, std::string_view name, nt::NetworkTableEntry entry, std::shared_ptr<nt::Value> value, int flags);
 
     /// Determine valid vision based on returned distance values
     /// \return         Whether or not the Vision Subsystem is giving accurate values

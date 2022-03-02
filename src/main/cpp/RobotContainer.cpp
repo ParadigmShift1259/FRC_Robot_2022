@@ -276,7 +276,8 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     switch (path)
     {
         case kEx1:
-            return GetAutoPathCmd("ball1", true);
+//            return GetAutoPathCmd("ball1", true);
+            return GetAutoPathCmd("Ball1Short", true);
 //            return GetAutoPathCmd("New New Path", true);
 
         case kEx2:

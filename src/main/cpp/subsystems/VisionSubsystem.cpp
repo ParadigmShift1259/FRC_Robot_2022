@@ -25,19 +25,19 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
     kTargetPitch = degree_t{0};
     m_consecNoTargets = 0;
 
-   m_networktable->AddEntryListener(
-       "TODO which entry do we need to watch"
-       ,[this](nt::NetworkTable* table
-            , std::string_view name
-            , nt::NetworkTableEntry entry
-            , std::shared_ptr<nt::Value> value
-            , int flags)
-        { NTcallback(table, name, entry, value, flags); }
-        , nt::EntryListenerFlags::kUpdate);
+//    m_networktable->AddEntryListener(
+//        "/photonvision/gloworm/latencyMillis"
+//        ,[this](nt::NetworkTable* table
+//             , std::string_view name
+//             , nt::NetworkTableEntry entry
+//             , std::shared_ptr<nt::Value> value
+//             , int flags)
+//         { NTcallback(table, name, entry, value, flags); }
+//         , nt::EntryListenerFlags::kUpdate);
 }
 
-void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name, nt::NetworkTableEntry entry, std::shared_ptr<nt::Value> value, int flags)
-//void VisionSubsystem::Periodic()
+//void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name, nt::NetworkTableEntry entry, std::shared_ptr<nt::Value> value, int flags)
+void VisionSubsystem::Periodic()
 {
     static Timer timer;
     units::time::second_t visionTimestamp = timer.GetFPGATimestamp();
@@ -186,7 +186,7 @@ void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name,
         else //if (m_validTarget)
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
-            //m_turret.TurnToRelative(hubAngle * 1);
+            m_turret.TurnToRelative(hubAngle * 1);
             turretCmdHoldoff = 0;  // limit turret command rate due to vision lag
             AdjustHood();
         }
