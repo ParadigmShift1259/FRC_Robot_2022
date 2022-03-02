@@ -144,8 +144,10 @@ private:
     DebugFlag   m_dbgSeroTest{"ServoTest", false};
     
     
+    frc2::SequentialCommandGroup* GetBall1Cmd(void);
     void BuildTrajectories(void);
-    Trajectory m_ball1Traj;
-    Trajectory m_ball23Traj;
-    Trajectory m_ball4Traj;
+    // Trajectory m_ball1Traj;
+    Trajectory m_ball1TrajPt1;
+    Trajectory m_ball1TrajPt2;
+    Trajectory m_ball1TrajPt3;
 };
