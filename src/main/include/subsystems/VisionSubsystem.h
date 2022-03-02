@@ -60,6 +60,8 @@ public:
 
     double GetHubDistance(bool smoothed);
 
+    void SetVisionEnable(bool bEnable) { m_bEnable = bEnable; }
+
 protected:
     /// Converts degrees to radians
     /// \param degrees Degrees to convert
@@ -74,6 +76,7 @@ private:
 
     int m_consecNoTargets;
     bool m_validTarget;
+    bool m_bEnable = false; // Do not enable right away in autonomous
     double m_smoothedRange;
     Pose2d m_robotPose;
     vector<double> m_averageDistance;

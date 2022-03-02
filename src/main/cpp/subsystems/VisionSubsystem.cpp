@@ -26,7 +26,7 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
     m_consecNoTargets = 0;
 
    m_networktable->AddEntryListener(
-       "TODO which entry do we need to watch"
+       "photonvision/gloworm/latencyMillis"
        ,[this](nt::NetworkTable* table
             , std::string_view name
             , nt::NetworkTableEntry entry
@@ -40,6 +40,10 @@ void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name,
 //void VisionSubsystem::Periodic()
 {
     static Timer timer;
+
+    if (!m_bEnable)
+        return;
+        
     units::time::second_t visionTimestamp = timer.GetFPGATimestamp();
 
     static unsigned counter = 0; 

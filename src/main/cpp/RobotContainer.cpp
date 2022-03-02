@@ -282,7 +282,8 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     switch (path)
     {
         case kEx1:
-            return GetAutoPathCmd(m_ball1Traj, true);
+            //return GetAutoPathCmd(m_ball1Traj, true);
+            return GetAutoPathCmd(m_trajectories);
 //            return GetAutoPathCmd("New New Path", true);
 
         case kEx2:
@@ -315,7 +316,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(frc::Trajectory tra
             (
                   std::move(GetSwerveCommandPath(trajectory, primaryPath))
                 //, frc2::WaitCommand(0.2_s)
-                , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
+                , frc2::InstantCommand([this]() { ZeroDrive(); m_vision.SetVisionEnable(true); }, {&m_drive})
             )
         )
         , std::move(Fire( &m_flywheel
@@ -329,6 +330,45 @@ frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(frc::Trajectory tra
                         , [this]() { return GetYvelovity(); }
                         , TransferConstants::kTimeLaunch))
     );
+}
+
+frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(std::vector<frc::Trajectory> trajectories)
+{
+    frc2::SequentialCommandGroup* pSeqCmdGrp = new frc2::SequentialCommandGroup;
+
+    frc2::SequentialCommandGroup pathSeqCmdGrp;
+    bool primaryPath = true;
+    for (auto& trajectory : trajectories)
+    {
+        //pathCmds.push_back(std::move(GetSwerveCommandPath(trajectory, primaryPath)));
+        pathSeqCmdGrp.AddCommands(std::move(GetSwerveCommandPath(trajectory, primaryPath)));
+        if (primaryPath)
+        {
+            primaryPath = false;
+        }
+    }
+    pathSeqCmdGrp.AddCommands(frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive}));
+
+    pSeqCmdGrp->AddCommands
+    (
+        frc2::ParallelCommandGroup
+        (
+              std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
+            , std::move(pathSeqCmdGrp)
+        )
+        , std::move(Fire( &m_flywheel
+                        , &m_turret
+                        , &m_hood
+                        , &m_transfer
+                        , m_vision
+                        , &m_turretready
+                        , &m_firing
+                        , &m_finished
+                        , [this]() { return GetYvelovity(); }
+                        , TransferConstants::kTimeLaunch))
+    );
+
+    return pSeqCmdGrp;
 }
 
 SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(frc::Trajectory trajectory, bool primaryPath)
@@ -418,27 +458,25 @@ void RobotContainer::PrintTrajectory(frc::Trajectory& trajectory)
     }
 }
 
-
-
 void RobotContainer::BuildTrajectories(void)
 {
     // one-shot generation of path 1... 
-    vector<Pose2d> ball1TrajWaypoints 
-    {
-        frc::Pose2d(305_in, 112_in, -111_deg),
-        frc::Pose2d(298.5_in, 50_in, -90_deg), // start intake ball 1   
-        frc::Pose2d(298.5_in, 30_in, -90_deg), // finish intake ball 1
-        frc::Pose2d(290_in, 30_in, -90_deg),   // sideways to avoid cusp in trajectory from direct reveral
-        frc::Pose2d(290_in, 50_in, -120_deg),  // start moving back toward hub and spinning to shoot
-        frc::Pose2d(298.5_in, 70_in, 155_deg), // ready to shoot
-    };
+    // vector<Pose2d> ball1TrajWaypoints 
+    // {
+    //     frc::Pose2d(305_in, 112_in, -111_deg),
+    //     frc::Pose2d(298.5_in, 50_in, -90_deg), // start intake ball 1   
+    //     frc::Pose2d(298.5_in, 30_in, -90_deg), // finish intake ball 1
+    //     frc::Pose2d(290_in, 30_in, -90_deg),   // sideways to avoid cusp in trajectory from direct reveral
+    //     frc::Pose2d(290_in, 50_in, -120_deg),  // start moving back toward hub and spinning to shoot
+    //     frc::Pose2d(298.5_in, 70_in, 155_deg), // ready to shoot
+    // };
 
-    TrajectoryConfig config = TrajectoryConfig{AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration};
-    config.SetKinematics(m_drive.kDriveKinematics);
-    config.SetEndVelocity(AutoConstants::kIntakeDriveSpeed);
-    config.AddConstraint(RectangularRegionConstraint(Translation2d{250_in, 0_in}, Translation2d{350_in, 50_in}, MaxVelocityConstraint{AutoConstants::kIntakeDriveSpeed}));
-    m_ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1TrajWaypoints, config);
-    TrajectoryUtil::ToPathweaverJson(m_ball1Traj, "ball1Traj_WPIone-shot");
+    // TrajectoryConfig config = TrajectoryConfig{AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration};
+    // config.SetKinematics(m_drive.kDriveKinematics);
+    // config.SetEndVelocity(AutoConstants::kIntakeDriveSpeed);
+    // config.AddConstraint(RectangularRegionConstraint(Translation2d{250_in, 0_in}, Translation2d{350_in, 50_in}, MaxVelocityConstraint{AutoConstants::kIntakeDriveSpeed}));
+    // m_ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1TrajWaypoints, config);
+    // TrajectoryUtil::ToPathweaverJson(m_ball1Traj, "ball1Traj_WPIone-shot");
 
     // alternate piece-wise construction of path #1...
     vector<Pose2d> ball1TrajPt1Waypoints 
@@ -458,22 +496,25 @@ void RobotContainer::BuildTrajectories(void)
         frc::Pose2d(298.5_in, 70_in, 155_deg),
     };
 
-    config = TrajectoryConfig{AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration};
+    auto config = TrajectoryConfig{AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration};
     config.SetKinematics(m_drive.kDriveKinematics);
     config.SetEndVelocity(AutoConstants::kIntakeDriveSpeed);
     Trajectory ball1TrajPt1 = frc::TrajectoryGenerator::GenerateTrajectory(ball1TrajPt1Waypoints, config);
+    m_trajectories.push_back(ball1TrajPt1);
 
     config = TrajectoryConfig{AutoConstants::kIntakeDriveSpeed, AutoConstants::kMaxAcceleration};
     config.SetKinematics(m_drive.kDriveKinematics);
     config.SetStartVelocity(AutoConstants::kIntakeDriveSpeed);
     Trajectory ball1TrajPt2 = frc::TrajectoryGenerator::GenerateTrajectory(ball1TrajPt1Waypoints, config);
+    m_trajectories.push_back(ball1TrajPt2);
 
     config = TrajectoryConfig{1_mps, AutoConstants::kMaxAcceleration};
     config.SetKinematics(m_drive.kDriveKinematics);
     Trajectory ball1TrajPt3 = frc::TrajectoryGenerator::GenerateTrajectory(ball1TrajPt1Waypoints, config);
+    m_trajectories.push_back(ball1TrajPt3);
 
-    m_ball1Traj = ball1TrajPt1 + ball1TrajPt2 + ball1TrajPt3; // combine three Trajectory segments
-    TrajectoryUtil::ToPathweaverJson(m_ball1Traj, "ball1Traj_WPIpiece-wise");
+    //m_ball1Traj = ball1TrajPt1 + ball1TrajPt2 + ball1TrajPt3; // combine three Trajectory segments
+    //TrajectoryUtil::ToPathweaverJson(m_ball1Traj, "ball1Traj_WPIpiece-wise");
 
-    Trajectory ball1TrajRed = m_ball1Traj.TransformBy(Transform2d(Translation2d{72_in+18_in, 0_in}.RotateBy(69_deg), Rotation2d{180_deg}));
+    //Trajectory ball1TrajRed = m_ball1Traj.TransformBy(Transform2d(Translation2d{72_in+18_in, 0_in}.RotateBy(69_deg), Rotation2d{180_deg}));
 }

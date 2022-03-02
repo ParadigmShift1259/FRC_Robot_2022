@@ -96,6 +96,7 @@ private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();
     frc2::SequentialCommandGroup* GetAutoPathCmd(frc::Trajectory trajectory, bool primaryPath);
+    frc2::SequentialCommandGroup* GetAutoPathCmd(std::vector<frc::Trajectory> trajectories);
     SwerveCtrlCmd GetSwerveCommandPath(frc::Trajectory trajectory, bool primaryPath);
     frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
     void PrintTrajectory(frc::Trajectory& trajectory);
@@ -143,7 +144,7 @@ private:
 
     DebugFlag   m_dbgSeroTest{"ServoTest", false};
     
-    
+    std::vector<Trajectory> m_trajectories; 
     void BuildTrajectories(void);
     Trajectory m_ball1Traj;
     Trajectory m_ball23Traj;
