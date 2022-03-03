@@ -51,11 +51,13 @@ void VisionSubsystem::Periodic()
 
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
     bool validTarget = result.HasTargets();
+printf("valid target %d\n", validTarget);
     if (validTarget)
     {
         vector<frc::Translation2d> targetVectors;
         auto targets = result.GetTargets();
 
+printf(" target count: %d   ",  targets.size());
         // Gets camera-relative x,y translations for each vision target
         for (int i = 0; i < targets.size(); i++)
         {
@@ -65,6 +67,9 @@ void VisionSubsystem::Periodic()
             if (!(TargetPitch > units::degree_t{20}) && !(TargetPitch < units::degree_t{-14}))
                 targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
         }
+
+printf(" pitch-filtered targets: %d   ", targetVectors.size());
+
 
         //find the center of the vision targets
         double xTotal = 0;
@@ -90,6 +95,8 @@ void VisionSubsystem::Periodic()
             }
         }
 
+printf(" outlier-filtered targets: %d   ", targetVectors.size());
+
         if (targetVectors.size() >= 3)
         {
             frc::Translation2d cameraToHub = FitCircle(targetVectors, meter_t{0.01}, 20);
@@ -99,7 +106,7 @@ void VisionSubsystem::Periodic()
                 m_validTarget = true;
                 // cameraToHub is the vector from cam to hub IN CAMERA-RELATIVE COORDINATE SYSTEM!
                 // printf("camera pose from circle fit: x %.3f y %.3f    ", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
-#define USE_ODO_COMPENSATION
+//#define USE_ODO_COMPENSATION
 #ifdef USE_ODO_COMPENSATION
                 visionTimestamp = visionTimestamp - result.GetLatency();
                 frc::Pose2d delayedOdoPose = m_odometry.GetPose(visionTimestamp);
@@ -150,7 +157,7 @@ void VisionSubsystem::Periodic()
             validTarget =  false; 
         }
         
-        if (validTarget == false)
+        if (validTarget == false && m_odometry.HasAuotRun())
         {
             m_consecNoTargets++;
 
@@ -181,7 +188,7 @@ void VisionSubsystem::Periodic()
         {
             turretCmdHoldoff--;
         }
-        else //if (m_validTarget)
+        else if (validTarget || m_odometry.HasAuotRun())
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
             m_turret.TurnToRelative(hubAngle * 1);

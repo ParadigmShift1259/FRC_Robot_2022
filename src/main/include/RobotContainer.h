@@ -89,6 +89,7 @@ public:
     Pose2d GetPose(units::time::second_t timestamp) const { return m_drive.GetPose(timestamp); }
     const vector<frc::Trajectory::State>& GetStateHist() const { return m_drive.GetStateHist(); }
     void ResetOdometry(frc::Pose2d pose) { m_drive.ResetOdometry(pose); }
+    bool HasAuotRun() { return m_hasAutoRun; }
 
     double GetYvelovity() { return m_drive.GetYvelocity().to<double>(); }
 
@@ -165,6 +166,7 @@ private:
         {&m_hood}
     };
 
+    bool m_hasAutoRun = false;
     bool m_turretready = false;
     bool m_firing = false;
     bool m_finished = false;

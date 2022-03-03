@@ -12,4 +12,5 @@ public:
     virtual frc::Pose2d GetPose() = 0;
     virtual frc::Pose2d GetPose(units::time::second_t timestamp) const = 0;
     virtual const std::vector<frc::Trajectory::State>& GetStateHist() const = 0;
+    virtual bool HasAuotRun() = 0;
 };
