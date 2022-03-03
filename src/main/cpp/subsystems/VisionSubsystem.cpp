@@ -17,12 +17,6 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
  , m_odometry(odometry)
 {
     SetLED(true);
-    m_averageDistance.reserve(3);
-    m_averageAngle.reserve(3);
-    kCameraHeight = inch_t{41.25}; //37
-    kCurrTargetHeight = inch_t{8*12 + 7};
-    kCameraPitch = degree_t{21.0}; // 18.8
-    kTargetPitch = degree_t{0};
     m_consecNoTargets = 0;
 
 //    m_networktable->AddEntryListener(
@@ -65,10 +59,10 @@ void VisionSubsystem::Periodic()
         // Gets camera-relative x,y translations for each vision target
         for (int i = 0; i < targets.size(); i++)
         {
-            kTargetPitch = degree_t{targets[i].GetPitch()};
+            degree_t TargetPitch = degree_t{targets[i].GetPitch()};
             meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
-                kCameraHeight, kCurrTargetHeight, kCameraPitch, kTargetPitch);
-            if (!(kTargetPitch > units::degree_t{24}) && !(kTargetPitch < units::degree_t{-9}))
+                kCameraHeight, kCurrTargetHeight, kCameraPitch, TargetPitch);
+            if (!(TargetPitch > units::degree_t{24}) && !(TargetPitch < units::degree_t{-9}))
                 targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
         }
 
