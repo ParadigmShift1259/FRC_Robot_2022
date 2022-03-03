@@ -231,7 +231,10 @@ namespace VisionConstants
     constexpr double kMountingHeight = 22;
     // Target center height, in inches
     // 6/30/21 Changed: Target bottom now instead for consistent tracking in worse conditions
-    constexpr double kTargetHeight = 81.25;  //98.25;
+   
+    constexpr inch_t kCameraHeight = inch_t{41.25};
+    constexpr inch_t kCurrTargetHeight = inch_t{8*12 + 7};
+    constexpr degree_t kCameraPitch = degree_t{21.0};
 
     constexpr double kMinTargetDistance = 70;
     constexpr double kMaxTargetDistance = 380;

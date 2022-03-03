@@ -81,11 +81,7 @@ private:
     photonlib::PhotonCamera camera{"gloworm"};
     //std::vector<std::pair<double, double>> m_centerPoints;
     frc::Translation2d m_cameraToHub;
-    inch_t kCameraHeight;
-    inch_t kCurrTargetHeight;
-    degree_t kCameraPitch;
-    degree_t kTargetPitch;
-
+    
     /// Gyro to determine field relative angles, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
     TurretSubsystem& m_turret;
