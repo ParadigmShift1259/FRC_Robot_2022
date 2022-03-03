@@ -11,6 +11,7 @@ using namespace TurretConstants;
 TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro) 
     : m_turretmotor(kMotorPort)
     , m_gyro(gyro)
+    , m_absEnc(0)
 {
     m_turretmotor.ConfigFactoryDefault();
 
@@ -55,6 +56,7 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
 #endif
     //m_turretmotor.Set(ControlMode::PercentOutput, 0.1);
     m_currentAngle = kStartingPositionDegrees;
+    m_startingPos = m_absEnc.GetValue();
 
 
 #ifdef TUNE_TURRET_PID
@@ -72,6 +74,11 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
 
 void TurretSubsystem::Periodic()
 {
+    if (m_setZero == true)
+    {
+        
+    }
+
     frc::SmartDashboard::PutNumber("D_T_CTicks", m_turretmotor.GetSelectedSensorPosition());
     frc::SmartDashboard::PutNumber("D_T_CAngle", TicksToDegrees(m_turretmotor.GetSelectedSensorPosition()));
     frc::SmartDashboard::PutNumber("D_T_CAngleCmd", m_currentAngle);
@@ -162,11 +169,6 @@ void TurretSubsystem::TurnToRelative(double angle, double minAngle, double maxAn
 bool TurretSubsystem::isAtSetpoint()
 {
     return fabs(m_turretmotor.GetClosedLoopError()) <= DegreesToTicks(kDegreeStopRange);
-}
-
-void TurretSubsystem::ResetPosition()
-{
-    m_turretmotor.SetSelectedSensorPosition(DegreesToTicks(kStartingPositionDegrees), 0, kTimeout);
 }
 
 void TurretSubsystem::SetNewPIDValues()

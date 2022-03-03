@@ -128,139 +128,69 @@ void RobotContainer::SetDefaultCommands()
 
 void RobotContainer::ConfigureButtonBindings()
 {
+    ConfigPrimaryButtonBindings();
+    ConfigSecondaryButtonBindings();
+}
+
+void RobotContainer::ConfigPrimaryButtonBindings()
+{
     using namespace frc;
     using namespace frc2;
     using xbox = frc::XboxController::Button;
 
+    auto& primary = m_primaryController;
+
     // Primary
+    // Keep the bindings in this order
+    // A, B, X, Y, Left Bumper, Right Bumper, Back, Start
+    JoystickButton(&primary, xbox::kA).WhenHeld(&m_turretToPosStop);
+    JoystickButton(&primary, xbox::kB).WhenHeld(m_testServoIfFlagSet);
+    // JoystickButton(&primaryController, xbox::kX).WhenPressed(&m_zeroHeading);  REMOVED FOR GAME PLAY!
+    JoystickButton(&primary, xbox::kY).WhenHeld(&m_turretToNegStop);
+
     // Triggers field relative driving
-    JoystickButton(&m_primaryController, xbox::kLeftBumper).WhenPressed(&m_setFieldRelative);
-    JoystickButton(&m_primaryController, xbox::kLeftBumper).WhenReleased(&m_clearFieldRelative);
+    JoystickButton(&primary, xbox::kLeftBumper).WhenPressed(&m_setFieldRelative);
+    JoystickButton(&primary, xbox::kLeftBumper).WhenReleased(&m_clearFieldRelative);
 
     // Toggle slow speed driving for strafe shot
-    JoystickButton(&m_primaryController, xbox::kRightBumper).WhenPressed(&m_toggleMaxDriveSpeed);
-
-    JoystickButton(&m_secondaryController, xbox::kY).WhenPressed(
-
-        Fire(&m_flywheel, &m_turret, &m_hood, &m_transfer, m_vision, &m_turretready, &m_firing, &m_finished, [this]() { return GetYvelovity(); } )
-    );
-
-    JoystickButton(&m_secondaryController, xbox::kX).WhenPressed(
-             InstantCommand(    
-             [this] { 
-                m_transfer.SetFeeder(.5);
-                m_transfer.SetTransfer(0.5);
-              },
-             {&m_transfer}
-         )
-    );
-
-     JoystickButton(&m_secondaryController, xbox::kX).WhenReleased(
-         InstantCommand(    
-             [this] { 
-                if (m_dbgSeroTest)
-                {
-                    auto s = SmartDashboard::GetNumber("servo override", 0.0);
-                    m_hood.Set(s);
-                }
-                else
-                {
-                    m_transfer.SetFeeder(0.0);
-                    m_transfer.SetTransfer(0.0);
-                    // m_turret.SetZeroAngle();
-                    // m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
-                }
-              },
-             {&m_transfer}
-         )
-    );
-
-    JoystickButton(&m_secondaryController, xbox::kLeftBumper).WhenHeld(
-         InstantCommand(    
-             [this] { 
-                m_turret.SetZeroAngle();
-              },
-             {&m_turret}
-         )
-    );
-
+    JoystickButton(&primary, xbox::kRightBumper).WhenPressed(&m_toggleMaxDriveSpeed);
  
-    JoystickButton(&m_primaryController, xbox::kA).WhenHeld(
-         InstantCommand(    
-             [this] { 
-                 
-                 //m_overrideAngle += 10.0;
-                m_turret.TurnToRelative(50.0);
-              },
-             {&m_turret}
-         )
-    );
-
-    JoystickButton(&m_primaryController, xbox::kY).WhenHeld(
-         InstantCommand(    
-             [this] { 
-                // m_overrideAngle -= 10.0;
-                m_turret.TurnToRelative(-50.0);
-               },
-             {&m_turret}
-         )
-    );
-
-    // JoystickButton(&m_primaryController, xbox::kX).WhenPressed(&m_zeroHeading);  REMOVED FOR GAME PLAY!
-    JoystickButton(&m_primaryController, xbox::kBack).WhileHeld(&m_climb);
+    JoystickButton(&primary, xbox::kBack).WhileHeld(&m_climb);
 #ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
-    JoystickButton(&m_primaryController, xbox::kStart).WhileHeld(&m_windClimb);
+    JoystickButton(&primary, xbox::kStart).WhileHeld(&m_windClimb);
 #endif
+}
 
-    // JoystickButton(&m_secondaryController, xbox::kRightBumper).WhenPressed(
-    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, m_vision,
-    //          &m_turretready, &m_firing, &m_finished)
-    // );
+void RobotContainer::ConfigSecondaryButtonBindings()
+{
+    using namespace frc;
+    using namespace frc2;
+    using namespace TransferConstants;
+    using xbox = frc::XboxController::Button;
 
-    JoystickButton(&m_secondaryController, xbox::kA).WhenPressed(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking));
+    auto& secondary = m_secondaryController;
 
-    // JoystickButton(&m_secondaryController, xbox::kLeftBumper).WhenHeld(
-    //     TransferFirstBall(&m_transfer, TransferConstants::kTransferSpeedIntaking),
-    //     TransferSecondBall(&m_transfer, TransferConstants::kTransferSpeedIntaking)
-    // );
-
-    // JoystickButton(&m_secondaryController, xbox::kBumperRight).WhenPressed(
-    //     InstantCommand([this] { m_turret.ResetPosition(); }, { &m_turret} )
-    // );
-
-    // JoystickButton(&m_secondaryController, xbox::kA).WhenReleased(
-    //     TransferPrepare(&m_transfer, true).WithTimeout(TransferConstants::kMaxTransferTime)
-    // );
-
-    JoystickButton(&m_secondaryController, xbox::kB).WhenHeld(IntakeRelease(*this));
-    JoystickButton(&m_secondaryController, xbox::kBack).WhenHeld(Unjam(&m_transfer, &m_intake));    
-
-    // JoystickButton(&m_primaryController, xbox::kA).WhenPressed(
-    //     InstantCommand(    
-    //         [this] { 
-    //             m_flywheel.SetRPM(m_flywheel.GetRPM() + 100.0);
-    //             printf("a");
-    //          },
-    //         {&m_flywheel}
-    //     )
-    // );
-
-    // JoystickButton(&m_primaryController, xbox::kB).WhenPressed(
-    //     InstantCommand(    
-    //         [this] { 
-    //             m_flywheel.SetRPM(m_flywheel.GetRPM() - 100.0);
-    //             printf("b");
-    //          },
-    //         {&m_flywheel}
-    //     )
-    // );
-
-    // Secondary
-    // Ex: Triggers Fire sequence
-    // JoystickButton(&m_secondaryController, xbox::kY).WhenPressed(
-    //     Fire(&m_secondaryController, &m_flywheel, &m_turret, &m_hood, &m_transfer, &m_vision,
-    //          &m_turretready, &m_firing, &m_finished)
-    // );
+    // Keep the bindings in this order
+    // A, B, X, Y, Left Bumper, Right Bumper, Back, Start
+    JoystickButton(&secondary, xbox::kA).WhenPressed(IntakeTransfer(*this, kTransferSpeedIntaking));
+    JoystickButton(&secondary, xbox::kB).WhenHeld(IntakeRelease(*this));
+    JoystickButton(&secondary, xbox::kX).WhenPressed(&m_runTransferAndFeeder);
+    JoystickButton(&secondary, xbox::kX).WhenReleased(&m_stopTransferAndFeeder);
+    JoystickButton(&secondary, xbox::kY).WhenPressed(
+        Fire( &m_flywheel
+            , &m_turret
+            , &m_hood
+            , &m_transfer
+            , m_vision
+            , &m_turretready
+            , &m_firing
+            , &m_finished
+            , [this]() { return GetYvelovity(); } )
+    );
+    //JoystickButton(&secondary, xbox::kLeftBumper).WhenHeld();
+    //JoystickButton(&secondary, xbox::kBumperRight).WhenPressed(&m_setTurretZero);
+    JoystickButton(&secondary, xbox::kBack).WhenHeld(Unjam(&m_transfer, &m_intake));    
+    //JoystickButton(&secondary, xbox::kStart).WhenPressed();    
 }
 
 const units::meters_per_second_t zeroMps{0.0};
@@ -284,14 +214,18 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
             return GetAutoPathCmd("ball2&3", false);
 
         case kEx3:
-            return GetAutoPathCmd("ball4", false);
+            return new frc2::SequentialCommandGroup
+            (
+                  std::move(*GetAutoPathCmd("Ball1Short", true))
+                , std::move(*GetAutoPathCmd("Ball3Short", false))
+            );
 
         case kEx4:
             return new frc2::SequentialCommandGroup
             (
-                  std::move(*GetAutoPathCmd("ball1", true))
-                , std::move(*GetAutoPathCmd("ball2&3", false))
-                , std::move(*GetAutoPathCmd("ball4", false))    // TODO only one ball, will transfer cmd end?
+                  std::move(*GetAutoPathCmd("Ball1Short", true))
+                , std::move(*GetAutoPathCmd("Ball3Short", false))
+                , std::move(*GetAutoPathCmd("Ball4Short", false))    // TODO only one ball, will transfer cmd end?
             );
 
         default:

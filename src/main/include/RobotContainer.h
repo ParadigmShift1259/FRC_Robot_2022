@@ -95,6 +95,8 @@ public:
 private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();
+    void ConfigPrimaryButtonBindings();
+    void ConfigSecondaryButtonBindings();
     frc2::SequentialCommandGroup* GetAutoPathCmd(string pathName, bool primaryPath);
     SwerveCtrlCmd GetSwerveCommandPath(string pathName, bool primaryPath);
     frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
@@ -126,14 +128,42 @@ private:
         },
         {&m_drive}
     };
-    frc2::InstantCommand m_zeroHeading{[this] { m_gyro.ZeroHeading(); }, {}};
+    //frc2::InstantCommand m_zeroHeading{[this] { m_gyro.ZeroHeading(); }, {} };
+    //frc2::InstantCommand m_setTurretZero{[this] { m_turret.SetZeroAngle(); }, {&m_turret} };
     frc2::InstantCommand m_climb{[this] { m_climber.Run(ClimberConstants::kMotorSpeed); }, {&m_climber} };
 #define CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
 #ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
     frc2::InstantCommand m_windClimb{[this] { m_climber.Run(-1.0 * ClimberConstants::kMotorSpeed); }, {&m_climber} };
 #endif
-
-    double m_overrideAngle = 0.0;
+    frc2::InstantCommand m_turretToPosStop{[this] { m_turret.TurnToRelative(50.0); }, {&m_turret} };
+    frc2::InstantCommand m_turretToNegStop{[this] { m_turret.TurnToRelative(-50.0); }, {&m_turret} };
+    frc2::InstantCommand m_runTransferAndFeeder
+    { [this]
+        { 
+            m_transfer.SetFeeder(0.5);
+            m_transfer.SetTransfer(0.5);
+        },
+        {&m_transfer}
+    };
+    frc2::InstantCommand m_stopTransferAndFeeder
+    { [this]
+        { 
+            m_transfer.SetFeeder(0.0);
+            m_transfer.SetTransfer(0.0);
+        },
+        {&m_transfer}
+    };
+    frc2::InstantCommand m_testServoIfFlagSet
+    { [this]
+        { 
+            if (m_dbgSeroTest)
+            {
+                auto s = SmartDashboard::GetNumber("servo override", 0.0);
+                m_hood.Set(s);
+            }
+        },
+        {&m_hood}
+    };
 
     bool m_turretready = false;
     bool m_firing = false;

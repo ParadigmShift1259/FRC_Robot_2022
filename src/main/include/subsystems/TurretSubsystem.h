@@ -4,7 +4,8 @@
 #include <frc2/command/SubsystemBase.h>
 
 #include <ctre/phoenix/motorcontrol/ControlMode.h>
-#include "ctre/phoenix/motorcontrol/can/TalonSRX.h"
+#include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
+#include <frc/AnalogInput.h>
 
 using namespace ctre::phoenix::motorcontrol;
 using namespace ctre::phoenix::motorcontrol::can;
@@ -46,9 +47,6 @@ public:
     /// Returns whether or not the turret is at the desired setpoint
     bool isAtSetpoint();
 
-    /// Resets the turret back to the initial default position
-    void ResetPosition();
-
     /// Set new PID Values for the turret from on the fly SmartDashboard values
     void SetNewPIDValues();
 
@@ -68,8 +66,14 @@ private:
     TalonSRX m_turretmotor;
     /// The current angle of the turret, in degrees
     double m_currentAngle;
+    /// The starting position of the turret, in ticks
+    int m_startingPos;
+    
+    bool m_setZero = false;
     /// Gyro to determine field relative angles, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
+
+    frc::AnalogInput m_absEnc;
 
     DebugFlag   m_dbgLogTurns{"TurretLogTurn", false};
 };
