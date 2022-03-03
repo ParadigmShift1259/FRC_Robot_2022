@@ -53,19 +53,16 @@ void VisionSubsystem::Periodic()
     const frc::Translation2d kHubCenter = frc::Translation2d(kFieldLength/2, kFieldWidth/2);  // TO DO make a constant
     const frc::Translation2d turretCenterToRobotCenter = frc::Translation2d(inch_t{2.25}, inch_t{0});   // TO DO make a constant
  
-    camera.SetLEDMode(photonlib::LEDMode::kDefault);
+    camera.SetLEDMode(photonlib::LEDMode::kDefault); // TO DO? move to SetLED() method below?
 
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
     bool validTarget = result.HasTargets();
-    vector<frc::Translation2d> targetVectors;
     if (validTarget)
     {
+        vector<frc::Translation2d> targetVectors;
         auto targets = result.GetTargets();
 
-        //Get List of Points
-        //if(!m_allPoints.empty())
-        
-        //Gets Vectors for each target
+        // Gets camera-relative x,y translations for each vision target
         for (int i = 0; i < targets.size(); i++)
         {
             kTargetPitch = degree_t{targets[i].GetPitch()};
@@ -75,7 +72,7 @@ void VisionSubsystem::Periodic()
                 targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
         }
 
-        //find the center of the vision tape targets
+        //find the center of the vision targets
         double xTotal = 0;
         double yTotal = 0;
         for (int i = 0; i < targetVectors.size(); i++)
@@ -132,11 +129,11 @@ void VisionSubsystem::Periodic()
                 m_cameraToHub = m_cameraToHub.RotateBy(-fieldToCamAngle); // transform from field-relative back to cam-relative
 
                 // printf("latency ms: %.1f delayed odo pose: x %.3f y %.3f   ", 1000*result.GetLatency().to<double>(), delayedOdoPose.X().to<double>(), delayedOdoPose.Y().to<double>());
-                printf("latency ms: %.1f compenstaion: x %.3f y %.3f    ", 1000*result.GetLatency().to<double>(), compenstaion.X().to<double>(), compenstaion.Y().to<double>());
-                printf("compensated camera pose: x %.3f y %.3f\n", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
+                // printf("latency ms: %.1f compenstaion: x %.3f y %.3f    ", 1000*result.GetLatency().to<double>(), compenstaion.X().to<double>(), compenstaion.Y().to<double>());
+                // printf("compensated camera pose: x %.3f y %.3f\n", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
 #else
                 m_cameraToHub = cameraToHub;
-                printf("camera pose x %.3f y %.3f\n", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
+                // printf("camera pose x %.3f y %.3f\n", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
 
 #endif  // def USE_ODO_COMPENSATION
                 // do Hub distance smoothing
@@ -149,20 +146,21 @@ void VisionSubsystem::Periodic()
             {
                 if (bLogInvalid)
                     std::cout << "Circle fit failed " << std::endl;
-                m_consecNoTargets++;
+                validTarget =  false;
             }
         }
         else
         {
             if (bLogInvalid)
                 std::cout << "Only " << targetVectors.size() << " vision targets" << std::endl;
-            m_consecNoTargets++;
+            validTarget =  false; 
         }
-
-        if (m_consecNoTargets >= kVisionFailLimit)
+        
+        if (validTarget == false)
         {
-            m_validTarget = false;
-            // m_smoothedRange = 0;
+            m_consecNoTargets++;
+
+            // use odometry instead of vision
             m_robotPose = m_odometry.GetPose();
             double angleTurret = Util::DegreesToRadians(m_turret.GetCurrentAngle());
             frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
@@ -170,6 +168,12 @@ void VisionSubsystem::Periodic()
             frc::Rotation2d fieldToCamAngle = m_robotPose.Rotation() + frc::Rotation2d(units::radian_t{angleTurret});  // TO DO keep history of turret angle and use that instead of current turrent angle    
             m_cameraToHub = kHubCenter - m_robotPose.TransformBy(camreaTransform.Inverse()).Translation();
             m_cameraToHub = m_cameraToHub.RotateBy(-fieldToCamAngle); // transform from field-relative back to cam-relative
+        }
+
+        if (m_consecNoTargets >= kVisionFailLimit)
+        {
+            m_validTarget = false;
+            m_smoothedRange = 0;
         }
     }
 
@@ -226,15 +230,15 @@ bool VisionSubsystem::GetValidTarget()
     return m_validTarget;
 }
 
-double VisionSubsystem::GetDistance()
-{
-    return Util::GetAverage(m_averageDistance);
-}
+// double VisionSubsystem::GetDistance()
+// {
+//     return Util::GetAverage(m_averageDistance);
+// }
 
-double VisionSubsystem::GetAngle()
-{
-    return Util::GetAverage(m_averageAngle);
-}
+// double VisionSubsystem::GetAngle()
+// {
+//     return Util::GetAverage(m_averageAngle);
+// }
 
 void VisionSubsystem::SetLED(bool on)
 {
