@@ -76,10 +76,7 @@ private:
     bool m_validTarget;
     double m_smoothedRange;
     Pose2d m_robotPose;
-    vector<double> m_averageDistance;
-    vector<double> m_averageAngle;
     photonlib::PhotonCamera camera{"gloworm"};
-    //std::vector<std::pair<double, double>> m_centerPoints;
     frc::Translation2d m_cameraToHub;
     
     /// Gyro to determine field relative angles, from @ref RobotContainer

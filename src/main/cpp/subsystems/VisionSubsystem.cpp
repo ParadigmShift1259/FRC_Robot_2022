@@ -17,8 +17,6 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
  , m_odometry(odometry)
 {
     SetLED(true);
-    m_averageDistance.reserve(3);
-    m_averageAngle.reserve(3);
     m_consecNoTargets = 0;
 
 //    m_networktable->AddEntryListener(
