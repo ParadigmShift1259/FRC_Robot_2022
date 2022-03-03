@@ -62,7 +62,7 @@ void VisionSubsystem::Periodic()
             degree_t TargetPitch = degree_t{targets[i].GetPitch()};
             meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
                 kCameraHeight, kCurrTargetHeight, kCameraPitch, TargetPitch);
-            if (!(TargetPitch > units::degree_t{24}) && !(TargetPitch < units::degree_t{-9}))
+            if (!(TargetPitch > units::degree_t{20}) && !(TargetPitch < units::degree_t{-14}))
                 targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
         }
 
