@@ -35,7 +35,7 @@ namespace DriveConstants
 
     /// \name Teleop Drive Constraints
     // constexpr auto kDriveSpeed = meters_per_second_t(1.5);
-    constexpr auto kDriveSpeed = meters_per_second_t(3.5);
+    constexpr auto kDriveSpeed = meters_per_second_t(4.0);
     constexpr auto kSlowDriveSpeed = meters_per_second_t(0.8);
     constexpr auto kDriveAngularSpeed = radians_per_second_t(wpi::numbers::pi * 2.0);
     constexpr auto kSlowDriveAngularSpeed = radians_per_second_t(wpi::numbers::pi / 2.0);
@@ -115,7 +115,7 @@ namespace DriveConstants
     constexpr double kRotationDriveIMaxRange = 0;
     constexpr double kRotationDriveD = 0.025;
     /// Max speed for control
-    constexpr double kRotationDriveMaxSpeed = 4.0; // 3.5;
+    constexpr double kRotationDriveMaxSpeed = 3.5;
     /// Speeds higher than value will prevent robot from changing directions for a turn
     constexpr double kRotationDriveDirectionLimit = 3;
     /// Tolerance for turning
@@ -362,6 +362,7 @@ namespace TurretConstants
     constexpr double kD = 0.0;
     constexpr double kF = 0.455;
 
+    constexpr double NeutralDeadband = 1.0; // degrees
     constexpr double kNominal = 0.06; // percent output to un-stall from stopped (FF y-intercept)
     constexpr double kMMCruiseVel = 100; // deg per sec 
     constexpr double kMMAccel = 100; // deg per sec^2

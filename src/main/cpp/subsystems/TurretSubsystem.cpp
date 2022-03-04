@@ -31,7 +31,7 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.SetIntegralAccumulator(0.0, 0);
     m_turretmotor.ConfigMotionSCurveStrength(1.0);
 
-    m_turretmotor.ConfigNeutralDeadband(0, kTimeout);
+    m_turretmotor.ConfigNeutralDeadband(DegreesToTicks(NeutralDeadband), kTimeout);
     m_turretmotor.ConfigNominalOutputForward(kNominal, kTimeout);
     m_turretmotor.ConfigNominalOutputReverse(kNominal * -1.0, kTimeout);
     m_turretmotor.ConfigPeakOutputForward(kMaxOut, kTimeout);
