@@ -53,11 +53,11 @@ void SwerveModule::Periodic()
     if (m_timer.Get() < 5_s)
         ResetRelativeToAbsolute();
 
-//    double absAngle = CalcAbsoluteAngle();
-    double absAngle = CalcAbsoluteAngle();
-    SmartDashboard::PutNumber("D_SM_Rel " + m_name, m_turnRelativeEncoder.GetPosition());
-    SmartDashboard::PutNumber("D_SM_Abs " + m_name, absAngle);
-    SmartDashboard::PutNumber("D_SM_AbsDiff " + m_name, m_turnRelativeEncoder.GetPosition() - absAngle);
+    //double absAngle = 
+    CalcAbsoluteAngle();
+    //SmartDashboard::PutNumber("D_SM_Rel " + m_name, m_turnRelativeEncoder.GetPosition());
+    //SmartDashboard::PutNumber("D_SM_Abs " + m_name, absAngle);
+    //SmartDashboard::PutNumber("D_SM_AbsDiff " + m_name, m_turnRelativeEncoder.GetPosition() - absAngle);
     // SmartDashboard::PutNumber("D_SM_MPS " + m_name, CalcMetersPerSec().to<double>());
     // SmartDashboard::PutNumber("D_SM_IError " + m_name, m_turnPIDController.GetIAccum());
     // SmartDashboard::PutNumber("D_SM_TP100MS " + m_name, m_driveMotor.GetSelectedSensorVelocity());

@@ -94,6 +94,8 @@ public:
     bool HasAuotRun() { return m_hasAutoRun; }
 
     double GetYvelovity() { return m_drive.GetYvelocity().to<double>(); }
+    
+    void CloseLogFile() { m_vision.CloseLogFile(); }
 
 private:
     void SetDefaultCommands();

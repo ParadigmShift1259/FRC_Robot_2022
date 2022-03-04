@@ -357,14 +357,14 @@ namespace TurretConstants
     // constexpr double kP = 0.3;
     // constexpr double kI = 0.001;
     // constexpr double kD = 10.0;
-    constexpr double kP = 0.02;
+    constexpr double kP = 0.01;
     constexpr double kI = 0.001;
     constexpr double kD = 0.0;
     constexpr double kF = 0.455;
 
     constexpr double kNominal = 0.06; // percent output to un-stall from stopped (FF y-intercept)
-    constexpr double kMMCruiseVel = 600; // deg per sec 
-    constexpr double kMMAccel = 250; // deg per sec^2
+    constexpr double kMMCruiseVel = 100; // deg per sec 
+    constexpr double kMMAccel = 100; // deg per sec^2
     constexpr double kMinOut = 0;
     constexpr double kMaxOut = 0.4; //1.0; //0.900;
 

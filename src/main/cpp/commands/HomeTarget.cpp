@@ -43,27 +43,26 @@ void HomeTarget::Execute()
     if (!m_vision.GetValidTarget())
         return;
 
-
     double distance = m_vision.GetHubDistance(true) - kHubOffsetRimToCenter.to<double>();
 
     // if (std::isnan(distance))
     if (distance != distance)
     {
-        distance = 5.0;
+        return;
     }
 
-    const std::map<double, double> distCompensation =
-        {
-            std::make_pair(6.0 * 12.0, 1100.0), std::make_pair(8.0 * 12.0, 1200.0), std::make_pair(10.0 * 12.0, 1400.0), std::make_pair(12.0 * 12.0, 1650.0), std::make_pair(14.0 * 12.0, 1750.0), std::make_pair(16.0 * 12.0, 1900.0), std::make_pair(18.0 * 12.0, 2100.0), std::make_pair(20.0 * 12.0, 2100.0)};
-    auto it = distCompensation.lower_bound(distance / 12.0);
+    // const std::map<double, double> distCompensation =
+    //     {
+    //         std::make_pair(6.0 * 12.0, 1100.0), std::make_pair(8.0 * 12.0, 1200.0), std::make_pair(10.0 * 12.0, 1400.0), std::make_pair(12.0 * 12.0, 1650.0), std::make_pair(14.0 * 12.0, 1750.0), std::make_pair(16.0 * 12.0, 1900.0), std::make_pair(18.0 * 12.0, 2100.0), std::make_pair(20.0 * 12.0, 2100.0)};
+    // auto it = distCompensation.lower_bound(distance / 12.0);
 
     double offset = 100.0 * distance / 12.0;
 
-    bool bUseLut = SmartDashboard::GetBoolean("UseLut", true);
-    if (bUseLut && it != distCompensation.end())
-    {
-        offset = it->second;
-    }
+    // bool bUseLut = SmartDashboard::GetBoolean("UseLut", true);
+    // if (bUseLut && it != distCompensation.end())
+    // {
+    //     offset = it->second;
+    // }
 
     bool bUseFudgeFactor = SmartDashboard::GetBoolean("UseFudgeFactor", true);
     double fudge = 0.0;
@@ -104,19 +103,20 @@ void HomeTarget::Execute()
     // std::cout << "Distance: "<< distance << std::endl;
     // std::cout << "Flywheel RPM "<< flywheelspeed << std::endl;
     SmartDashboard::PutNumber("Init Angle: ", initAngle.to<double>());
-    SmartDashboard::PutNumber("Hood servo set: ", hoodangle);
-    SmartDashboard::PutNumber("Distance: ", distance);
-    SmartDashboard::PutNumber("Flywheel RPM ", flywheelspeed);
-    SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
+    //SmartDashboard::PutNumber("Hood servo set: ", hoodangle);
+    //SmartDashboard::PutNumber("Distance: ", distance);
+    //SmartDashboard::PutNumber("Flywheel RPM ", flywheelspeed);
+    //SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
+
     SmartDashboard::PutNumber("Hoodangle Constant", c);
 
     m_flywheel->SetRPM(flywheelspeed);
 
     SmartDashboard::PutBoolean("D_FIRE_AT_RPM", m_flywheel->IsAtRPM());
-    SmartDashboard::PutBoolean("D_FIRE_AT_SET", m_turret->isAtSetpoint());
+    //SmartDashboard::PutBoolean("D_FIRE_AT_SET", m_turret->isAtSetpoint());
     SmartDashboard::PutNumber("Hood Angle:", hoodangle);
 
-    if (m_flywheel->IsAtRPM() && m_yVelocityCb() <= kSlowDriveSpeed.to<double>())
+    if (m_flywheel->IsAtRPM() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
     {
         *m_turretready = true;
     }
@@ -131,6 +131,7 @@ bool HomeTarget::IsFinished()
 
 void HomeTarget::End(bool interrupted)
 {
+    
     //*m_finished = false;
     // m_flywheel->SetRPM(FlywheelConstants::kIdleRPM);
     // m_hood->Set(HoodConstants::kMax);
