@@ -19,7 +19,7 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
     SetLED(true);
     m_consecNoTargets = 0;
 
-    m_logFile = fopen("/tmp/visionLog.txt", "w");
+    m_logFile = stderr; // fopen("/tmp/visionLog.txt", "w");
 
 //    m_networktable->AddEntryListener(
 //        "/photonvision/gloworm/latencyMillis"
@@ -59,7 +59,7 @@ void VisionSubsystem::Periodic()
         vector<frc::Translation2d> targetVectors;
         auto targets = result.GetTargets();
 
-fprintf(m_logFile, " target count: %d   ",  targets.size());
+// fprintf(m_logFile, " target count: %d   ",  targets.size());
         // Gets camera-relative x,y translations for each vision target
         for (int i = 0; i < targets.size(); i++)
         {
@@ -70,7 +70,7 @@ fprintf(m_logFile, " target count: %d   ",  targets.size());
                 targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
         }
 
-fprintf(m_logFile, " pitch-filtered targets: %d   ", targetVectors.size());
+// fprintf(m_logFile, " pitch-filtered targets: %d   ", targetVectors.size());
 
 
         //find the center of the vision targets
@@ -97,7 +97,7 @@ fprintf(m_logFile, " pitch-filtered targets: %d   ", targetVectors.size());
             }
         }
 
-fprintf(m_logFile, " outlier-filtered targets: %d   ", targetVectors.size());
+// fprintf(m_logFile, " outlier-filtered targets: %d   ", targetVectors.size());
 
         if (targetVectors.size() >= 3)
         {
@@ -173,7 +173,7 @@ fprintf(m_logFile, " outlier-filtered targets: %d   ", targetVectors.size());
             frc::Rotation2d fieldToCamAngle = m_robotPose.Rotation() + frc::Rotation2d(units::radian_t{angleTurret});  // TO DO keep history of turret angle and use that instead of current turrent angle    
             m_cameraToHub = kHubCenter - m_robotPose.TransformBy(camreaTransform.Inverse()).Translation();
             m_cameraToHub = m_cameraToHub.RotateBy(-fieldToCamAngle); // transform from field-relative back to cam-relative
-fprintf(m_logFile, "NO VISION RESULT -- USING ODO ");            
+// fprintf(m_logFile, "NO VISION RESULT -- USING ODO ");            
         }
 
         if (m_consecNoTargets >= kVisionFailLimit)
@@ -199,7 +199,7 @@ fprintf(m_logFile, "NO VISION RESULT -- USING ODO ");
             m_turret.TurnToRelative(hubAngle * 1);
             turretCmdHoldoff = 5;  // limit turret command rate due to vision lag
             AdjustHood();
-printf( " Hub angle: %f  range: %f\n", GetHubAngle(), GetHubDistance(true));
+// printf( " Hub angle: %f  range: %f\n", GetHubAngle(), GetHubDistance(true));
 
         }
     }
