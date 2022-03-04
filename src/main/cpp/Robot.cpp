@@ -30,6 +30,7 @@ void Robot::RobotPeriodic() {
  */
 void Robot::DisabledInit()
 {
+  m_container.CloseLogFile();
   Shuffleboard::StopRecording();
   m_container.TurretSetZeroAngle();
 }

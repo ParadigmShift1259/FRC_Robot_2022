@@ -60,6 +60,8 @@ public:
 
     double GetHubDistance(bool smoothed);
 
+    void CloseLogFile() { if (m_logFile) fclose(m_logFile);  }
+
 protected:
     /// Converts degrees to radians
     /// \param degrees Degrees to convert
@@ -85,8 +87,9 @@ private:
     IOdometry& m_odometry;
     HoodSubsystem& m_hood;
   	Calculations m_calculation;
+    FILE* m_logFile = nullptr;
 
-    DebugFlag   m_dbgLogInvalid{"VisLogInvalid", false};
-    DebugFlag   m_dbgLogTargetData{"VisLogTargetData", false};
+    DebugFlag   m_dbgLogInvalid{"VisLogInvalid", true};
+    DebugFlag   m_dbgLogTargetData{"VisLogTargetData", true};
     DebugFlag   m_dbgUseUseVisionForTurret{"UseVisionForTurret", true};
 };

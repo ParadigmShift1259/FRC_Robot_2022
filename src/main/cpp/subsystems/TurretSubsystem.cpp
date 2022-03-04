@@ -102,8 +102,8 @@ void TurretSubsystem::Periodic()
     m_turretmotor.Config_kD(0, d, kTimeout);
 
     double iZone = frc::SmartDashboard::GetNumber("TurretIzone", 0);
-    double cruiseV = frc::SmartDashboard::GetNumber("TurretCruiseV", 0);
-    double accel = frc::SmartDashboard::GetNumber("TurretAccel", 0);
+    double cruiseV = frc::SmartDashboard::GetNumber("TurretCruiseV", 60);
+    double accel = frc::SmartDashboard::GetNumber("TurretAccel", 100);
     double sCurve = frc::SmartDashboard::GetNumber("TurretScurve", 1.0);
 
     m_turretmotor.Config_IntegralZone(0, iZone);
