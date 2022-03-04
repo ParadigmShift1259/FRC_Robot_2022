@@ -79,11 +79,13 @@ public:
 
     frc::SendableChooser<EAutoPath> m_chooser;
 
-    HoodSubsystem&       GetHood() override { return m_hood; };
-    IntakeSubsystem&     GetIntake() override { return m_intake; };
-    TransferSubsystem&   GetTransfer() override { return m_transfer; };
-    TurretSubsystem&     GetTurret() override { return m_turret; };
-    VisionSubsystem&     GetVision() override { return m_vision; };    
+    HoodSubsystem&       GetHood() override { return m_hood; }
+    IntakeSubsystem&     GetIntake() override { return m_intake; }
+    TransferSubsystem&   GetTransfer() override { return m_transfer; }
+    TurretSubsystem&     GetTurret() override { return m_turret; }
+    VisionSubsystem&     GetVision() override { return m_vision; }
+
+    bool OnlyOneBall() { return false; }    // TODO complete for 3 ball auto
 
     Pose2d GetPose() { return m_drive.GetPose(); }
     Pose2d GetPose(units::time::second_t timestamp) const { return m_drive.GetPose(timestamp); }

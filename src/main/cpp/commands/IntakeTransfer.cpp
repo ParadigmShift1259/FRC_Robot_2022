@@ -9,6 +9,6 @@ IntakeTransfer::IntakeTransfer(ISubsysAccess& subSysAccess, double speed)
   AddCommands(
       IntakeIngest(subSysAccess.GetIntake())
     , TransferFirstBall(subSysAccess.GetTransfer(), subSysAccess.GetIntake(), speed)
-    , TransferSecondBall(subSysAccess.GetTransfer(), subSysAccess.GetIntake(), speed)
+    , TransferSecondBall(subSysAccess)
   );
 }

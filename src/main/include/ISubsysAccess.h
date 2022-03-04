@@ -14,4 +14,6 @@ public:
     virtual TransferSubsystem&   GetTransfer() = 0;
     virtual TurretSubsystem&     GetTurret() = 0;
     virtual VisionSubsystem&     GetVision() = 0;
+
+    virtual bool OnlyOneBall() = 0;
 };

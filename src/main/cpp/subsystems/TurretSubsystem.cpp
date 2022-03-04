@@ -57,7 +57,7 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     //m_turretmotor.Set(ControlMode::PercentOutput, 0.1);
     m_currentAngle = kStartingPositionDegrees;
     m_startingPos = m_absEnc.GetValue();
-
+    frc::SmartDashboard::PutNumber("TurretStartingPos", m_startingPos);
 
 #ifdef TUNE_TURRET_PID
     frc::SmartDashboard::PutNumber("TurretP", kP);
@@ -72,11 +72,16 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
 #endif
 }
 
+constexpr double kDegreesPerAbsEncTick = 0.001;
+
 void TurretSubsystem::Periodic()
 {
-    if (m_setZero == true)
+    if (!m_setZero)
     {
-        
+        m_setZero = true;
+        int currentPos = m_absEnc.GetValue();
+        double angleChange = (m_startingPos - currentPos) / kDegreesPerAbsEncTick;
+        //TurnToRelative(angleChange);
     }
 
     frc::SmartDashboard::PutNumber("D_T_CTicks", m_turretmotor.GetSelectedSensorPosition());

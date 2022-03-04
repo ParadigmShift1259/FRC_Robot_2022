@@ -4,18 +4,16 @@
 using namespace IntakeConstants;
 using namespace TransferConstants;
 
-TransferSecondBall::TransferSecondBall(TransferSubsystem& transfer, IntakeSubsystem& intake, double speed)
- : m_transfer(transfer)
- , m_intake(intake)
- , m_speed(speed)
- , m_photoeyeCount(0)
- {
-  AddRequirements({&transfer, &intake});
+TransferSecondBall::TransferSecondBall(ISubsysAccess& subsysAccess)
+ : m_subSysAccess(subsysAccess)
+ , m_transfer(subsysAccess.GetTransfer())
+ , m_intake(subsysAccess.GetIntake())
+{
+  AddRequirements({&m_transfer, &m_intake});
 }
 
 void TransferSecondBall::Initialize()
 {
-    m_photoeyeCount = 0;
 }
 
 void TransferSecondBall::Execute()
@@ -24,12 +22,9 @@ void TransferSecondBall::Execute()
     m_intake.Set(kIngestHigh);
 }
 
-bool TransferSecondBall::IsFinished() {
-    if (m_transfer.GetTransferPhotoeye()) {
-        m_photoeyeCount++;
-    }
-
-    return m_transfer.GetTransferPhotoeye();
+bool TransferSecondBall::IsFinished()
+{
+    return (m_transfer.GetTransferPhotoeye() || m_subSysAccess.OnlyOneBall());
 }
 
 void TransferSecondBall::End(bool interrupted)
