@@ -31,7 +31,7 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.SetIntegralAccumulator(0.0, 0);
     m_turretmotor.ConfigMotionSCurveStrength(1.0);
 
-    m_turretmotor.ConfigNeutralDeadband(DegreesToTicks(NeutralDeadband), kTimeout);
+    m_turretmotor.ConfigNeutralDeadband(kNeutralDeadband, kTimeout);
     m_turretmotor.ConfigNominalOutputForward(kNominal, kTimeout);
     m_turretmotor.ConfigNominalOutputReverse(kNominal * -1.0, kTimeout);
     m_turretmotor.ConfigPeakOutputForward(kMaxOut, kTimeout);
@@ -70,12 +70,17 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     frc::SmartDashboard::PutNumber("TurretAccel", kMMAccel);
     frc::SmartDashboard::PutNumber("TurretScurve", 1.0);
 #endif
+
+    //frc::SmartDashboard::PutNumber("TurretDeadbandPercent", kNeutralDeadband);
 }
 
 constexpr double kDegreesPerAbsEncTick = 0.001;
 
 void TurretSubsystem::Periodic()
 {
+    //double db = frc::SmartDashboard::GetNumber("TurretDeadbandPercent", kNeutralDeadband);
+    //m_turretmotor.ConfigNeutralDeadband(db, kTimeout);
+
     if (!m_setZero)
     {
         m_setZero = true;
@@ -152,12 +157,6 @@ void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)
 #endif
 }
 
-void TurretSubsystem::TurnToRobot(double robotAngle)
-{
-    double angle = robotAngle - kTurretToRobotAngleOffset;
-    TurnTo(angle);
-}
- 
 void TurretSubsystem::TurnToField(double desiredAngle)
 {
     // safeguard
@@ -166,7 +165,6 @@ void TurretSubsystem::TurnToField(double desiredAngle)
     double gyroAngle = m_gyro->GetHeading();
     // The difference between the field and robot is the desired angle to set relative to the robot
     double angle = gyroAngle - desiredAngle;
-    //TurnToRobot(Util::ZeroTo360Degs(angle));
     TurnTo(angle);
 }
 

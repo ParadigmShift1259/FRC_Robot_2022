@@ -189,7 +189,7 @@ void RobotContainer::ConfigSecondaryButtonBindings()
             , &m_finished
             , [this]() { return GetYvelovity(); } )
     );
-    //JoystickButton(&secondary, xbox::kLeftBumper).WhenHeld();
+    JoystickButton(&secondary, xbox::kLeftBumper).WhenPressed(&m_turretToCenter);
     //JoystickButton(&secondary, xbox::kBumperRight).WhenPressed(&m_setTurretZero);
     JoystickButton(&secondary, xbox::kBack).WhenHeld(Unjam(&m_transfer, &m_intake));    
     //JoystickButton(&secondary, xbox::kStart).WhenPressed();    
@@ -249,6 +249,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(string pathName, bo
                 , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
             )
         )
+        , frc2::WaitCommand(3.0_s)
         , std::move(Fire( &m_flywheel
                         , &m_turret
                         , &m_hood

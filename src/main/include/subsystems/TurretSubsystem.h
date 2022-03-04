@@ -32,10 +32,6 @@ public:
     /// \param angle        Angle desired to turn to, must be within the boundaries of the turret, must be positive, in degrees
     void TurnTo(double angle, double minAngle=TurretConstants::kMinAngle, double maxAngle=TurretConstants::kMaxAngle);
 
-    /// Turns the turret based on the robot angle
-    /// \param robotAngle        Robot angle to turn to, must be positive, in degrees
-    void TurnToRobot(double robotAngle);
-
     /// Turns the turret based on an absolute field angle
     /// \param deisredAngle        Field angle to turn to, must be positive
     void TurnToField(double desiredAngle);

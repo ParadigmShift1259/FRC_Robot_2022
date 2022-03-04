@@ -197,7 +197,7 @@ void VisionSubsystem::Periodic()
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
             m_turret.TurnToRelative(hubAngle * 1);
-            turretCmdHoldoff = 5;  // limit turret command rate due to vision lag
+            turretCmdHoldoff = 0;  // limit turret command rate due to vision lag
             AdjustHood();
 // printf( " Hub angle: %f  range: %f\n", GetHubAngle(), GetHubDistance(true));
 
