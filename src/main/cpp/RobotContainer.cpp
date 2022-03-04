@@ -219,7 +219,9 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
             return new frc2::SequentialCommandGroup
             (
                   std::move(*GetAutoPathCmd("Ball1Short", true))
+                , m_setOneBallFlag
                 , std::move(*GetAutoPathCmd("Ball3Short", false))
+                , m_resetOneBallFlag
             );
 
         case kEx4:
@@ -249,7 +251,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(string pathName, bo
                 , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
             )
         )
-        , frc2::WaitCommand(3.0_s)
+        , frc2::WaitCommand(1.0_s)
         , std::move(Fire( &m_flywheel
                         , &m_turret
                         , &m_hood
@@ -294,7 +296,7 @@ SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(string pathName, bool primary
         // Init absolute gyro angle isn't required by ResetOdometry() but IS required due to directly reading the gyro elsewhere
         m_gyro.SetHeading((double)trajectory.InitialPose().Rotation().Degrees()); 
         m_drive.ResetOdometry(trajectory.InitialPose());
-        m_hasAutoRun = true;
+        //m_hasAutoRun = true;
     }
 
     return swerveControllerCommand;

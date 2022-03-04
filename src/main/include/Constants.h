@@ -362,7 +362,7 @@ namespace TurretConstants
     constexpr double kD = 0.0;
     constexpr double kF = 0.455;
 
-    constexpr double kNeutralDeadband = 0.07; // Deadband percentage
+    constexpr double kNeutralDeadband = 0.06; // Deadband percentage
     constexpr double kNominal = 0.06; // percent output to un-stall from stopped (FF y-intercept)
     constexpr double kMMCruiseVel = 300; // deg per sec 
     constexpr double kMMAccel = 100; // deg per sec^2

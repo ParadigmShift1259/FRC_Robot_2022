@@ -49,8 +49,6 @@ void VisionSubsystem::Periodic()
     const frc::Translation2d kHubCenter = frc::Translation2d(kFieldLength/2, kFieldWidth/2);  // TO DO make a constant
     const frc::Translation2d turretCenterToRobotCenter = frc::Translation2d(inch_t{2.25}, inch_t{0});   // TO DO make a constant
  
-    camera.SetLEDMode(photonlib::LEDMode::kDefault); // TO DO? move to SetLED() method below?
-
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
     bool validTarget = result.HasTargets();
 //printf("valid target %d\n", validTarget);
@@ -253,16 +251,7 @@ bool VisionSubsystem::GetValidTarget()
 void VisionSubsystem::SetLED(bool on)
 {
     m_led = on;
-    if (m_led)
-    {
-        /// 3 forces limelight led on
-        m_networktable->PutNumber("ledMode", 3);
-    }
-    else
-    {
-        /// 1 forces limelight led off
-        m_networktable->PutNumber("ledMode", 1);
-    }
+    camera.SetLEDMode(m_led ? photonlib::LEDMode::kDefault : photonlib::LEDMode::kOff);
 }
 
 

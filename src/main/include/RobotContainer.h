@@ -85,7 +85,7 @@ public:
     TurretSubsystem&     GetTurret() override { return m_turret; }
     VisionSubsystem&     GetVision() override { return m_vision; }
 
-    bool OnlyOneBall() { return false; }    // TODO complete for 3 ball auto
+    bool OnlyOneBall() { return m_onlyOneBall; }
 
     Pose2d GetPose() { return m_drive.GetPose(); }
     Pose2d GetPose(units::time::second_t timestamp) const { return m_drive.GetPose(timestamp); }
@@ -135,8 +135,13 @@ private:
     };
     //frc2::InstantCommand m_zeroHeading{[this] { m_gyro.ZeroHeading(); }, {} };
     //frc2::InstantCommand m_setTurretZero{[this] { m_turret.SetZeroAngle(); }, {&m_turret} };
-    frc2::InstantCommand m_climb{[this] { m_climber.Run(ClimberConstants::kMotorSpeed); }, {&m_climber} };
-#define CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
+    frc2::InstantCommand m_climb{[this]
+    {
+        m_vision.SetLED(false);
+        m_turret.TurnTo(0.0);
+        m_climber.Run(ClimberConstants::kMotorSpeed); }, {&m_climber}
+    };
+//#define CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
 #ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
     frc2::InstantCommand m_windClimb{[this] { m_climber.Run(-1.0 * ClimberConstants::kMotorSpeed); }, {&m_climber} };
 #endif
@@ -170,7 +175,11 @@ private:
         },
         {&m_hood}
     };
+    frc2::InstantCommand m_setOneBallFlag{[this] { m_onlyOneBall = true; }, {} };
+    frc2::InstantCommand m_resetOneBallFlag{[this] { m_onlyOneBall = false; }, {} };
+    
 
+    bool m_onlyOneBall = false;    // Used in auto to shoot one ball
     bool m_hasAutoRun = false;
     bool m_turretready = false;
     bool m_firing = false;
