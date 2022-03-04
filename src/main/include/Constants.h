@@ -115,7 +115,7 @@ namespace DriveConstants
     constexpr double kRotationDriveIMaxRange = 0;
     constexpr double kRotationDriveD = 0.025;
     /// Max speed for control
-    constexpr double kRotationDriveMaxSpeed = 3.5;
+    constexpr double kRotationDriveMaxSpeed = 4.0; // 3.5;
     /// Speeds higher than value will prevent robot from changing directions for a turn
     constexpr double kRotationDriveDirectionLimit = 3;
     /// Tolerance for turning
