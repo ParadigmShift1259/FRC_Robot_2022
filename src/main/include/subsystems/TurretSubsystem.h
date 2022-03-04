@@ -47,9 +47,6 @@ public:
     /// Returns whether or not the turret is at the desired setpoint
     bool isAtSetpoint();
 
-    /// Set new PID Values for the turret from on the fly SmartDashboard values
-    void SetNewPIDValues();
-
     double GetCurrentAngle();
 
 protected:

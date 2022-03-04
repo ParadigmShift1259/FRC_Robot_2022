@@ -88,12 +88,6 @@ Calculations::Calculations()
                       .WithSize(1, 1)
                       .WithPosition(3, 1)
                       .GetEntry();
-
-  // frc::SmartDashboard::PutNumber("HeightAboveHub", m_heightAboveHub.to<double>());
-  // frc::SmartDashboard::PutNumber("TargetHeight", m_heightTarget.to<double>());
-  // frc::SmartDashboard::PutNumber("RobotHeight", m_heightRobot.to<double>());
-  // frc::SmartDashboard::PutNumber("FloorHubDistance", m_xInput.to<double>());
-  // frc::SmartDashboard::PutNumber("TargetXDistance", m_xTarget.to<double>());
 }
 
 meter_t Calculations::HubHeightToMaxHeight()
@@ -102,8 +96,6 @@ meter_t Calculations::HubHeightToMaxHeight()
   auto bValue = ((m_xInput + m_xTarget) * (m_xInput + m_xTarget) * (m_heightAboveHub - m_heightRobot) - m_xInput * m_xInput * (m_heightTarget - m_heightRobot)) / (m_xTarget * m_xInput * (m_xInput + m_xTarget));
 
   m_heightMax = -1.0 * bValue * bValue / (4.0 * aValue) + m_heightRobot;
-
-  // frc::SmartDashboard::PutNumber("HubHeightToMaxHeight", units::foot_t(m_heightMax).to<double>());
 
   return m_heightMax;
 }
@@ -145,37 +137,18 @@ meters_per_second_t Calculations::CalcInitYVel()
 
 meters_per_second_t Calculations::CalcInitVel()
 {
-  // m_heightAboveHub = foot_t(frc::SmartDashboard::GetNumber("HeightAboveHub", 0.0));
-  // m_heightTarget = foot_t(frc::SmartDashboard::GetNumber("TargetHeight", 0.0));
-  // m_heightRobot = foot_t(frc::SmartDashboard::GetNumber("RobotHeight", 0.0));
-  // m_xInput = foot_t(frc::SmartDashboard::GetNumber("FloorHubDistance", 0.0));
-  // m_xTarget = foot_t(frc::SmartDashboard::GetNumber("TargetXDistance", 0.0));
-
-  //m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(10.0));
-  // m_heightTarget = foot_t(m_heightTargetEntry.GetDouble(0.0));
-  // m_heightRobot = foot_t(m_heightRobotEntry.GetDouble(0.0));
-  // m_xInput = foot_t(m_xFloorDistanceEntry.GetDouble(0.0));
-  // m_xTarget = foot_t(m_xTargetDistanceEntry.GetDouble(0.0));
-    
   HubHeightToMaxHeight();
 
   CalcInitXVel();
   CalcInitYVel();
   
   m_angleInit = math::atan(m_velYInit / m_velXInit);
-  // printf("Angle Before Clamp %.3f\n", m_angleInit.to<double>());
   m_angleInit = degree_t(std::clamp(m_angleInit.to<double>(), minAngle.to<double>(), maxAngle.to<double>()));
-  // printf("Angle After Clamp %.3f\n", m_angleInit);
 
   CalcInitVelWithAngle();
-  // printf("InitVel %.3f\n", m_velInit.to<double>());
-  // printf("InitAngle %.3f\n", m_angleInit.to<double>());
 
   m_initVelEntry.SetDouble(m_velInit.to<double>());
   m_initAngleEntry.SetDouble(m_angleInit.to<double>());
-
-  // frc::SmartDashboard::PutNumber("InitVel", units::feet_per_second_t(m_velInit).to<double>());
-  // frc::SmartDashboard::PutNumber("InitAngle", m_angleInit.to<double>());
 
   return m_velInit;
 }
@@ -206,7 +179,6 @@ revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t ta
 
   m_initRpmEntry.SetDouble(m_rpmInit.to<double>());
   m_setpointEntry.SetDouble(m_rpmInit.to<double>() / FlywheelConstants::kGearRatio);
-  // frc::SmartDashboard::PutNumber("InitRPM", m_rpmInit.to<double>());
 
   return m_rpmInit;
 }
@@ -233,11 +205,6 @@ void Calculations::CalculateAll() {
 
   for (double i=8.0; i<25.0; i++) {
     for (double j=0.1; j<4; j+=0.1) {
-      // m_heightAboveHubEntry.SetDouble(9.0);
-      // m_heightTargetEntry.SetDouble(8.0 + 2.0/3.0);
-      // m_heightRobotEntry.SetDouble(3.0 + 5.0/6.0);
-      // m_xFloorDistanceEntry.SetDouble(i);
-      // m_xTargetDistanceEntry.SetDouble(j);
 
       CalcInitRPMs(foot_t(i), foot_t(j));
 

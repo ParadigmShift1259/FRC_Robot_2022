@@ -6,7 +6,7 @@
 
 using namespace TurretConstants;
 
-#define TUNE_TURRET_PID
+//#define TUNE_TURRET_PID
 
 TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro) 
     : m_turretmotor(kMotorPort)
@@ -88,8 +88,8 @@ void TurretSubsystem::Periodic()
     //m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
     
     //m_turretmotor.Set(ControlMode::Position, 0.0);
-     frc::SmartDashboard::PutNumber("ClosedLoopError", m_turretmotor.GetClosedLoopError());
-     frc::SmartDashboard::PutNumber("IntegralAccumulator", m_turretmotor.GetIntegralAccumulator());
+    frc::SmartDashboard::PutNumber("ClosedLoopError", m_turretmotor.GetClosedLoopError());
+    frc::SmartDashboard::PutNumber("IntegralAccumulator", m_turretmotor.GetIntegralAccumulator());
 
 #ifdef TUNE_TURRET_PID
     double f = frc::SmartDashboard::GetNumber("TurretF", 0);
@@ -112,6 +112,16 @@ void TurretSubsystem::Periodic()
     m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(accel/10), kTimeout);     // encoder ticks per 100ms per sec
 
     // m_turretmotor.SetIntegralAccumulator(0.0, 0);
+#else
+    m_turretmotor.Config_kF(0, kF, kTimeout);
+    m_turretmotor.Config_kP(0, kP, kTimeout);
+    m_turretmotor.Config_kI(0, kI, kTimeout);
+    m_turretmotor.Config_kD(0, kD, kTimeout);
+
+    m_turretmotor.Config_IntegralZone(0, 1000.0);
+    m_turretmotor.ConfigMotionSCurveStrength(1.0);
+    m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(kMMCruiseVel / 10.0), kTimeout);  // encoder ticks per 100ms 
+    m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(kMMAccel / 10.0), kTimeout);     // encoder ticks per 100ms per sec
 #endif
 }
 
@@ -142,7 +152,7 @@ void TurretSubsystem::TurnToRobot(double robotAngle)
     double angle = robotAngle - kTurretToRobotAngleOffset;
     TurnTo(angle);
 }
-
+ 
 void TurretSubsystem::TurnToField(double desiredAngle)
 {
     // safeguard
@@ -169,21 +179,6 @@ void TurretSubsystem::TurnToRelative(double angle, double minAngle, double maxAn
 bool TurretSubsystem::isAtSetpoint()
 {
     return fabs(m_turretmotor.GetClosedLoopError()) <= DegreesToTicks(kDegreeStopRange);
-}
-
-void TurretSubsystem::SetNewPIDValues()
-{
-    /// CONFIRMED: OVERUNNING THE ENTIRE LOOP
-    /// Bug
-    // double p = frc::SmartDashboard::GetNumber("T_T_P", kP);
-    // double i = frc::SmartDashboard::GetNumber("T_T_I", kI);
-    // double d = frc::SmartDashboard::GetNumber("T_T_D", kD);
-    // double max = frc::SmartDashboard::GetNumber("T_T_Max", kMaxOut);
-    // m_turretmotor.Config_kP(0, p, kTimeout);
-    // m_turretmotor.Config_kI(0, i, kTimeout);
-    // m_turretmotor.Config_kD(0, d, kTimeout);
-    // m_turretmotor.ConfigPeakOutputForward(max, kTimeout);
-    // m_turretmotor.ConfigPeakOutputReverse(max * -1.0, kTimeout);
 }
 
 double TurretSubsystem::TicksToDegrees(double ticks)
