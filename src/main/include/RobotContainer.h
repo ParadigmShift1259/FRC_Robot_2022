@@ -148,6 +148,20 @@ private:
     frc2::InstantCommand m_turretToCenter{[this] { m_turret.TurnTo(0.0); }, {&m_turret} };
     frc2::InstantCommand m_turretToPosStop{[this] { m_turret.TurnToRelative(50.0); }, {&m_turret} };
     frc2::InstantCommand m_turretToNegStop{[this] { m_turret.TurnToRelative(-50.0); }, {&m_turret} };
+    // frc2::InstantCommand m_resetOdoAndGyro{[this] 
+    // { 
+    //     m_gyro.SetHeading((double)trajectory.InitialPose().Rotation().Degrees()); 
+    //     m_drive.ResetOdometry(trajectory.InitialPose());
+    // }, {&m_drive}
+    // };
+    frc2::InstantCommand m_driveRotateCw
+    { [this]
+        { m_drive.Drive(units::meters_per_second_t(0.0), units::meters_per_second_t(0.0),units::angular_velocity::radians_per_second_t(0.1), m_fieldRelative); }, {&m_drive} 
+    };
+    frc2::InstantCommand m_driveRotateCcw
+    { [this]
+        { m_drive.Drive(units::meters_per_second_t(0.0), units::meters_per_second_t(0.0),units::angular_velocity::radians_per_second_t(-0.1), m_fieldRelative); }, {&m_drive} 
+    };
     frc2::InstantCommand m_runTransferAndFeeder
     { [this]
         { 
