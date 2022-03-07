@@ -208,12 +208,23 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     switch (path)
     {
         case kEx1:
-            return GetAutoPathCmd("Ball1Short", true);
+            return GetAutoPathCmd("Ball1Short", true);  // Save slot for move off the line
 
         case kEx2:
-            return GetAutoPathCmd("Ball3Short", true);
+            return GetAutoPathCmd("Ball1Short", true);  // 2 ball auto
+//            return GetAutoPathCmd("Ball3Short", true);
 
         case kEx3:
+            return new frc2::SequentialCommandGroup
+            (
+                  std::move(*GetAutoPathCmd("Ball1ShortOld", true)) // (almost) 3 ball auto
+                , m_setOneBallFlag
+                , std::move(*GetAutoPathCmd("Ball3ShortOld", false))
+                //, std::move(*GetAutoPathCmd("OneBallTest", true))
+                , m_resetOneBallFlag
+            );
+
+        case kEx4:
             return new frc2::SequentialCommandGroup
             (
                 m_driveRotateCw                 // Shimmy so the intake deploys
@@ -229,13 +240,21 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
                 , m_resetOneBallFlag
             );
 
-        case kEx4:
-            return new frc2::SequentialCommandGroup
-            (
-                  std::move(*GetAutoPathCmd("Ball1Short", true))
-                , std::move(*GetAutoPathCmd("Ball3Short", false))
-                , std::move(*GetAutoPathCmd("Ball4Short", false))    // TODO only one ball, will transfer cmd end?
-            );
+        // case kEx5:
+        //     return new frc2::SequentialCommandGroup
+        //     (
+        //         m_driveRotateCw                 // Shimmy so the intake deploys
+        //         , frc2::WaitCommand(0.250_s)
+        //         , m_driveRotateCcw
+        //         , frc2::WaitCommand(0.500_s)
+        //         , m_driveRotateCw
+        //         , frc2::WaitCommand(0.250_s)
+        //         , std::move(*GetAutoPathCmd("Ball1Short", true))
+        //         , m_setOneBallFlag
+        //         , std::move(*GetAutoPathCmd("Ball3Short", false))
+        //         //, std::move(*GetAutoPathCmd("OneBallTest", true))
+        //         , m_resetOneBallFlag
+        //     );
 
         default:
             return new frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive});
@@ -256,7 +275,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(string pathName, bo
                 , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
             )
         )
-        , frc2::WaitCommand(0.300_s)
+        , frc2::WaitCommand(0.500_s)
         , std::move(Fire( &m_flywheel
                         , &m_turret
                         , &m_hood

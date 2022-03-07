@@ -3,7 +3,9 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <iostream>
 
-units::meter_t kHubOffsetRimToCenter = units::foot_t(2.0);
+units::meter_t kHubOffsetRimToCenter2 = units::foot_t(2.5);  // Duluth adjustment to leesen dist by 1 ft
+units::meter_t kTargetDistIntoHub2 = units::foot_t(2.0);     // Separate offset from target dist within cone
+//units::meter_t kHubOffsetRimToCenter = units::foot_t(2.0);
 
 HomeTarget::HomeTarget(   FlywheelSubsystem *flywheel
                         , TurretSubsystem *turret
@@ -43,7 +45,7 @@ void HomeTarget::Execute()
     if (!m_vision.GetValidTarget())
         return;
 
-    double distance = m_vision.GetHubDistance(true) - kHubOffsetRimToCenter.to<double>();
+    double distance = m_vision.GetHubDistance(true) - kHubOffsetRimToCenter2.to<double>();
 
     // if (std::isnan(distance))
     if (distance != distance)
@@ -78,7 +80,7 @@ void HomeTarget::Execute()
         offset -= 330;
     }
 
-    revolutions_per_minute_t flywheelspeedInPRM = revolutions_per_minute_t(offset) + m_calculation.CalcInitRPMs(meter_t(distance), kHubOffsetRimToCenter);
+    revolutions_per_minute_t flywheelspeedInPRM = revolutions_per_minute_t(offset) + m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub2);
     double flywheelspeed = flywheelspeedInPRM.to<double>();
 
     // Servo Pos    Measured Angle  Complement

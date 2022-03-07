@@ -4,7 +4,9 @@
 #include <vector>
 #include <photonlib/PhotonUtils.h>
 
-units::meter_t kVisionHubOffsetRimToCenter = units::foot_t(2.0);
+//units::meter_t kVisionHubOffsetRimToCenter = units::foot_t(2.0);
+units::meter_t kHubOffsetRimToCenter = units::foot_t(2.5);  // Duluth adjustment to leesen dist by 1 ft
+units::meter_t kTargetDistIntoHub = units::foot_t(2.0);     // Separate offset from target dist within cone
 
 VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, HoodSubsystem& hood, IOdometry& odometry) 
  //: m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
@@ -332,10 +334,12 @@ double VisionSubsystem::GetHubDistance(bool smoothed)
 
 void VisionSubsystem::AdjustHood()
 {
-    double distance = (GetHubDistance(true));
+    //double distance = (GetHubDistance(true));
+    double distance = GetHubDistance(true) - kHubOffsetRimToCenter.to<double>();
+
     if (distance > 0)
     {
-        m_calculation.CalcInitRPMs(meter_t(distance), kVisionHubOffsetRimToCenter);
+        m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub);
         degree_t initAngle = m_calculation.GetInitAngle();
         double x = initAngle.to<double>();
         double c = SmartDashboard::GetNumber("Hoodangle Constant", 0.0317);
