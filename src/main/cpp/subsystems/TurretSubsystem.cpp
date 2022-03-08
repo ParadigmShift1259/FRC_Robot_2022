@@ -38,7 +38,7 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.ConfigPeakOutputReverse(kMaxOut * -1.0, kTimeout);
     //m_turretmotor.ConfigClosedloopRamp()
     //m_turretmotor.ConfigAllowableClosedloopError(0, DegreesToTicks(kDegreePIDStopRange), kTimeout);
-    m_turretmotor.ConfigAllowableClosedloopError(0, 30.0, kTimeout);    // Approx 90 ticks per degree
+    m_turretmotor.ConfigAllowableClosedloopError(0, 30.0, kTimeout);    // Approx 90 ticks per degree **** WHAT DOES THIS DO WHEN USING MOTION MAGIC? ****
     m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(kMMCruiseVel/10), kTimeout);  // encoder ticks per 100ms 
     m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(kMMAccel/10), kTimeout);     // encoder ticks per 100ms per sec
 
@@ -122,16 +122,6 @@ void TurretSubsystem::Periodic()
     m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(accel/10), kTimeout);     // encoder ticks per 100ms per sec
 
     // m_turretmotor.SetIntegralAccumulator(0.0, 0);
-#else
-    m_turretmotor.Config_kF(0, kF, kTimeout);
-    m_turretmotor.Config_kP(0, kP, kTimeout);
-    m_turretmotor.Config_kI(0, kI, kTimeout);
-    m_turretmotor.Config_kD(0, kD, kTimeout);
-
-    m_turretmotor.Config_IntegralZone(0, 1000.0);
-    m_turretmotor.ConfigMotionSCurveStrength(1.0);
-    m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(kMMCruiseVel / 10.0), kTimeout);  // encoder ticks per 100ms 
-    m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(kMMAccel / 10.0), kTimeout);     // encoder ticks per 100ms per sec
 #endif
 }
 
