@@ -32,6 +32,8 @@ HomeTarget::HomeTarget(   FlywheelSubsystem *flywheel
 
 void HomeTarget::Initialize()
 {
+    m_startTime = m_timer.GetFPGATimestamp().to<double>();
+    printf("timestamp start home target %.3f\n", m_startTime);
     *m_turretready = false;
     *m_firing = false;
     *m_finished = false;
@@ -133,7 +135,10 @@ bool HomeTarget::IsFinished()
 
 void HomeTarget::End(bool interrupted)
 {
-    
+    auto endTime = m_timer.GetFPGATimestamp().to<double>();
+    auto elapsed = endTime - m_startTime;
+    printf("timestamp end home target %.3f elapsed %.3f\n", endTime, elapsed);
+   
     //*m_finished = false;
     // m_flywheel->SetRPM(FlywheelConstants::kIdleRPM);
     // m_hood->Set(HoodConstants::kMax);

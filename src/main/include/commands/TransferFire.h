@@ -25,4 +25,5 @@ public:
     bool* m_firing;
     bool* m_finished;
     double m_launchtime;
+    double m_startTime = 0.0;   // Temp
 };

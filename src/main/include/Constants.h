@@ -35,7 +35,9 @@ namespace DriveConstants
 
     /// \name Teleop Drive Constraints
     // constexpr auto kDriveSpeed = meters_per_second_t(1.5);
-    constexpr auto kDriveSpeed = meters_per_second_t(4.0);
+    //constexpr auto kDriveSpeed = meters_per_second_t(4.0);
+    constexpr meters_per_second_t kDriveSpeed = feet_per_second_t(13.6);
+
     constexpr auto kSlowDriveSpeed = meters_per_second_t(0.8);
     constexpr auto kDriveAngularSpeed = radians_per_second_t(wpi::numbers::pi * 2.0);
     constexpr auto kSlowDriveAngularSpeed = radians_per_second_t(wpi::numbers::pi / 2.0);
@@ -277,9 +279,10 @@ namespace FlywheelConstants
     constexpr double kFiringRPMMultiplier = 1.01; //TEMP 1.015; //2; //1.035; //1.05;
 
     // Launch PID values, used to first get to setpoint
-    constexpr double kP = 0.0002900;
+    //constexpr double kP = 0.0002900;
+    constexpr double kP = 0.3;
 //    constexpr double kP = 0.0;
-    constexpr double kI = 0.0;
+    constexpr double kI = 0.003;
     constexpr double kD = 0.0;
 
     // Maintain PID values, used to adjust for error once the robot is shooting

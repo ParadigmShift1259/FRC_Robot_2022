@@ -92,8 +92,8 @@ void VisionSubsystem::Periodic()
             {
                 targetVectors.erase(targetVectors.begin() + i);
                 i--;
-                if (bLogInvalid)
-                    std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
+                //if (bLogInvalid)
+                    //std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
             }
         }
 
@@ -219,9 +219,9 @@ void VisionSubsystem::Periodic()
         {
             fprintf(m_logFile, "Angle: %f, Range: %f, Robot X %f, Y: %f, Theta: %f\n", GetHubAngle() *180/3.14, GetHubDistance(true) * 39.37, m_robotPose.X().to<double>() * 39.37,m_robotPose.Y().to<double>() * 39.37,m_robotPose.Rotation().Degrees().to<double>()); 
             // std::cout << "Center: (" << (double)m_cameraToHub.X() << "," << (double)m_cameraToHub.Y() << "). ";
-            std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
-            std::cout << "Range: " << GetHubDistance(true) * 39.37 << ", ";
-            std::cout << "Robot X: " << (double) m_robotPose.X() * 39.37 << ", Y: " << (double) m_robotPose.Y() * 39.37 << ", Theta: ", m_robotPose.Rotation().Degrees().to<double>();
+            // std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
+            // std::cout << "Range: " << GetHubDistance(true) * 39.37 << ", ";
+            // std::cout << "Robot X: " << (double) m_robotPose.X() * 39.37 << ", Y: " << (double) m_robotPose.Y() * 39.37 << ", Theta: ", m_robotPose.Rotation().Degrees().to<double>();
             // for(int i = 0; i < targetVectors.size(); i++) {
             //     std::cout << "(" << (double)targetVectors[i].X() << "," << (double)targetVectors[i].Y() << "). ";
             // }

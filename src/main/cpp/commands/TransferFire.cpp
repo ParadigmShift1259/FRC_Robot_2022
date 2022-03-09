@@ -19,6 +19,9 @@ TransferFire::TransferFire(TransferSubsystem* subsystem,
 
 void TransferFire::Initialize()
 {
+   m_startTime = m_timer.GetFPGATimestamp().to<double>();
+   printf("timestamp start transfer fire %.3f\n", m_startTime);
+ 
     m_timer.Reset();
     m_timer.Stop();
     *m_firing = false;
@@ -63,6 +66,10 @@ void TransferFire::End(bool interrupted) {
     m_timer.Stop();
     m_transfer->SetFeeder(0);
     m_transfer->SetTransfer(0);
+
+    auto endTime = m_timer.GetFPGATimestamp().to<double>();
+    auto elapsed = endTime - m_startTime;
+    printf("timestamp end transfer fire %.3f elapsed %.3f\n", endTime, elapsed);
 
     // SmartDashboard::PutBoolean("TEST_FIRING", *m_firing);
 }

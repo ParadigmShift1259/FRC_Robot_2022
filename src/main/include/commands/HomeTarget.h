@@ -43,4 +43,6 @@ private:
     GetYvelocityCallback m_yVelocityCb;
   	Calculations m_calculation;
 
+    Timer m_timer;  // Temp
+    double m_startTime = 0.0;
 };
