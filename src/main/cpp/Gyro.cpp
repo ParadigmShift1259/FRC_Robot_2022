@@ -20,12 +20,19 @@ double Gyro::GetHeading()
 
 void Gyro::ZeroHeading()
 {
-    m_gyro.SetFusedHeading(0.0, 0);
+    m_gyro.SetFusedHeading(0.0, 30);
 }
 
 void Gyro::SetHeading(double heading)
 {
-    m_gyro.SetFusedHeading(heading * (kGyroReversed ? -1. : 1.), 0);
+int err;
+
+printf("initial gyro: %f  ", GetHeading());
+for (int n=0; n<100; n++)
+    err = m_gyro.SetFusedHeading(heading * (kGyroReversed ? -1. : 1.), 30);
+printf("heading to set: %f  ", heading);  
+printf("returned error code: %d  ", err); // Observed to return 0 yet still not set heading!
+printf("finial gyro: %f\n", GetHeading());
 }
 
 double Gyro::GetTurnRate()

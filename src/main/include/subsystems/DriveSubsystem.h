@@ -112,6 +112,9 @@ public:
     /// \return The pose.
     Pose2d GetPose(units::time::second_t timestamp) const;
 
+
+    units::meters_per_second_t GetSpeed(void) const;
+
     /// Converts PWM input on the CANifier to a pulse width
     /// \param pwmChannel The PWM channel to pass in
     /// \return The pulse width of the PWM channel

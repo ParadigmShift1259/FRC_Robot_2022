@@ -308,6 +308,16 @@ frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
     return m_odometry.GetPose();
 }
 
+
+units::meters_per_second_t DriveSubsystem::GetSpeed() const
+{
+    frc::Trajectory::State lastOdoState = m_StateHist.back();
+    return lastOdoState.velocity;
+}
+
+
+
+
 double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
 {
     double dutyCycleAndPeriod[2];

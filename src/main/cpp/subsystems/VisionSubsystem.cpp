@@ -93,7 +93,7 @@ void VisionSubsystem::Periodic()
                 targetVectors.erase(targetVectors.begin() + i);
                 i--;
                 if (bLogInvalid)
-                    std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
+                    ;//std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
             }
         }
 
@@ -213,7 +213,7 @@ void VisionSubsystem::Periodic()
         if (!m_validTarget && bLogInvalid)
         {
             fprintf(m_logFile, "PhotonCam Has No Targets!\n");
-            std::cout << "PhotonCam Has No Targets!" << std::endl;
+            //std::cout << "PhotonCam Has No Targets!" << std::endl;
         }
         else if (m_dbgLogTargetData)
         {

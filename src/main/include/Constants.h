@@ -169,7 +169,8 @@ namespace AutoConstants
 {
     using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
 
-    constexpr auto kMaxSpeed = meters_per_second_t(2.0);
+    //constexpr auto kMaxSpeed = meters_per_second_t(2.8);
+    constexpr meters_per_second_t kMaxSpeed = feet_per_second_t(13.6);
     constexpr auto kIntakeDriveSpeed = meters_per_second_t(0.5);
 
     constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
@@ -185,13 +186,13 @@ namespace AutoConstants
     // constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi * 6.0);
     // constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi * 6.0);
 
-    constexpr double kPXController = 20; //7.0;
-    constexpr double kIXController = 1; 
-    constexpr double kDXController = 1; // 0.7;
+    constexpr double kPXController = 0.5;//20; //7.0;
+    constexpr double kIXController = 0;//1; 
+    constexpr double kDXController = 0;//1; // 0.7;
     constexpr double kPYController = kPXController; //7.0;
     constexpr double kIYController = kIXController; 
     constexpr double kDYController = kDXController; // 0.7;
-    constexpr double kPThetaController = 20; // 10.0;
+    constexpr double kPThetaController = 0.5;//20; // 10.0;
     constexpr double kIThetaController = 0; 
     constexpr double kDThetaController = 1; // 0.9;
 

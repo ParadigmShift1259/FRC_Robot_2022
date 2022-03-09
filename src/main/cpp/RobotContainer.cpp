@@ -205,21 +205,37 @@ void RobotContainer::ZeroDrive()
 
 frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
 {
+
+
+
+    vector<Pose2d> straightLine50ftWaypoints
+    {
+        frc::Pose2d(0_in, 0_in, 0_deg),
+        frc::Pose2d(40*12_in, 0_in, 0_deg)
+    };
+
+    auto config = TrajectoryConfig{AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration};
+    config.SetKinematics(m_drive.kDriveKinematics);
+    config.SetEndVelocity(AutoConstants::kIntakeDriveSpeed);
+    
+    Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLine50ftWaypoints, config);
+
+
     switch (path)
     {
         case kEx1:
-            return GetAutoPathCmd("Ball1Short", true);  // Save slot for move off the line
+            return GetAutoPathCmd(straightLine50ftTraj, true);  // Save slot for move off the line
 
         case kEx2:
-            return GetAutoPathCmd("Ball1Short", true);  // 2 ball auto
+            return GetAutoPathCmd(straightLine50ftTraj, true);  // 2 ball auto
 //            return GetAutoPathCmd("Ball3Short", true);
 
         case kEx3:
             return new frc2::SequentialCommandGroup
             (
-                  std::move(*GetAutoPathCmd("Ball1ShortOld", true)) // (almost) 3 ball auto
+                  std::move(*GetAutoPathCmd(straightLine50ftTraj, true)) // (almost) 3 ball auto
                 , m_setOneBallFlag
-                , std::move(*GetAutoPathCmd("Ball3ShortOld", false))
+                , std::move(*GetAutoPathCmd(straightLine50ftTraj, false))
                 //, std::move(*GetAutoPathCmd("OneBallTest", true))
                 , m_resetOneBallFlag
             );
@@ -233,9 +249,9 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
                 , frc2::WaitCommand(0.500_s)
                 , m_driveRotateCw
                 , frc2::WaitCommand(0.250_s)
-                , std::move(*GetAutoPathCmd("Ball1Short", true))
+                , std::move(*GetAutoPathCmd(straightLine50ftTraj, true))
                 , m_setOneBallFlag
-                , std::move(*GetAutoPathCmd("Ball3Short", false))
+                , std::move(*GetAutoPathCmd(straightLine50ftTraj, false))
                 //, std::move(*GetAutoPathCmd("OneBallTest", true))
                 , m_resetOneBallFlag
             );
@@ -261,7 +277,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     }
 }
 
-frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(string pathName, bool primaryPath)
+frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(Trajectory trajectory, bool primaryPath)
 {
     return new frc2::SequentialCommandGroup
     (
@@ -270,7 +286,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(string pathName, bo
               std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
             , frc2::SequentialCommandGroup
             (
-                  std::move(GetSwerveCommandPath(pathName, primaryPath))
+                  std::move(GetSwerveCommandPath(trajectory, primaryPath))
                 //, frc2::WaitCommand(0.2_s)
                 , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
             )
@@ -289,12 +305,12 @@ frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(string pathName, bo
     );
 }
 
-SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(string pathName, bool primaryPath)
+SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(Trajectory trajectory, bool primaryPath)
 {
-    PathPlannerTrajectory path = PathPlanner::loadPath(pathName, AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration);
-    // PathPlannerTrajectory path = PathPlanner::loadPath(pathName, 1.0 * 1_mps, 2.0 * 1_mps_sq);
+    // PathPlannerTrajectory path = PathPlanner::loadPath(pathName, AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration);
+    // // PathPlannerTrajectory path = PathPlanner::loadPath(pathName, 1.0 * 1_mps, 2.0 * 1_mps_sq);
 
-    frc::Trajectory trajectory = convertPathToTrajectory(path);
+    // frc::Trajectory trajectory = convertPathToTrajectory(path);
     PrintTrajectory(trajectory);
 
     frc::ProfiledPIDController<units::radians> thetaController{
@@ -320,6 +336,7 @@ SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(string pathName, bool primary
         // Init absolute gyro angle isn't required by ResetOdometry() but IS required due to directly reading the gyro elsewhere
         m_gyro.SetHeading((double)trajectory.InitialPose().Rotation().Degrees()); 
         m_drive.ResetOdometry(trajectory.InitialPose());
+        printf("initial Pose: %f\n\n\n\n", m_drive.GetPose().Rotation().Degrees());
         //m_hasAutoRun = true;
     }
 
