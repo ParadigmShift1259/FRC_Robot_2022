@@ -104,6 +104,8 @@ private:
     void ConfigPrimaryButtonBindings();
     void ConfigSecondaryButtonBindings();
     frc2::SequentialCommandGroup* GetAutoPathCmd(Trajectory trajectory, bool primaryPath);
+    frc2::ParallelCommandGroup* GetIntakePathCmd(Trajectory trajectory, bool primaryPath);
+    frc2::SequentialCommandGroup* GetFirePathCmd(Trajectory trajectory, bool primaryPath);
     SwerveCtrlCmd GetSwerveCommandPath(Trajectory trajectory, bool primaryPath);
     frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
     void PrintTrajectory(frc::Trajectory& trajectory);

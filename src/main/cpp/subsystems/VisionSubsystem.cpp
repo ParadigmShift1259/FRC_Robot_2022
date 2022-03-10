@@ -24,7 +24,7 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
     m_logFile = stderr; // fopen("/tmp/visionLog.txt", "w");
 
 //    m_networktable->AddEntryListener(
-//        "/photonvision/gloworm/latencyMillis"
+//        "photonvision/gloworm/latencyMillis"
 //        ,[this](nt::NetworkTable* table
 //             , std::string_view name
 //             , nt::NetworkTableEntry entry

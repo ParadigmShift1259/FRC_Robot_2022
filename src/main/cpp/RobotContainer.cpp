@@ -214,11 +214,25 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
         frc::Pose2d(40*12_in, 0_in, 0_deg)
     };
 
+    vector<Pose2d> ball1PickUpWaypoints
+    {
+        frc::Pose2d(7_m, 1.771_m, frc::Rotation2d(-90_deg)),
+        frc::Pose2d(7_m, 0.6_m, frc::Rotation2d(-90_deg))
+    };
+
+    vector<Pose2d> ball1ShootWaypoints
+    {
+        frc::Pose2d(7_m, 0.6_m, frc::Rotation2d(-90_deg)),
+        frc::Pose2d(6.5_m, 0.75_m, frc::Rotation2d(45_deg)),
+    };
+
     auto config = TrajectoryConfig{units::velocity::meters_per_second_t{1.0}, AutoConstants::kMaxAcceleration};
     config.SetKinematics(m_drive.kDriveKinematics);
-    config.SetEndVelocity(AutoConstants::kIntakeDriveSpeed);
+    // config.SetEndVelocity(AutoConstants::kIntakeDriveSpeed);
     
     Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLineWaypoints, config);
+    Trajectory ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1PickUpWaypoints, config);
+    Trajectory ball1ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball1ShootWaypoints, config);
 
 
     switch (path)
@@ -227,15 +241,15 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
             return GetAutoPathCmd(straightLine50ftTraj, true);  // Save slot for move off the line
 
         case kEx2:
-            return GetAutoPathCmd(straightLine50ftTraj, true);  // 2 ball auto
+            return GetAutoPathCmd(ball1Traj, true);  // 2 ball auto
 //            return GetAutoPathCmd("Ball3Short", true);
 
         case kEx3:
             return new frc2::SequentialCommandGroup
             (
-                  std::move(*GetAutoPathCmd(straightLine50ftTraj, true)) // (almost) 3 ball auto
+                  std::move(*GetIntakePathCmd(ball1Traj, true)) // (almost) 3 ball auto
                 , m_setOneBallFlag
-                , std::move(*GetAutoPathCmd(straightLine50ftTraj, false))
+                , std::move(*GetFirePathCmd(ball1ShootTraj, false))
                 //, std::move(*GetAutoPathCmd("OneBallTest", true))
                 , m_resetOneBallFlag
             );
@@ -249,9 +263,9 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
                 , frc2::WaitCommand(0.500_s)
                 , m_driveRotateCw
                 , frc2::WaitCommand(0.250_s)
-                , std::move(*GetAutoPathCmd(straightLine50ftTraj, true))
+                , std::move(*GetAutoPathCmd(ball1Traj, true))
                 , m_setOneBallFlag
-                , std::move(*GetAutoPathCmd(straightLine50ftTraj, false))
+                , std::move(*GetAutoPathCmd(ball1ShootTraj, false))
                 //, std::move(*GetAutoPathCmd("OneBallTest", true))
                 , m_resetOneBallFlag
             );
@@ -276,6 +290,59 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
             return new frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive});
     }
 }
+
+
+
+
+frc2::ParallelCommandGroup* RobotContainer::GetIntakePathCmd(Trajectory trajectory, bool primaryPath)
+{
+    return new frc2::ParallelCommandGroup
+        (
+              std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
+            , frc2::SequentialCommandGroup
+            (
+                  std::move(GetSwerveCommandPath(trajectory, primaryPath))
+                //, frc2::WaitCommand(0.2_s)
+                , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
+            )
+        );
+}
+
+
+
+
+frc2::SequentialCommandGroup* RobotContainer::GetFirePathCmd(Trajectory trajectory, bool primaryPath)
+{
+    return new frc2::SequentialCommandGroup
+    (
+        std::move(GetSwerveCommandPath(trajectory, primaryPath))
+        , frc2::WaitCommand(0.500_s)
+        , std::move(Fire( &m_flywheel
+                        , &m_turret
+                        , &m_hood
+                        , &m_transfer
+                        , m_vision
+                        , &m_turretready
+                        , &m_firing
+                        , &m_finished
+                        , [this]() { return GetYvelovity(); }
+                        , TransferConstants::kTimeLaunch))
+    );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(Trajectory trajectory, bool primaryPath)
 {
