@@ -84,7 +84,8 @@ public:
     TransferSubsystem&   GetTransfer() override { return m_transfer; }
     TurretSubsystem&     GetTurret() override { return m_turret; }
     VisionSubsystem&     GetVision() override { return m_vision; }
-
+    DriveSubsystem&     GetDrive() { return m_drive; }
+    
     bool OnlyOneBall() { return m_onlyOneBall; }
 
     Pose2d GetPose() { return m_drive.GetPose(); }

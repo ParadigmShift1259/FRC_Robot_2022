@@ -208,17 +208,17 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
 
 
 
-    vector<Pose2d> straightLine50ftWaypoints
+    vector<Pose2d> straightLineWaypoints
     {
         frc::Pose2d(0_in, 0_in, 0_deg),
         frc::Pose2d(40*12_in, 0_in, 0_deg)
     };
 
-    auto config = TrajectoryConfig{AutoConstants::kMaxSpeed, AutoConstants::kMaxAcceleration};
+    auto config = TrajectoryConfig{units::velocity::meters_per_second_t{1.0}, AutoConstants::kMaxAcceleration};
     config.SetKinematics(m_drive.kDriveKinematics);
     config.SetEndVelocity(AutoConstants::kIntakeDriveSpeed);
     
-    Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLine50ftWaypoints, config);
+    Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLineWaypoints, config);
 
 
     switch (path)

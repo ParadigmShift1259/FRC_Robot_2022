@@ -158,10 +158,10 @@ namespace ModuleConstants
     /// \name Drive PID Controller for Swerve Modules
     ///@{
     constexpr bool kDriveAdjust = false;
-    constexpr double kDriveP = 0.1;
+    constexpr double kDriveP = 0.0025; // 0.1;
     constexpr double kDriveI = 0;
     constexpr double kDriveD = 0;
-    constexpr double kDriveFF = 0.047619;
+    constexpr double kDriveFF = 0.055;//0.047619;
     ///@}
 }
 
@@ -170,10 +170,10 @@ namespace AutoConstants
     using radians_per_second_squared_t = compound_unit<radians, inverse<squared<second>>>;
 
     //constexpr auto kMaxSpeed = meters_per_second_t(2.8);
-    constexpr meters_per_second_t kMaxSpeed = feet_per_second_t(13.6);
+    constexpr meters_per_second_t kMaxSpeed = meters_per_second_t(3.6); // feet_per_second_t(13.6);
     constexpr auto kIntakeDriveSpeed = meters_per_second_t(0.5);
 
-    constexpr auto kMaxAcceleration = meters_per_second_squared_t(2.0);
+    constexpr auto kMaxAcceleration = meters_per_second_squared_t(1.0);
 
     // constexpr auto kMaxSpeed = meters_per_second_t(2.0);
     // constexpr auto kMaxAcceleration = meters_per_second_squared_t(3.0);
@@ -186,7 +186,7 @@ namespace AutoConstants
     // constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi * 6.0);
     // constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi * 6.0);
 
-    constexpr double kPXController = 0.5;//20; //7.0;
+    constexpr double kPXController = 1.0;; // 1.5; // 0.5;//20; //7.0;
     constexpr double kIXController = 0;//1; 
     constexpr double kDXController = 0;//1; // 0.7;
     constexpr double kPYController = kPXController; //7.0;

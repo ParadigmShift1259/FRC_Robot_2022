@@ -52,6 +52,8 @@ public:
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
 
+    bool m_enabled = false;
+
     // Subsystem methods go here.
 
     /// Drives the robot at given x, y and theta speeds. Speeds range from [-1, 1]

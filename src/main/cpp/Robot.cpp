@@ -33,6 +33,7 @@ void Robot::DisabledInit()
   m_container.CloseLogFile();
   Shuffleboard::StopRecording();
   m_container.TurretSetZeroAngle();
+  m_container.GetDrive().m_enabled = false;
 }
 
 void Robot::DisabledPeriodic() {}
@@ -53,7 +54,9 @@ void Robot::AutonomousInit()
   }
 }
 
-void Robot::AutonomousPeriodic() {}
+void Robot::AutonomousPeriodic() {
+  m_container.GetDrive().m_enabled = true;
+}
 
 void Robot::TeleopInit()
 {
@@ -79,7 +82,9 @@ void Robot::TeleopInit()
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  m_container.GetDrive().m_enabled = true;
+}
 
 /**
  * This function is called periodically during test mode.

@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "subsystems/DriveSubsystem.h"
+#include <iostream>
 
 using namespace DriveConstants;
 using namespace std;
@@ -93,6 +94,8 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro)
 
 void DriveSubsystem::Periodic()
 {
+static int n=0;
+
     m_frontLeft.Periodic();
     m_frontRight.Periodic();
     m_rearRight.Periodic();
@@ -102,6 +105,10 @@ void DriveSubsystem::Periodic()
                 , m_frontRight.GetState()
                 , m_rearLeft.GetState()
                 , m_rearRight.GetState());
+
+ if (n%10 == 0 && m_enabled) 
+  printf("t=%.3f Module Speeds: FL=%.2f FR=%.2f RL=%.2f RR=%.2f\n", m_timer.GetFPGATimestamp().to<double>(), m_frontLeft.GetState().speed.to<double>(), m_rearLeft.GetState().speed.to<double>(), m_rearRight.GetState().speed.to<double>(), m_frontRight.GetState().speed.to<double>());
+ n++;
 
     frc::Pose2d pose = m_odometry.GetPose();
     frc::Trajectory::State state;
