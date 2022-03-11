@@ -6,8 +6,8 @@ using namespace TransferConstants;
 
 TransferSecondBall::TransferSecondBall(ISubsysAccess& subsysAccess)
  : m_subSysAccess(subsysAccess)
- , m_transfer(subsysAccess.GetTransfer())
  , m_intake(subsysAccess.GetIntake())
+ , m_transfer(subsysAccess.GetTransfer())
 {
   AddRequirements({&m_transfer, &m_intake});
 }

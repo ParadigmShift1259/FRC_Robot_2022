@@ -219,6 +219,9 @@ namespace OIConstants
 // Vision Subsystem Constants
 namespace VisionConstants
 {
+    constexpr units::meter_t kHubOffsetRimToCenter = units::foot_t(2.5);  // Duluth adjustment to leesen dist by 1 ft
+    constexpr units::meter_t kTargetDistIntoHub = units::foot_t(2.0);     // Separate offset from target dist within cone
+
     // constexpr frc::Translation2d kHubCenter = frc::Translation2d(kFieldLength/2, kFieldWidth/2);
     // constexpr frc::Translation2d turretCenterToRobotCenter = frc::Translation2d(inch_t{2.25}, inch_t{0});
     // constexpr frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});

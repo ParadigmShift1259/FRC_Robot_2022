@@ -329,8 +329,8 @@ SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(string pathName, bool primary
 frc::Trajectory RobotContainer::convertPathToTrajectory(PathPlannerTrajectory path)
 {
     std::vector<frc::Trajectory::State> states;
-    double time = 0.0;
-    for (double time = 0; time < path.getTotalTime().to<double>(); time += 0.02)
+    //double time = 0.0;
+    for (double time = 0.0; time < path.getTotalTime().to<double>(); time += 0.02)
     {
         PathPlannerTrajectory::PathPlannerState state = path.sample(time * 1_s);
         //printf("time %.3f holorot %.3f\n", state.holonomicRotation.Degrees().to<double>());

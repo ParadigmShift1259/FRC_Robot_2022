@@ -24,7 +24,6 @@
 #include "TurretSubsystem.h"
 #include "HoodSubsystem.h"
 #include "common/DebugFlag.h"
-#include "Calculations.h"
 
 using namespace std;
 using namespace frc;
@@ -67,8 +66,6 @@ protected:
     /// \param degrees Degrees to convert
     double DegreesToRadians(double degrees);
 
-    void AdjustHood();
-
 private:    
     //shared_ptr<nt::NetworkTable> m_dashboard;
     shared_ptr<nt::NetworkTable> m_networktable;
@@ -84,9 +81,8 @@ private:
     /// Gyro to determine field relative angles, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
     TurretSubsystem& m_turret;
-    IOdometry& m_odometry;
     HoodSubsystem& m_hood;
-  	Calculations m_calculation;
+    IOdometry& m_odometry;
     FILE* m_logFile = nullptr;
 
     DebugFlag   m_dbgLogInvalid{"VisLogInvalid", true};

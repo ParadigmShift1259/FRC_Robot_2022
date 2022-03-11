@@ -184,7 +184,7 @@ private:
             if (m_dbgSeroTest)
             {
                 auto s = SmartDashboard::GetNumber("servo override", 0.0);
-                m_hood.Set(s);
+                m_hood.SetServoPosition(s);
             }
         },
         {&m_hood}

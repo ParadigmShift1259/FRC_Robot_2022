@@ -142,7 +142,8 @@ void FlywheelSubsystem::CalculateRPM()
     SmartDashboard::PutNumber("FeedForward", FF);
     m_flywheelPID.SetReference(m_setpoint, CANSparkMax::ControlType::kVelocity, pidslot, FF);
 
+#ifdef COMMAND_TIMING
     auto endTime = m_timer.GetFPGATimestamp().to<double>();
     printf("timestamp %.3f rpm %.3f\n", endTime, m_flywheelencoder.GetVelocity());
-
+#endif
 }

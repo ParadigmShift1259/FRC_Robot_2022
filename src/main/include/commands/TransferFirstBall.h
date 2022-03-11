@@ -16,7 +16,7 @@ class TransferFirstBall : public frc2::CommandHelper<frc2::CommandBase, Transfer
   void End(bool interrupted) override;
  
  private:
-  IntakeSubsystem& m_intake;
   TransferSubsystem& m_transfer;
+  IntakeSubsystem& m_intake;
   double m_speed;
 };

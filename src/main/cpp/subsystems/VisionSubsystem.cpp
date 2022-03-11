@@ -4,12 +4,7 @@
 #include <vector>
 #include <photonlib/PhotonUtils.h>
 
-//units::meter_t kVisionHubOffsetRimToCenter = units::foot_t(2.0);
-units::meter_t kHubOffsetRimToCenter = units::foot_t(2.5);  // Duluth adjustment to leesen dist by 1 ft
-units::meter_t kTargetDistIntoHub = units::foot_t(2.0);     // Separate offset from target dist within cone
-
 VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, HoodSubsystem& hood, IOdometry& odometry) 
- //: m_dashboard (nt::NetworkTableInstance::GetDefault().GetTable("SmartDashboard"))
  : m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("gloworm"))
  , m_led(true)
  , m_validTarget(false)
@@ -61,7 +56,7 @@ void VisionSubsystem::Periodic()
 
 // fprintf(m_logFile, " target count: %d   ",  targets.size());
         // Gets camera-relative x,y translations for each vision target
-        for (int i = 0; i < targets.size(); i++)
+        for (size_t i = 0; i < targets.size(); i++)
         {
             degree_t TargetPitch = degree_t{targets[i].GetPitch()};
             meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
@@ -72,21 +67,20 @@ void VisionSubsystem::Periodic()
 
 // fprintf(m_logFile, " pitch-filtered targets: %d   ", targetVectors.size());
 
-
         //find the center of the vision targets
         double xTotal = 0;
         double yTotal = 0;
-        for (int i = 0; i < targetVectors.size(); i++)
+        for (size_t i = 0; i < targetVectors.size(); i++)
         {
             xTotal += (double)targetVectors[i].X();
             yTotal += (double)targetVectors[i].Y();
         }
-        double xMean = xTotal/targetVectors.size();
-        double yMean = yTotal/targetVectors.size();
+        double xMean = xTotal / targetVectors.size();
+        double yMean = yTotal / targetVectors.size();
         frc::Translation2d averageTarget = Translation2d(meter_t{xMean}, meter_t{yMean});
 
         //Throw out outliers
-        for (int i = 0; i < targetVectors.size(); i++)
+        for (size_t i = 0; i < targetVectors.size(); i++)
         {
             if (averageTarget.Distance(targetVectors[i]) > meter_t{kMaxTargetSpread})
             {
@@ -124,7 +118,7 @@ void VisionSubsystem::Periodic()
                 // printf("robot pose x %.3f y %.3f theta %.3f   ", RobotvisionPose.X().to<double>(), RobotvisionPose.Y().to<double>(), RobotvisionPose.Rotation().Degrees().to<double>());
 
                 // Use wheel odo to correct RobotvisionPose for movement since image was captured
-                frc::Pose2d lastOdoState = m_odometry.GetPose(); // auto& lastOdoState = m_odometry.GetStateHist().back();  
+                //frc::Pose2d lastOdoState = m_odometry.GetPose(); // auto& lastOdoState = m_odometry.GetStateHist().back();  
                 // frc::Transform2d compenstaion = Transform2d(lastOdoState.pose, delayedOdoPose);
                 frc::Transform2d compenstaion; // zero transform for testing
                 m_robotPose = RobotvisionPose.TransformBy(compenstaion);              
@@ -196,24 +190,19 @@ void VisionSubsystem::Periodic()
         else if (validTarget || m_odometry.HasAuotRun())
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
-            m_turret.TurnToRelative(hubAngle * 1);
+//            m_turret.TurnToRelative(hubAngle * 1.0);
             turretCmdHoldoff = 0;  // limit turret command rate due to vision lag
-            AdjustHood();
-// printf( " Hub angle: %f  range: %f\n", GetHubAngle(), GetHubDistance(true));
-
+            m_hood.SetByDistance(GetHubDistance(true));
+            // printf( " Hub angle: %f  range: %f\n", GetHubAngle(), GetHubDistance(true));
         }
     }
-    // else
-    // {
-    //     m_turret.TurnToField(0.0);
-    // }
 
     if (willPrint)
     {
         if (!m_validTarget && bLogInvalid)
         {
-            fprintf(m_logFile, "PhotonCam Has No Targets!\n");
-            std::cout << "PhotonCam Has No Targets!" << std::endl;
+            //fprintf(m_logFile, "PhotonCam Has No Targets!\n");
+            //std::cout << "PhotonCam Has No Targets!" << std::endl;
         }
         else if (m_dbgLogTargetData)
         {
@@ -240,16 +229,6 @@ bool VisionSubsystem::GetValidTarget()
     return m_validTarget;
 }
 
-// double VisionSubsystem::GetDistance()
-// {
-//     return Util::GetAverage(m_averageDistance);
-// }
-
-// double VisionSubsystem::GetAngle()
-// {
-//     return Util::GetAverage(m_averageAngle);
-// }
-
 void VisionSubsystem::SetLED(bool on)
 {
     m_led = on;
@@ -261,7 +240,7 @@ frc::Translation2d VisionSubsystem::FitCircle(vector<frc::Translation2d> targetV
 {
     double xSum = 0.0;
     double ySum = 0.0;
-    for (int i = 0; i < targetVectors.size(); i++) 
+    for (size_t i = 0; i < targetVectors.size(); i++) 
     {
         xSum += (double) targetVectors[i].X();
         ySum += (double) targetVectors[i].Y();
@@ -312,7 +291,7 @@ frc::Translation2d VisionSubsystem::FitCircle(vector<frc::Translation2d> targetV
  meter_t VisionSubsystem::calcResidual(meter_t radius, vector<frc::Translation2d> points, frc::Translation2d center)
 {
     double residual = 0.0;
-    for (int i = 0; i < points.size(); i++) {
+    for (size_t i = 0; i < points.size(); i++) {
       double diff = (double) (points[i].Distance(center) - radius);
       residual += diff * diff;
     }
@@ -330,26 +309,5 @@ double VisionSubsystem::GetHubDistance(bool smoothed)
         return m_smoothedRange;
 
     return (double) m_cameraToHub.Norm();
-}
-
-void VisionSubsystem::AdjustHood()
-{
-    //double distance = (GetHubDistance(true));
-    double distance = GetHubDistance(true) - kHubOffsetRimToCenter.to<double>();
-
-    if (distance > 0)
-    {
-        m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub);
-        degree_t initAngle = m_calculation.GetInitAngle();
-        double x = initAngle.to<double>();
-        double c = SmartDashboard::GetNumber("Hoodangle Constant", 0.0317);
-        double hoodangle = 0.33 - c * x + 0.000816 * x * x;
-        if (hoodangle != hoodangle)
-        {
-            hoodangle = 0.33 - 0.0317 * x + 0.000816 * x * x;
-        }
-        hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
-        m_hood.Set(hoodangle);
-    }
 }
 

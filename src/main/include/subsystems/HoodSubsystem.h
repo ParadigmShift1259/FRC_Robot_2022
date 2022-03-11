@@ -5,6 +5,9 @@
 #include <frc/Servo.h>
 
 #include "Constants.h"
+#include "Calculations.h"
+
+using namespace VisionConstants;
 
 class HoodSubsystem : public frc2::SubsystemBase
 {
@@ -16,9 +19,14 @@ public:
 
     /// Set hood to certain position
     /// \param position         Servo rotation, ranging from [0, 1]
-    void Set(double position);
+    void SetServoPosition(double position);
+
+    /// Set hood to certain position
+    /// \param distHubCenter    Distance to center of hub
+    void SetByDistance(double distHubCenter);
 
 private:
     /// Servo that moves hood up and down
     frc::Servo m_servo;
+   	Calculations m_calculation;
 };

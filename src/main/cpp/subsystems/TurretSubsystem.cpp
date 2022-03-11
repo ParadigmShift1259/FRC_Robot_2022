@@ -74,19 +74,21 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     //frc::SmartDashboard::PutNumber("TurretDeadbandPercent", kNeutralDeadband);
 }
 
-constexpr double kDegreesPerAbsEncTick = 0.001;
+constexpr double kDegreesPerAbsEncTick = 60.0 / 1600.0;
 
 void TurretSubsystem::Periodic()
 {
     //double db = frc::SmartDashboard::GetNumber("TurretDeadbandPercent", kNeutralDeadband);
     //m_turretmotor.ConfigNeutralDeadband(db, kTimeout);
 
+    frc::SmartDashboard::PutNumber("TurretAbsEnc", m_absEnc.GetValue());
     if (!m_setZero)
     {
         m_setZero = true;
-        int currentPos = m_absEnc.GetValue();
-        double angleChange = (m_startingPos - currentPos) / kDegreesPerAbsEncTick;
-        //TurnToRelative(angleChange);
+        int zeroPos = 2400;//m_absEnc.GetValue();
+        double angleChange = (zeroPos - m_startingPos) * kDegreesPerAbsEncTick;
+printf("angle %.3f start pos %d cur pos %d pos delta %d deg per tick %.3f\n", angleChange, m_startingPos, m_absEnc.GetValue(), zeroPos - m_startingPos, kDegreesPerAbsEncTick);
+        TurnToRelative(angleChange);
     }
 
     frc::SmartDashboard::PutNumber("D_T_CTicks", m_turretmotor.GetSelectedSensorPosition());
@@ -129,6 +131,8 @@ void TurretSubsystem::SetZeroAngle()
 {
     m_currentAngle = 0;
     m_turretmotor.SetSelectedSensorPosition(0.0);
+    m_setZero = false;
+    m_startingPos = m_absEnc.GetValue();
 }
 
 void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)
@@ -179,7 +183,8 @@ double TurretSubsystem::TicksToDegrees(double ticks)
     // double rev = ticks / kTicksPerRev;
     // double turretrev = rev * kMotorRevPerRev;
     // return turretrev * kDegreesPerRev;
-    return ticks * 90.0 / 6606.0;
+    //return ticks * 90.0 / 6606.0;
+    return ticks * 90.0 / 7700.0;
 }
 
 
@@ -188,7 +193,8 @@ double TurretSubsystem::DegreesToTicks(double degrees)
     // double turretrev = degrees / kDegreesPerRev;
     // double rev = turretrev / kMotorRevPerRev;
     // return rev * kTicksPerRev;
-    return degrees * 6606.0 / 90.0;    // Empirically measured 6606 ticks in 90 degree swing of turret
+    //return degrees * 6606.0 / 90.0;    // Empirically measured 6606 ticks in 90 degree swing of turret
+    return degrees * 7700.0 / 90.0;    // Empirically measured 6606 ticks in 90 degree swing of turret
 }
 
 // double TurretSubsystem::GetCurrentComandedAngle()

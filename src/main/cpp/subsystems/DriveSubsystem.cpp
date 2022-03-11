@@ -277,7 +277,7 @@ frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
         }
         else
         {
-            int i = 1;
+            size_t i = 1;
             while(m_StateHist[i].t <= timestamp && i < m_StateHist.size() - 1)
                 i++;
             State1Idx = i - 1;
