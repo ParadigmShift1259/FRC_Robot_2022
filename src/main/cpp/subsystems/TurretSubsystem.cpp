@@ -26,19 +26,15 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.Config_kI(0, kI, kTimeout);
     m_turretmotor.Config_kD(0, kD, kTimeout);
     m_turretmotor.Config_kF(0, kF, kTimeout);
-    m_turretmotor.Config_IntegralZone(0, 1000.0);
-    m_turretmotor.ConfigMaxIntegralAccumulator(0, 50000.0);
-    m_turretmotor.SetIntegralAccumulator(0.0, 0);
+    m_turretmotor.Config_IntegralZone(0, 1000.0); // TO DO: remove or tune
+    m_turretmotor.ConfigMaxIntegralAccumulator(0, 50000.0); // TO DO: remove or tune
+    //m_turretmotor.SetIntegralAccumulator(0.0, 0);
     m_turretmotor.ConfigMotionSCurveStrength(1.0);
 
-    m_turretmotor.ConfigNeutralDeadband(kNeutralDeadband, kTimeout);
-    m_turretmotor.ConfigNominalOutputForward(kNominal, kTimeout);
-    m_turretmotor.ConfigNominalOutputReverse(kNominal * -1.0, kTimeout);
+    // m_turretmotor.ConfigNeutralDeadband(kNeutralDeadband, kTimeout); // TO DO: remove or tune
     m_turretmotor.ConfigPeakOutputForward(kMaxOut, kTimeout);
     m_turretmotor.ConfigPeakOutputReverse(kMaxOut * -1.0, kTimeout);
-    //m_turretmotor.ConfigClosedloopRamp()
-    //m_turretmotor.ConfigAllowableClosedloopError(0, DegreesToTicks(kDegreePIDStopRange), kTimeout);
-    m_turretmotor.ConfigAllowableClosedloopError(0, 30.0, kTimeout);    // Approx 90 ticks per degree
+    // m_turretmotor.ConfigAllowableClosedloopError(0, DegreesToTicks(kDegreePIDStopRange), kTimeout);
     m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(kMMCruiseVel/10), kTimeout);  // encoder ticks per 100ms 
     m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(kMMAccel/10), kTimeout);     // encoder ticks per 100ms per sec
 
@@ -189,7 +185,7 @@ double TurretSubsystem::TicksToDegrees(double ticks)
     // double rev = ticks / kTicksPerRev;
     // double turretrev = rev * kMotorRevPerRev;
     // return turretrev * kDegreesPerRev;
-    return ticks * 90.0 / 6606.0;
+    return ticks * 90.0 / 7700; // 6606.0;
 }
 
 
@@ -198,7 +194,7 @@ double TurretSubsystem::DegreesToTicks(double degrees)
     // double turretrev = degrees / kDegreesPerRev;
     // double rev = turretrev / kMotorRevPerRev;
     // return rev * kTicksPerRev;
-    return degrees * 6606.0 / 90.0;    // Empirically measured 6606 ticks in 90 degree swing of turret
+    return degrees * 7700 / 90.0; // 6606.0 / 90.0;    // Empirically measured 6606 ticks in 90 degree swing of turret
 }
 
 // double TurretSubsystem::GetCurrentComandedAngle()

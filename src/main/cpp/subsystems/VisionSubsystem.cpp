@@ -197,7 +197,9 @@ void VisionSubsystem::Periodic()
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
             m_turret.TurnToRelative(hubAngle * 1);
-            turretCmdHoldoff = 0;  // limit turret command rate due to vision lag
+            turretCmdHoldoff = 2;  // limit turret command rate due to vision lag
+            //printf("Turret Angle %.2f   ", m_turret.GetCurrentAngle());
+            //printf("Hub Angle: %.2f \n", hubAngle);
             AdjustHood();
 // printf( " Hub angle: %f  range: %f\n", GetHubAngle(), GetHubDistance(true));
 
@@ -219,13 +221,13 @@ void VisionSubsystem::Periodic()
         {
             fprintf(m_logFile, "Angle: %f, Range: %f, Robot X %f, Y: %f, Theta: %f\n", GetHubAngle() *180/3.14, GetHubDistance(true) * 39.37, m_robotPose.X().to<double>() * 39.37,m_robotPose.Y().to<double>() * 39.37,m_robotPose.Rotation().Degrees().to<double>()); 
             // std::cout << "Center: (" << (double)m_cameraToHub.X() << "," << (double)m_cameraToHub.Y() << "). ";
-            std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
-            std::cout << "Range: " << GetHubDistance(true) * 39.37 << ", ";
-            std::cout << "Robot X: " << (double) m_robotPose.X() * 39.37 << ", Y: " << (double) m_robotPose.Y() * 39.37 << ", Theta: ", m_robotPose.Rotation().Degrees().to<double>();
+            // std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
+            // std::cout << "Range: " << GetHubDistance(true) * 39.37 << ", ";
+            // std::cout << "Robot X: " << (double) m_robotPose.X() * 39.37 << ", Y: " << (double) m_robotPose.Y() * 39.37 << ", Theta: ", m_robotPose.Rotation().Degrees().to<double>();
             // for(int i = 0; i < targetVectors.size(); i++) {
             //     std::cout << "(" << (double)targetVectors[i].X() << "," << (double)targetVectors[i].Y() << "). ";
             // }
-            std::cout << std::endl;
+            //std::cout << std::endl;
         }
     }
  
