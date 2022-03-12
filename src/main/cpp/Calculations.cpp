@@ -12,6 +12,7 @@ using namespace units;
 
 Calculations::Calculations()
 {
+#ifdef USE_SHUFFLEBOARD_INPUTS
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_10(3);
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_4(3);
   wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_25(3);
@@ -88,6 +89,7 @@ Calculations::Calculations()
                       .WithSize(1, 1)
                       .WithPosition(3, 1)
                       .GetEntry();
+#endif  //def USE_SHUFFLEBOARD_INPUTS
 }
 
 meter_t Calculations::HubHeightToMaxHeight()

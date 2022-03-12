@@ -230,17 +230,42 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     vector<Pose2d> ball2PickUpWaypoints
     {
         frc::Pose2d(6.0_m, 1.0_m, frc::Rotation2d(45_deg)),
-        frc::Pose2d(4.3_m, 2.5_m, frc::Rotation2d(150_deg))
+        frc::Pose2d(4.0_m, 1.8_m, frc::Rotation2d(150_deg))
     };
 
-    auto config = TrajectoryConfig{units::velocity::meters_per_second_t{1.0}, AutoConstants::kMaxAcceleration};
-    config.SetKinematics(m_drive.kDriveKinematics);
-    // config.SetEndVelocity(AutoConstants::kIntakeDriveSpeed);
-    
+    vector<Pose2d> ball3PickUpWaypoints
+    {
+        frc::Pose2d(4.0_m, 1.8_m, frc::Rotation2d(150_deg)),
+        frc::Pose2d(1.0_m, 1.2_m, frc::Rotation2d(223_deg)) // perpendicular to corner wall
+    };
+
+    vector<Pose2d> ball3ShootWaypoints
+    {
+        frc::Pose2d(1.0_m, 1.2_m, frc::Rotation2d(223_deg)),
+        frc::Pose2d(3.0_m, 2.0_m, frc::Rotation2d(0_deg)),
+    };
+	
+
+    auto config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
+    config.SetKinematics(m_drive.kDriveKinematics);    
     Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLineWaypoints, config);
     Trajectory ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1PickUpWaypoints, config);
+
+    config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
     Trajectory ball1ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball1ShootWaypoints, config);
+
+    config = TrajectoryConfig{units::velocity::meters_per_second_t{1.8}, AutoConstants::kMaxAcceleration};
+    config.SetStartVelocity(units::velocity::meters_per_second_t{0});
+    config.SetEndVelocity(units::velocity::meters_per_second_t{1.8});
     Trajectory ball2PickUpTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball2PickUpWaypoints, config);
+
+    config = TrajectoryConfig{units::velocity::meters_per_second_t{1.8}, AutoConstants::kMaxAcceleration};
+    config.SetStartVelocity(units::velocity::meters_per_second_t{1.8});
+    config.SetEndVelocity(units::velocity::meters_per_second_t{0});
+    Trajectory ball3PickUpTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball3PickUpWaypoints, config);
+
+    config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
+    Trajectory ball3ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball3ShootWaypoints, config);
 
 
     switch (path)
@@ -260,7 +285,11 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
                 , std::move(*GetFirePathCmd(ball1ShootTraj, false))
                 //, std::move(*GetAutoPathCmd("OneBallTest", true))
                 // , m_resetOneBallFlag
+                , m_setOneBallFlag
                 , std::move(*GetIntakePathCmd(ball2PickUpTraj, false))
+                , m_resetOneBallFlag
+                , std::move(*GetIntakePathCmd(ball3PickUpTraj, false))
+                , std::move(*GetFirePathCmd(ball3ShootTraj, false))
             );
 
         case kEx4:
@@ -310,11 +339,20 @@ frc2::ParallelCommandGroup* RobotContainer::GetIntakePathCmd(Trajectory trajecto
               std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
             , frc2::SequentialCommandGroup
             (
-                  frc2::InstantCommand([this]() { printf("Started IntakePathCmd\n"); }, {})
+                  frc2::InstantCommand([this]() { 
+                      Timer timer;
+                      printf("t=%.3f Started IntakePathCmd ", timer.GetFPGATimestamp().to<double>());
+                      printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
+                      }, {})
+                  
                 , std::move(GetSwerveCommandPath(trajectory, primaryPath))
                 //, frc2::WaitCommand(0.2_s)
-                , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
-                , frc2::InstantCommand([this]() { printf("Finished IntakePathCmd\n"); }, {})
+                //, frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
+                ,  frc2::InstantCommand([this]() { 
+                      Timer timer;
+                      printf("t=%.3f Finished IntakePathCmd ", timer.GetFPGATimestamp().to<double>());
+                      printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
+                      }, {})
             )
         );
 }
@@ -326,10 +364,15 @@ frc2::SequentialCommandGroup* RobotContainer::GetFirePathCmd(Trajectory trajecto
 {
     return new frc2::SequentialCommandGroup
     (
-          frc2::InstantCommand([this]() { printf("Started FirePathCmd\n"); }, {})
+        frc2::InstantCommand([this]() { 
+            Timer timer;
+            printf("t=%.3f Started FirePathCmd ", timer.GetFPGATimestamp().to<double>());
+            printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
+            }, {})
+
         , std::move(GetSwerveCommandPath(trajectory, primaryPath))
         , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
-        , frc2::WaitCommand(0.500_s)
+        // , frc2::WaitCommand(0.500_s)
         , frc2::InstantCommand([this]() { printf("Firing!\n"); }, {})
         , std::move(Fire( &m_flywheel
                         , &m_turret
@@ -341,7 +384,11 @@ frc2::SequentialCommandGroup* RobotContainer::GetFirePathCmd(Trajectory trajecto
                         , &m_finished
                         , [this]() { return GetYvelovity(); }
                         , TransferConstants::kTimeLaunch))
-        , frc2::InstantCommand([this]() { printf("Finished FirePathCmd\n"); }, {})
+        , frc2::InstantCommand([this]() { 
+            Timer timer;
+            printf("t=%.3f Finished FirePathCmd ", timer.GetFPGATimestamp().to<double>());
+            printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
+            }, {})
     );
 }
 
