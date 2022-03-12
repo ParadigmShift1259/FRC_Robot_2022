@@ -465,7 +465,7 @@ SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(Trajectory trajectory, bool p
         // Init absolute gyro angle isn't required by ResetOdometry() but IS required due to directly reading the gyro elsewhere
         m_gyro.SetHeading((double)trajectory.InitialPose().Rotation().Degrees()); 
         m_drive.ResetOdometry(trajectory.InitialPose());
-        printf("initial Pose: %f\n\n\n\n", m_drive.GetPose().Rotation().Degrees());
+        printf("initial Pose: %f\n\n\n\n", m_drive.GetPose().Rotation().Degrees().to<double>());
         //m_hasAutoRun = true;
     }
 

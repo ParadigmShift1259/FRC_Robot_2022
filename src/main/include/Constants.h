@@ -188,7 +188,7 @@ namespace AutoConstants
     // constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi * 6.0);
     // constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi * 6.0);
 
-    constexpr double kPXController = 1.0;; // 1.5; // 0.5;//20; //7.0;
+    constexpr double kPXController = 1.0; // 1.5; // 0.5;//20; //7.0;
     constexpr double kIXController = 0;//1; 
     constexpr double kDXController = 0;//1; // 0.7;
     constexpr double kPYController = kPXController; //7.0;

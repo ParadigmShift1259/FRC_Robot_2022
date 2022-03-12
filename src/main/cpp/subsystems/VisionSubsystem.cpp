@@ -19,19 +19,28 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
 
     m_logFile = stderr; // fopen("/tmp/visionLog.txt", "w");
 
-//    m_networktable->AddEntryListener(
-//        "photonvision/gloworm/latencyMillis"
-//        ,[this](nt::NetworkTable* table
-//             , std::string_view name
-//             , nt::NetworkTableEntry entry
-//             , std::shared_ptr<nt::Value> value
-//             , int flags)
-//         { NTcallback(table, name, entry, value, flags); }
-//         , nt::EntryListenerFlags::kUpdate);
+   m_networktable->AddEntryListener(
+       "photonvision/gloworm/latencyMillis"
+       ,[this](nt::NetworkTable* table
+            , std::string_view name
+            , nt::NetworkTableEntry entry
+            , std::shared_ptr<nt::Value> value
+            , int flags)
+        { NTcallback(table, name, entry, value, flags); }
+        , nt::EntryListenerFlags::kUpdate);
 }
 
-//void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name, nt::NetworkTableEntry entry, std::shared_ptr<nt::Value> value, int flags)
+void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name, nt::NetworkTableEntry entry, std::shared_ptr<nt::Value> value, int flags)
+{
+    //Work();
+}
+
 void VisionSubsystem::Periodic()
+{
+    Work();
+}
+    
+void VisionSubsystem::Work()
 {
     static Timer timer;
     units::time::second_t visionTimestamp = timer.GetFPGATimestamp();
@@ -90,8 +99,8 @@ void VisionSubsystem::Periodic()
             {
                 targetVectors.erase(targetVectors.begin() + i);
                 i--;
-                if (bLogInvalid)
-                    ;//std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
+                //if (bLogInvalid)
+                    //std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
             }
         }
 
