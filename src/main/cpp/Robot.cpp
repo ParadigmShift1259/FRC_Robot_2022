@@ -33,6 +33,7 @@ void Robot::DisabledInit()
   m_container.CloseLogFile();
   Shuffleboard::StopRecording();
   m_container.TurretSetZeroAngle();
+  m_container.GetDrive().m_enabled = false;
 }
 
 void Robot::DisabledPeriodic() {}
@@ -53,17 +54,24 @@ void Robot::AutonomousInit()
   }
 }
 
-void Robot::AutonomousPeriodic() {}
+void Robot::AutonomousPeriodic() {
+  m_container.GetDrive().m_enabled = true;
+}
 
 void Robot::TeleopInit()
 {
   Shuffleboard::SetRecordingFileNameFormat("Team1259NetTblData${date}_${time}");
   Shuffleboard::StartRecording();
 
-  m_container.TurretSetZeroAngle();  // for testing ans enc TODO REMOVE
-  // m_container.TurretSetZeroAngle();  // THIS SHOULD BE SET AT t=0 OF AUTO -- DON"T RESET IT
-  // m_container.GyroSetZeroHeading();  // THIS SHOULD BE SET AT t=0 OF AUTO -- DON"T RESET IT
-  // m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 120_in, kFieldWidth/2, frc::Rotation2d())); // test code: 10 feet in front of hub
+  // if (m_container.HasAuotRun() == false)
+  //   {
+  //   // Test code -- NORMALLY THIS SHOULD BE SET AT t=0 OF AUTO
+  //   m_container.TurretSetZeroAngle();  
+  //   m_container.GyroSetZeroHeading();  
+  //   m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 131_in, kFieldWidth/2, Rotation2d{0_deg})); // test code: 10 feet in front of hub
+  //   printf("Resetting Odometry from Teleop: x=%.3f, y=%.3f, heading =%.1f\n", m_container.GetPose().X().to<double>(), m_container.GetPose().Y().to<double>(), m_container.GetPose().Rotation().Degrees().to<double>());
+  //   }   
+ 
 
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to
@@ -80,7 +88,9 @@ void Robot::TeleopInit()
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  m_container.GetDrive().m_enabled = true;
+}
 
 /**
  * This function is called periodically during test mode.

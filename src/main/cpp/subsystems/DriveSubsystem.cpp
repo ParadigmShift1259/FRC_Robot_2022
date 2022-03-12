@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "subsystems/DriveSubsystem.h"
+#include <iostream>
 
 using namespace DriveConstants;
 using namespace std;
@@ -84,6 +85,8 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro)
     m_StateHist.reserve(10000);
     m_StateHist.clear(); // clear() does not delatocate memory
 
+    m_odoValid = false;
+
     // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_3_PwmInputs0, 10);
     // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_4_PwmInputs1, 10);
     // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_5_PwmInputs2, 10);
@@ -93,6 +96,8 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro)
 
 void DriveSubsystem::Periodic()
 {
+//static int n=0;
+
     m_frontLeft.Periodic();
     m_frontRight.Periodic();
     m_rearRight.Periodic();
@@ -102,6 +107,10 @@ void DriveSubsystem::Periodic()
                 , m_frontRight.GetState()
                 , m_rearLeft.GetState()
                 , m_rearRight.GetState());
+
+//  if (n%10 == 0 && m_enabled) 
+//   printf("t=%.3f Module Speeds: FL=%.2f FR=%.2f RL=%.2f RR=%.2f\n", m_timer.GetFPGATimestamp().to<double>(), m_frontLeft.GetState().speed.to<double>(), m_rearLeft.GetState().speed.to<double>(), m_rearRight.GetState().speed.to<double>(), m_frontRight.GetState().speed.to<double>());
+//  n++;
 
     frc::Pose2d pose = m_odometry.GetPose();
     frc::Trajectory::State state;
@@ -253,6 +262,11 @@ void DriveSubsystem::ResetEncoders()
     m_rearLeft.ResetEncoders();
 }
 
+bool DriveSubsystem::OdoValid()
+{
+    return m_odoValid;
+}
+
 Pose2d DriveSubsystem::GetPose()
 {
     return m_odometry.GetPose();
@@ -308,6 +322,12 @@ frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
     return m_odometry.GetPose();
 }
 
+units::meters_per_second_t DriveSubsystem::GetSpeed() const
+{
+    frc::Trajectory::State lastOdoState = m_StateHist.back();
+    return lastOdoState.velocity;
+}
+
 double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
 {
     double dutyCycleAndPeriod[2];
@@ -318,6 +338,7 @@ double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
 void DriveSubsystem::ResetOdometry(Pose2d pose)
 {
     m_odometry.ResetPosition(pose, m_gyro->GetHeadingAsRot2d());
+    m_odoValid = true;
 }
 
 void DriveSubsystem::ResetRelativeToAbsolute()

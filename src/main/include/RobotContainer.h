@@ -61,7 +61,8 @@
 #include <pathplanner/lib/PathPlanner.h>
 
 using namespace pathplanner;
-using SwerveCtrlCmd = frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules>;
+// using SwerveCtrlCmd = frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules>;
+using SwerveCtrlCmd = frc2::SwerveControllerCommand<DriveConstants::kNumSwerveModules>;
 
 class RobotContainer : public ISubsysAccess, public IOdometry
 {
@@ -84,7 +85,8 @@ public:
     TransferSubsystem&   GetTransfer() override { return m_transfer; }
     TurretSubsystem&     GetTurret() override { return m_turret; }
     VisionSubsystem&     GetVision() override { return m_vision; }
-
+    DriveSubsystem&     GetDrive() { return m_drive; }
+    
     bool OnlyOneBall() { return m_onlyOneBall; }
 
     Pose2d GetPose() { return m_drive.GetPose(); }
@@ -97,13 +99,17 @@ public:
     
     void CloseLogFile() { m_vision.CloseLogFile(); }
 
+    bool OdoValid() {return m_drive.OdoValid();};
+
 private:
     void SetDefaultCommands();
     void ConfigureButtonBindings();
     void ConfigPrimaryButtonBindings();
     void ConfigSecondaryButtonBindings();
-    frc2::SequentialCommandGroup* GetAutoPathCmd(string pathName, bool primaryPath);
-    SwerveCtrlCmd GetSwerveCommandPath(string pathName, bool primaryPath);
+    frc2::SequentialCommandGroup* GetAutoPathCmd(Trajectory trajectory, bool primaryPath);
+    frc2::ParallelCommandGroup* GetIntakePathCmd(Trajectory trajectory, bool primaryPath);
+    frc2::SequentialCommandGroup* GetFirePathCmd(Trajectory trajectory, bool primaryPath);
+    SwerveCtrlCmd GetSwerveCommandPath(Trajectory trajectory, bool primaryPath);
     frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
     void PrintTrajectory(frc::Trajectory& trajectory);
 

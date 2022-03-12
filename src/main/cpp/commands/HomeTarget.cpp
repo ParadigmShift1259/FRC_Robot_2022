@@ -43,7 +43,11 @@ void HomeTarget::Execute()
     SmartDashboard::PutBoolean("TEST_VIS_ACTIVE", m_vision.GetValidTarget());
 
     if (!m_vision.GetValidTarget())
+    {
+        printf("Waiting for Valid Vision Target\n");
         return;
+    }
+
 
     double distToHubCenter = m_vision.GetHubDistance(true);
     double distance = distToHubCenter - kHubOffsetRimToCenter.to<double>();
@@ -51,6 +55,7 @@ void HomeTarget::Execute()
     // if (std::isnan(distance))
     if (distance != distance)
     {
+        printf("Not a Valid Distane\n");
         return;
     }
 

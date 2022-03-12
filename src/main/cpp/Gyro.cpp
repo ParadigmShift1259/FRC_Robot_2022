@@ -20,12 +20,27 @@ double Gyro::GetHeading()
 
 void Gyro::ZeroHeading()
 {
-    m_gyro.SetFusedHeading(0.0, 0);
+    SetHeading(0.0);
 }
 
 void Gyro::SetHeading(double heading)
 {
-    m_gyro.SetFusedHeading(heading * (kGyroReversed ? -1. : 1.), 0);
+int err;
+
+// printf("initial gyro: %f  ", GetHeading());
+// printf("heading to set: %f  ", heading);  
+for (int n=0; n<100; n++)
+    {
+    err = m_gyro.SetFusedHeading(heading * (kGyroReversed ? -1. : 1.), 30);
+    if (err)
+        printf("SetFusedHeading() failed with error code: %d  ", err); 
+    else if(fabs(GetHeading() - heading) < 0.1)  // *** Check needed becuase SetFusedHeading() observed to faile yet still return 0! ***
+        {
+        // printf("finial gyro: %f\n", GetHeading())
+        return;
+        }
+    }
+    printf("************************* FAILED TO SET GYRO HEADING! **********************************");
 }
 
 double Gyro::GetTurnRate()

@@ -52,6 +52,8 @@ public:
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
 
+    bool m_enabled = false;
+
     // Subsystem methods go here.
 
     /// Drives the robot at given x, y and theta speeds. Speeds range from [-1, 1]
@@ -112,6 +114,9 @@ public:
     /// \return The pose.
     Pose2d GetPose(units::time::second_t timestamp) const;
 
+
+    units::meters_per_second_t GetSpeed(void) const;
+
     /// Converts PWM input on the CANifier to a pulse width
     /// \param pwmChannel The PWM channel to pass in
     /// \return The pulse width of the PWM channel
@@ -138,6 +143,8 @@ public:
         Translation2d( kWheelBase / 2, -kTrackWidth / 2),    // +x, -y FR
         Translation2d(-kWheelBase / 2,  kTrackWidth / 2),    // -x, +y RL
         Translation2d(-kWheelBase / 2, -kTrackWidth / 2)};   // -x, -y RR
+
+    bool OdoValid();
 
 private:    
     /// Get all 4 swerve module wheel speed to update the odometry with
@@ -167,6 +174,7 @@ private:
     Team1259::Gyro *m_gyro;
     /// Odometry class for tracking robot pose
     SwerveDriveOdometry<DriveConstants::kNumSwerveModules> m_odometry;
+    bool m_odoValid;
 
     /// PID to control overall robot chassis rotation 
     frc2::PIDController m_rotationPIDController{
