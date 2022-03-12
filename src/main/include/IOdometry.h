@@ -13,4 +13,6 @@ public:
     virtual frc::Pose2d GetPose(units::time::second_t timestamp) const = 0;
     virtual const std::vector<frc::Trajectory::State>& GetStateHist() const = 0;
     virtual bool HasAuotRun() = 0;
+    virtual bool OdoValid() = 0;
+    virtual void ResetOdometry(frc::Pose2d) = 0;
 };

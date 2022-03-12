@@ -182,7 +182,7 @@ namespace AutoConstants
     //constexpr auto kMaxAcceleration = meters_per_second_squared_t(4.5);
 
     constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi);
-    constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi);
+    constexpr auto kMaxAngularAcceleration = 2*unit_t<radians_per_second_squared_t>(wpi::numbers::pi);
     // constexpr auto kMaxAngularSpeed = radians_per_second_t(wpi::numbers::pi * 6.0);
     // constexpr auto kMaxAngularAcceleration = unit_t<radians_per_second_squared_t>(wpi::numbers::pi * 6.0);
 
@@ -192,7 +192,7 @@ namespace AutoConstants
     constexpr double kPYController = kPXController; //7.0;
     constexpr double kIYController = kIXController; 
     constexpr double kDYController = kDXController; // 0.7;
-    constexpr double kPThetaController = 0.5;//20; // 10.0;
+    constexpr double kPThetaController = 1.0; //0.5; //20; // 10.0;
     constexpr double kIThetaController = 0; 
     constexpr double kDThetaController = 1; // 0.9;
 
@@ -336,7 +336,7 @@ namespace TransferConstants
 
     constexpr double kFeederSpeed = 0.5;
     constexpr double kFeederSpeedFiring = 0.8;
-    constexpr double kSpeedFiring = 0.7;
+    constexpr double kSpeedFiring = 0.8;
     constexpr double kTransferSpeedIntaking = 0.7;
 
     // Time to go from 0 to full throttle

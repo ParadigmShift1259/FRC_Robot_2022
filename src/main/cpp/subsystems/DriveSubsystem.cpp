@@ -85,6 +85,8 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro)
     m_StateHist.reserve(10000);
     m_StateHist.clear(); // clear() does not delatocate memory
 
+    m_odoValid = false;
+
     // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_3_PwmInputs0, 10);
     // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_4_PwmInputs1, 10);
     // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_5_PwmInputs2, 10);
@@ -260,6 +262,11 @@ void DriveSubsystem::ResetEncoders()
     m_rearLeft.ResetEncoders();
 }
 
+bool DriveSubsystem::OdoValid()
+{
+    return m_odoValid;
+}
+
 Pose2d DriveSubsystem::GetPose()
 {
     return m_odometry.GetPose();
@@ -315,15 +322,11 @@ frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
     return m_odometry.GetPose();
 }
 
-
 units::meters_per_second_t DriveSubsystem::GetSpeed() const
 {
     frc::Trajectory::State lastOdoState = m_StateHist.back();
     return lastOdoState.velocity;
 }
-
-
-
 
 double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
 {
@@ -335,6 +338,7 @@ double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
 void DriveSubsystem::ResetOdometry(Pose2d pose)
 {
     m_odometry.ResetPosition(pose, m_gyro->GetHeadingAsRot2d());
+    m_odoValid = true;
 }
 
 void DriveSubsystem::ResetRelativeToAbsolute()

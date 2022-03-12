@@ -20,7 +20,7 @@ double Gyro::GetHeading()
 
 void Gyro::ZeroHeading()
 {
-    m_gyro.SetFusedHeading(0.0, 30);
+    SetHeading(0.0);
 }
 
 void Gyro::SetHeading(double heading)

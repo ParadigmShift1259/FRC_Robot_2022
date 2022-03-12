@@ -144,6 +144,8 @@ public:
         Translation2d(-kWheelBase / 2,  kTrackWidth / 2),    // -x, +y RL
         Translation2d(-kWheelBase / 2, -kTrackWidth / 2)};   // -x, -y RR
 
+    bool OdoValid();
+
 private:    
     /// Get all 4 swerve module wheel speed to update the odometry with
     SwerveModuleStates getCurrentWheelSpeeds()
@@ -172,6 +174,7 @@ private:
     Team1259::Gyro *m_gyro;
     /// Odometry class for tracking robot pose
     SwerveDriveOdometry<DriveConstants::kNumSwerveModules> m_odometry;
+    bool m_odoValid;
 
     /// PID to control overall robot chassis rotation 
     frc2::PIDController m_rotationPIDController{

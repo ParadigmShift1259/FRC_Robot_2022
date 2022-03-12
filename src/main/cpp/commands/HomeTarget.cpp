@@ -43,13 +43,18 @@ void HomeTarget::Execute()
     SmartDashboard::PutBoolean("TEST_VIS_ACTIVE", m_vision.GetValidTarget());
 
     if (!m_vision.GetValidTarget())
+    {
+        printf("Waiting for Valid Vision Target\n");
         return;
+    }
+
 
     double distance = m_vision.GetHubDistance(true) - kHubOffsetRimToCenter2.to<double>();
 
     // if (std::isnan(distance))
     if (distance != distance)
     {
+        printf("Not a Valid Distane\n");
         return;
     }
 
@@ -99,6 +104,7 @@ void HomeTarget::Execute()
     }
     hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
     m_hood->Set(hoodangle);
+    printf("Distance: %f,   HoodAngle: %f \n", distance, hoodangle);
 
     // std::cout << "Init Angle: "<< initAngle.to<double>() << std::endl;
     // std::cout << "Hood servo set: "<< hoodangle << std::endl;

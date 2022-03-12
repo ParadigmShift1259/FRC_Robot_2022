@@ -61,7 +61,8 @@
 #include <pathplanner/lib/PathPlanner.h>
 
 using namespace pathplanner;
-using SwerveCtrlCmd = frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules>;
+// using SwerveCtrlCmd = frc2::SwerveControllerCommand2<DriveConstants::kNumSwerveModules>;
+using SwerveCtrlCmd = frc2::SwerveControllerCommand<DriveConstants::kNumSwerveModules>;
 
 class RobotContainer : public ISubsysAccess, public IOdometry
 {
@@ -97,6 +98,8 @@ public:
     double GetYvelovity() { return m_drive.GetYvelocity().to<double>(); }
     
     void CloseLogFile() { m_vision.CloseLogFile(); }
+
+    bool OdoValid() {return m_drive.OdoValid();};
 
 private:
     void SetDefaultCommands();
