@@ -43,10 +43,7 @@ void HomeTarget::Execute()
     SmartDashboard::PutBoolean("TEST_VIS_ACTIVE", m_vision.GetValidTarget());
 
     if (!m_vision.GetValidTarget())
-    {
-        printf("Waiting for Valid Vision Target\n");
         return;
-    }
 
 
     double distToHubCenter = m_vision.GetHubDistance(true);
