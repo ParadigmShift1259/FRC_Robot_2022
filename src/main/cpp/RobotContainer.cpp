@@ -206,7 +206,7 @@ void RobotContainer::ZeroDrive()
 frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
 {
 
-
+    const frc::Translation2d kHubCenter = frc::Translation2d(VisionConstants::kFieldLength/2, VisionConstants::kFieldWidth/2);  // TO DO make a constant
 
     vector<Pose2d> straightLineWaypoints
     {
@@ -216,14 +216,21 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
 
     vector<Pose2d> ball1PickUpWaypoints
     {
-        frc::Pose2d(7_m, 1.771_m, frc::Rotation2d(-90_deg)),
-        frc::Pose2d(7_m, 0.6_m, frc::Rotation2d(-90_deg))
+        //frc::Pose2d(7_m, 1.771_m, frc::Rotation2d(-90_deg)),
+        frc::Pose2d(kHubCenter.X()-18_in, kHubCenter.Y()-94_in, frc::Rotation2d(-90_deg)),
+        frc::Pose2d(kHubCenter.X()-18_in, 0.6_m, frc::Rotation2d(-90_deg))
     };
 
     vector<Pose2d> ball1ShootWaypoints
     {
-        frc::Pose2d(7_m, 0.6_m, frc::Rotation2d(-90_deg)),
-        frc::Pose2d(6.5_m, 0.75_m, frc::Rotation2d(45_deg)),
+        frc::Pose2d(kHubCenter.X()-18_in, 0.6_m, frc::Rotation2d(-90_deg)),
+        frc::Pose2d(6.0_m, 1.0_m, frc::Rotation2d(45_deg))
+    };
+
+    vector<Pose2d> ball2PickUpWaypoints
+    {
+        frc::Pose2d(6.0_m, 1.0_m, frc::Rotation2d(45_deg)),
+        frc::Pose2d(4.3_m, 2.5_m, frc::Rotation2d(150_deg))
     };
 
     auto config = TrajectoryConfig{units::velocity::meters_per_second_t{1.0}, AutoConstants::kMaxAcceleration};
@@ -233,6 +240,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLineWaypoints, config);
     Trajectory ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1PickUpWaypoints, config);
     Trajectory ball1ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball1ShootWaypoints, config);
+    Trajectory ball2PickUpTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball2PickUpWaypoints, config);
 
 
     switch (path)
@@ -248,10 +256,11 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
             return new frc2::SequentialCommandGroup
             (
                   std::move(*GetIntakePathCmd(ball1Traj, true)) // (almost) 3 ball auto
-                , m_setOneBallFlag
+                // , m_setOneBallFlag
                 , std::move(*GetFirePathCmd(ball1ShootTraj, false))
                 //, std::move(*GetAutoPathCmd("OneBallTest", true))
-                , m_resetOneBallFlag
+                // , m_resetOneBallFlag
+                , std::move(*GetIntakePathCmd(ball2PickUpTraj, false))
             );
 
         case kEx4:
@@ -301,9 +310,11 @@ frc2::ParallelCommandGroup* RobotContainer::GetIntakePathCmd(Trajectory trajecto
               std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
             , frc2::SequentialCommandGroup
             (
-                  std::move(GetSwerveCommandPath(trajectory, primaryPath))
+                  frc2::InstantCommand([this]() { printf("Started IntakePathCmd\n"); }, {})
+                , std::move(GetSwerveCommandPath(trajectory, primaryPath))
                 //, frc2::WaitCommand(0.2_s)
                 , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
+                , frc2::InstantCommand([this]() { printf("Finished IntakePathCmd\n"); }, {})
             )
         );
 }
@@ -315,8 +326,11 @@ frc2::SequentialCommandGroup* RobotContainer::GetFirePathCmd(Trajectory trajecto
 {
     return new frc2::SequentialCommandGroup
     (
-        std::move(GetSwerveCommandPath(trajectory, primaryPath))
+          frc2::InstantCommand([this]() { printf("Started FirePathCmd\n"); }, {})
+        , std::move(GetSwerveCommandPath(trajectory, primaryPath))
+        , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
         , frc2::WaitCommand(0.500_s)
+        , frc2::InstantCommand([this]() { printf("Firing!\n"); }, {})
         , std::move(Fire( &m_flywheel
                         , &m_turret
                         , &m_hood
@@ -327,6 +341,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetFirePathCmd(Trajectory trajecto
                         , &m_finished
                         , [this]() { return GetYvelovity(); }
                         , TransferConstants::kTimeLaunch))
+        , frc2::InstantCommand([this]() { printf("Finished FirePathCmd\n"); }, {})
     );
 }
 
