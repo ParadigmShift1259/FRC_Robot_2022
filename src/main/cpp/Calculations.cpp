@@ -9,6 +9,7 @@
 #include <units/energy.h>
 
 using namespace units;
+// #define TRAJECTORY_TUNING
 
 Calculations::Calculations()
 {
@@ -166,10 +167,18 @@ degree_t Calculations::GetInitAngle()
   return m_angleInit;
 }
 
-revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t targetDist)
+revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t targetDist, meter_t targetHeight/* = defaultTargetHeight*/, meter_t heightAboveHub/* = defaultHeightAboveHub*/)
 {
   m_xInput = distance;
   m_xTarget = targetDist;
+  m_heightTarget = targetHeight;
+  m_heightAboveHub = heightAboveHub;
+
+  #ifdef TRAJECTORY_TUNING
+    m_xTarget = foot_t(m_xTargetDistanceEntry.GetDouble(defaultTargetDist.to<double>()));
+    m_heightTarget = foot_t(m_heightTargetEntry.GetDouble(defaultTargetHeight.to<double>()));
+    m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(defaultHeightAboveHub.to<double>()));
+  #endif
   
   CalcInitVel();
 
@@ -203,24 +212,28 @@ void Calculations::CalculateAll() {
 
   fprintf(calcFile, "HeightAboveHub, TargetHeight, RobotHeight, FloorDist, TargetDist, RPMs, Setpoint, InitialVelocity, InitialAngle\n");
 
-  for (double i=8.0; i<25.0; i++) {
-    for (double j=0.1; j<4; j+=0.1) {
+  for (double i=8.0; i<25.0; i++)
+  {
+    for (double j=0.1; j<4.0; j+=0.1)
+    {
+      for (double k=9.0; k<10.0; k+=0.1)
+      {
+        CalcInitRPMs(foot_t(i), foot_t(j), foot_t(8.67), foot_t(k));
 
-      CalcInitRPMs(foot_t(i), foot_t(j));
+        auto setpoint = m_rpmInit / FlywheelConstants::kGearRatio;
 
-      auto setpoint = m_rpmInit / FlywheelConstants::kGearRatio;
-
-      fprintf(calcFile
-              , "%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f\n"
-              , foot_t(m_heightAboveHub).to<double>()
-              , foot_t(m_heightTarget).to<double>()
-              , foot_t(m_heightRobot).to<double>()
-              , foot_t(m_xInput).to<double>()
-              , foot_t(m_xTarget).to<double>()
-              , m_rpmInit.to<double>()
-              , setpoint.to<double>()
-              , feet_per_second_t(m_velInit).to<double>()
-              , m_angleInit.to<double>());
+        fprintf(calcFile
+                , "%.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f, %.3f\n"
+                , foot_t(m_heightAboveHub).to<double>()
+                , foot_t(m_heightTarget).to<double>()
+                , foot_t(m_heightRobot).to<double>()
+                , foot_t(m_xInput).to<double>()
+                , foot_t(m_xTarget).to<double>()
+                , m_rpmInit.to<double>()
+                , setpoint.to<double>()
+                , feet_per_second_t(m_velInit).to<double>()
+                , m_angleInit.to<double>());
+      }
     }
   }
 
