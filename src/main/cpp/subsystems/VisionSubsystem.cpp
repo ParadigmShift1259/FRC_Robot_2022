@@ -1,5 +1,6 @@
 
 #include "subsystems/VisionSubsystem.h"
+#include <units/math.h>
 #include <iostream>
 #include <vector>
 #include <photonlib/PhotonUtils.h>
@@ -70,28 +71,36 @@ void VisionSubsystem::Periodic()
 // fprintf(m_logFile, " pitch-filtered targets: %d   ", targetVectors.size());
 
 
-        //find the center of the vision targets
-        double xTotal = 0;
-        double yTotal = 0;
-        for (int i = 0; i < targetVectors.size(); i++)
-        {
-            xTotal += (double)targetVectors[i].X();
-            yTotal += (double)targetVectors[i].Y();
-        }
-        double xMean = xTotal/targetVectors.size();
-        double yMean = yTotal/targetVectors.size();
-        frc::Translation2d averageTarget = Translation2d(meter_t{xMean}, meter_t{yMean});
+        // //find the center of the vision targets
+        // double xTotal = 0;
+        // double yTotal = 0;
+        // for (int i = 0; i < targetVectors.size(); i++)
+        // {
+        //     xTotal += (double)targetVectors[i].X();
+        //     yTotal += (double)targetVectors[i].Y();
+        // }
+        // double xMean = xTotal/targetVectors.size();
+        // double yMean = yTotal/targetVectors.size();
+        // frc::Translation2d averageTarget = Translation2d(meter_t{xMean}, meter_t{yMean});
 
         //Throw out outliers
+
+
         for (int i = 0; i < targetVectors.size(); i++)
         {
-            if (averageTarget.Distance(targetVectors[i]) > meter_t{kMaxTargetSpread})
+            units::meter_t rTolerance = 12.0_in;
+            
+            Translation2d r = targetVectors[i] - m_cameraToHub;
+
+            if (units::math::fabs(r.Norm() - kVisionTargetRadius) > rTolerance || 
+                (GetVectorAngle(r) < units::radian_t{GetHubAngle() + wpi::numbers::pi/2} && GetVectorAngle(r) > units::radian_t{GetHubAngle() - wpi::numbers::pi/2}))
             {
                 targetVectors.erase(targetVectors.begin() + i);
                 i--;
                 if (bLogInvalid)
                     ;//std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
             }
+            
         }
 
 // fprintf(m_logFile, " outlier-filtered targets: %d   ", targetVectors.size());
@@ -334,7 +343,12 @@ frc::Translation2d VisionSubsystem::FitCircle(vector<frc::Translation2d> targetV
 
 double VisionSubsystem::GetHubAngle()
 {
-    return atan2((double)m_cameraToHub.Y(), (double)m_cameraToHub.X());
+    return (double) GetVectorAngle(m_cameraToHub);
+}
+
+units::radian_t VisionSubsystem::GetVectorAngle(Translation2d vector)
+{
+    return units::radian_t{atan2((double)vector.Y(), (double)vector.X())};
 }
 
 double VisionSubsystem::GetHubDistance(bool smoothed)

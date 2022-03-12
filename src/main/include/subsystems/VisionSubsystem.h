@@ -60,6 +60,8 @@ public:
 
     double GetHubDistance(bool smoothed);
 
+    units::radian_t GetVectorAngle(Translation2d vector);
+
     void CloseLogFile() { if (m_logFile) fclose(m_logFile);  }
 
 protected:
