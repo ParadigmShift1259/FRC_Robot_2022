@@ -167,32 +167,7 @@ degree_t Calculations::GetInitAngle()
   return m_angleInit;
 }
 
-revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t targetDist)
-{
-  m_xInput = distance;
-  m_xTarget = targetDist;
-  m_heightTarget = defaultTargetHeight;
-  m_heightAboveHub = defaultHeightAboveHub;
-
-  #ifdef TRAJECTORY_TUNING
-    m_xTarget = foot_t(m_xTargetDistanceEntry.GetDouble(defaultTargetDist.to<double>()));
-    m_heightTarget = foot_t(m_heightTargetEntry.GetDouble(defaultTargetHeight.to<double>()));
-    m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(defaultHeightAboveHub.to<double>()));
-  #endif
-  
-  CalcInitVel();
-
-  m_rotVelInit = radian_t(1.0) * m_velInit / flywheelRadius * (2.0 + (cargoRotInertiaFrac + 1.0) / (flywheelRotInertiaFrac * massRatio));
-  
-  m_rpmInit = m_rotVelInit;
-
-  m_initRpmEntry.SetDouble(m_rpmInit.to<double>());
-  m_setpointEntry.SetDouble(m_rpmInit.to<double>() / FlywheelConstants::kGearRatio);
-
-  return m_rpmInit;
-}
-
-revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t targetDist, meter_t targetHeight, meter_t heightAboveHub)
+revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t targetDist, meter_t targetHeight/* = defaultTargetHeight*/, meter_t heightAboveHub/* = defaultHeightAboveHub*/)
 {
   m_xInput = distance;
   m_xTarget = targetDist;

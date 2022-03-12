@@ -64,8 +64,7 @@ class Calculations
   meters_per_second_t CalcInitVel();
   meters_per_second_t CalcInitVelWithAngle();
   degree_t GetInitAngle();                                                            //!< Call after GetInitVelWithAngle or GetInitRPMS
-  revolutions_per_minute_t CalcInitRPMs(meter_t distance, meter_t targetDist);
-  revolutions_per_minute_t CalcInitRPMs(meter_t distance, meter_t targetDist, meter_t targetHeight, meter_t heightAboveHub);        //!< Calculates the RPMs needed to shoot the specified distance
+  revolutions_per_minute_t CalcInitRPMs(meter_t distance, meter_t targetDist, meter_t targetHeight = defaultTargetHeight, meter_t heightAboveHub = defaultHeightAboveHub);        //!< Calculates the RPMs needed to shoot the specified distance
   radians_per_second_t QuadraticFormula(double a, double b, double c, bool subtract);
 
   void CalculateAll();
