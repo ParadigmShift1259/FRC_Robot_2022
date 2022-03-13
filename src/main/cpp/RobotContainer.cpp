@@ -11,7 +11,7 @@
 
 RobotContainer::RobotContainer()
     : m_gyro()
-    , m_drive(&m_gyro)
+    , m_drive(&m_gyro, *this)
     , m_vision(&m_gyro, m_turret, m_hood, *this)
     , m_flywheel()
 {

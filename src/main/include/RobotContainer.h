@@ -91,7 +91,8 @@ public:
 
     Pose2d GetPose() { return m_drive.GetPose(); }
     Pose2d GetPose(units::time::second_t timestamp) const { return m_drive.GetPose(timestamp); }
-    const vector<frc::Trajectory::State>& GetStateHist() const { return m_drive.GetStateHist(); }
+    const StateHistColl& GetStateHist() const { return m_drive.GetStateHist(); }
+    units::degree_t GetTurretAngle() { return units::degree_t(m_turret.GetCurrentAngle()); }
     void ResetOdometry(frc::Pose2d pose) { m_drive.ResetOdometry(pose); }
     bool HasAuotRun() { return m_hasAutoRun; }
 
