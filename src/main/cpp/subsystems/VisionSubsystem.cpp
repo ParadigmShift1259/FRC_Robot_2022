@@ -119,17 +119,19 @@ void VisionSubsystem::Work()
 #define USE_ODO_COMPENSATION
 #ifdef USE_ODO_COMPENSATION
                 visionTimestamp = visionTimestamp - result.GetLatency();
-                frc::Pose2d delayedOdoPose = m_odometry.GetPose(visionTimestamp);
-                
-                double angleTurret = Util::DegreesToRadians(m_turret.GetCurrentAngle()); // TO DO keep history of turret angle and use that instead of current turrent angle
-                Rotation2d fieldToCamAngle = delayedOdoPose.Rotation() + Rotation2d(radian_t{angleTurret});  // TO DO keep history of turret angle and use that instead of current turrent angle
-                frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
-                frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{angleTurret});
+                StateHist delayedState = m_odometry.GetState(visionTimestamp);
+                frc::Pose2d delayedOdoPose = delayedState.pose;
+                degree_t angleTurret = delayedState.m_turretAngle;
+
+                Rotation2d fieldToCamAngle = delayedOdoPose.Rotation() + Rotation2d{angleTurret};  // TO DO keep history of turret angle and use that instead of current turrent angle
+                // frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(units::math::cos(angleTurret) * inch_t{-12})}, meter_t{(units::math::sin(angleTurret) * inch_t{-12})});
+                frc::Translation2d camToTurretCenter = frc::Translation2d(inch_t{-12}, Rotation2d{angleTurret});
+                frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, Rotation2d{angleTurret});
 
                 Pose2d cameraPose = Pose2d(kHubCenter - cameraToHub.RotateBy(fieldToCamAngle), fieldToCamAngle); // field relative cam pose
                 auto RobotvisionPose = cameraPose.TransformBy(camreaTransform.Inverse());  // where vision thinks robot was when image was captured (e.g. latency)
                 // printf("camera pose x %.3f y %.3f theta %.3f   ", cameraPose.X().to<double>(), cameraPose.Y().to<double>(), cameraPose.Rotation().Degrees().to<double>());
-                // printf("robot pose x %.3f y %.3f theta %.3f   ", RobotvisionPose.X().to<double>(), RobotvisionPose.Y().to<double>(), RobotvisionPose.Rotation().Degrees().to<double>());
+                // printf("robot pose x %.3f y %.3f theta %.3f   ", RobotvisionPose.X().to<double>(), RobotvisionPose.Y().to<double>({}), RobotvisionPose.Rotation().Degrees().to<double>());
 
                 // Use wheel odo to correct RobotvisionPose for movement since image was captured
                 //frc::Pose2d lastOdoState = m_odometry.GetPose(); // auto& lastOdoState = m_odometry.GetStateHist().back();  
@@ -188,11 +190,14 @@ void VisionSubsystem::Work()
     if (m_odometry.OdoValid())
             {
             // use odometry instead of vision
-            m_robotPose = m_odometry.GetPose();
-            double angleTurret = Util::DegreesToRadians(m_turret.GetCurrentAngle());
-            frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
-            frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{angleTurret});
-            frc::Rotation2d fieldToCamAngle = m_robotPose.Rotation() + frc::Rotation2d(units::radian_t{angleTurret});  // TO DO keep history of turret angle and use that instead of current turrent angle    
+            StateHist lastOdoState = m_odometry.GetState();
+            degree_t angleTurret = lastOdoState.m_turretAngle;
+
+            m_robotPose = lastOdoState.pose;
+            // frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
+            frc::Translation2d camToTurretCenter = frc::Translation2d(inch_t{-12}, Rotation2d{angleTurret});
+            frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, Rotation2d{angleTurret});
+            frc::Rotation2d fieldToCamAngle = m_robotPose.Rotation() + frc::Rotation2d(angleTurret);     
             m_cameraToHub = kHubCenter - m_robotPose.TransformBy(camreaTransform.Inverse()).Translation();
             m_cameraToHub = m_cameraToHub.RotateBy(-fieldToCamAngle); // transform from field-relative back to cam-relative
             }

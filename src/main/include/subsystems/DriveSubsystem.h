@@ -110,10 +110,12 @@ public:
     /// Returns the currently-estimated pose of the robot.
     /// \return The pose.
     Pose2d GetPose();
+    StateHist GetState() const;
 
     /// Returns the previous estimated pose of the robot at the given timestamp.
     /// \return The pose.
     Pose2d GetPose(units::time::second_t timestamp) const;
+    StateHist GetState(units::time::second_t timestamp) const;
 
     units::meters_per_second_t GetSpeed(void) const;
 

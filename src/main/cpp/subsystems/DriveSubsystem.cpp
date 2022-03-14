@@ -84,7 +84,7 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo)
     m_lastHeading = 0;
     m_rotationalInput = true;
     m_StateHist.reserve(10000);
-    m_StateHist.clear(); // clear() does not delatocate memory
+    m_StateHist.clear(); // clear() does not delatocate memory TO DO: clear when we Reset Odo?
 
     m_odoValid = false;
 
@@ -276,52 +276,73 @@ Pose2d DriveSubsystem::GetPose()
 
 frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
 {
+    return GetState(timestamp).pose;
+}
+
+
+StateHist DriveSubsystem::GetState() const
+{
+    return m_StateHist.back();
+}
+
+StateHist DriveSubsystem::GetState(units::time::second_t timestamp) const
+{
     auto& lastOdoState = m_StateHist.back();
     auto& firstOdoState = m_StateHist.front();
-    int State1Idx, State2Idx;
-    if (firstOdoState.t < timestamp && timestamp < lastOdoState.t)
-    {
-        // TO DO -- start searching from index interpolated between firstOdoState.t lastOdoState.t based on requested timestamp 
-        if(lastOdoState.t - timestamp < timestamp - firstOdoState.t)
+    size_t i;
+
+    if(timestamp > lastOdoState.t)
+        return lastOdoState;        
+    if(timestamp < firstOdoState.t)
+        return firstOdoState;
+    else 
         {
-            int i = m_StateHist.size() - 2;
-            while(m_StateHist[i].t >= timestamp && i >= 0)
-                i--;
-            State1Idx = i;
-            State2Idx = i+1;
-            //printf("searching odo hist from back...  ");
-        }
+        i = m_StateHist.size() * (double)((timestamp - firstOdoState.t) * (lastOdoState.t - firstOdoState.t));
+        if (i >= m_StateHist.size())
+            return lastOdoState;  // probably not needed but just to be safe
+        else if (i == 0)
+            return firstOdoState; // probably not needed but just to be safe
+        else if (m_StateHist[i].t < timestamp)
+            {
+            while(i <= m_StateHist.size()-1 && m_StateHist[i+1].t < timestamp)
+                i++;        
+            }
         else
-        {
-            size_t i = 1;
-            while(m_StateHist[i].t <= timestamp && i < m_StateHist.size() - 1)
-                i++;
-            State1Idx = i - 1;
-            State2Idx = i;
-            //printf("searching odo hist from front...  ");
+            {
+            while(i > 1 && m_StateHist[i-1].t > timestamp)
+                i--;        
+            }
+            
         }
-        //printf("returning odo state # %d of %d total\n", State1Idx, m_StateHist.size()-1);
-        m_StateHist[State1Idx].pose;    
-        m_StateHist[State2Idx].pose;
-        units::time::second_t T1 = m_StateHist[State1Idx].t;
-        units::time::second_t T2 = m_StateHist[State2Idx].t;
-        double x = (double) ((timestamp-T1) / (T2-T1)); 
-        units::meter_t X = m_StateHist[State1Idx].pose.X();
-        units::meter_t Y = m_StateHist[State1Idx].pose.Y();
-        units::radian_t theta = m_StateHist[State1Idx].pose.Rotation().Radians();
 
-        X += x * (m_StateHist[State2Idx].pose.X() - m_StateHist[State1Idx].pose.X());
-        Y += x * (m_StateHist[State2Idx].pose.Y() - m_StateHist[State1Idx].pose.Y());
-        theta += x * (m_StateHist[State2Idx].pose.Rotation().Radians() - m_StateHist[State1Idx].pose.Rotation().Radians());
-        return frc::Pose2d(X, Y, frc::Rotation2d(theta));
 
-        // vector<frc::Trajectory::State> neighboringStates;
-        // neighboringStates.push_back(m_StateHist[State1Idx]);
-        // neighboringStates.push_back(m_StateHist[State2Idx]);
-        // frc::Trajectory trajectory = Trajectory(neighboringStates);
-        // return trajectory.Sample(timestamp).pose;
-    }
-    return m_odometry.GetPose();
+    units::time::second_t T1 = m_StateHist[i].t;
+    units::time::second_t T2 = m_StateHist[i+1].t;
+    double x = (double) ((timestamp-T1) / (T2-T1)); 
+
+    // TO DO? replace most of this except turret angle with Interpolate() method from FRC trajectory state class?
+    units::meter_t X = m_StateHist[i].pose.X();
+    units::meter_t Y = m_StateHist[i].pose.Y();
+    units::radian_t theta = m_StateHist[i].pose.Rotation().Radians();
+    units::meters_per_second_t vel = m_StateHist[i].velocity;
+    units::meters_per_second_squared_t accel = m_StateHist[i].acceleration;
+    units::degree_t turretAngle = m_StateHist[i].m_turretAngle;
+
+    X += x * (m_StateHist[i+1].pose.X() - m_StateHist[i].pose.X());
+    Y += x * (m_StateHist[i+1].pose.Y() - m_StateHist[i].pose.Y());
+    theta += x * (m_StateHist[i+1].pose.Rotation().Radians() - m_StateHist[i].pose.Rotation().Radians());
+    vel += x * (m_StateHist[i+1].velocity - m_StateHist[i].velocity);
+    accel += x * (m_StateHist[i+1].acceleration - m_StateHist[i].acceleration);
+    turretAngle += x * (m_StateHist[i+1].m_turretAngle - m_StateHist[i].m_turretAngle);
+
+    StateHist state;
+    state.t = timestamp;
+    state.pose = frc::Pose2d(X, Y, frc::Rotation2d(theta));
+    state.velocity = vel;
+    state.acceleration = accel;
+    state.m_turretAngle = turretAngle;    
+
+    return state;
 }
 
 units::meters_per_second_t DriveSubsystem::GetSpeed() const
