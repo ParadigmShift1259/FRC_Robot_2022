@@ -8,6 +8,8 @@
 #pragma once
 
 #include <frc/trajectory/TrapezoidProfile.h>
+#include "frc/DataLogManager.h"
+#include "wpi/DataLog.h"
 
 #include <units/time.h>
 #include <units/velocity.h>

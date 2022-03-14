@@ -2,6 +2,7 @@
 #include "subsystems/VisionSubsystem.h"
 #include <units/math.h>
 #include <iostream>
+#include <fmt/core.h>
 #include <vector>
 #include <photonlib/PhotonUtils.h>
 
@@ -156,6 +157,7 @@ void VisionSubsystem::Work()
             }
             else
             {
+                frc::DataLogManager::Log("Circle fit failed");
                 if (bLogInvalid)
                     fprintf(m_logFile, "Circle fit failed \n");
                     //std::cout << "Circle fit failed " << std::endl;
@@ -164,6 +166,7 @@ void VisionSubsystem::Work()
         }
         else
         {
+            frc::DataLogManager::Log(fmt::format("Only {}  vision targets", targetVectors.size()));
             if (bLogInvalid)
                 fprintf(m_logFile, "Only %d  vision targets\n", targetVectors.size());
                 //std::cout << fprintf(m_logFile, "Only " << targetVectors.size() << " vision targets" << std::endl;

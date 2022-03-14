@@ -7,6 +7,7 @@
 //#include <frc/smartdashboard/SmartDashboard.h>
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc2/command/CommandScheduler.h>
+#include <frc/DriverStation.h>
 
 void Robot::RobotInit() {}
 
@@ -18,7 +19,8 @@ void Robot::RobotInit() {}
  * <p> This runs after the mode specific periodic functions, but before
  * LiveWindow and SmartDashboard integrated updating.
  */
-void Robot::RobotPeriodic() {
+void Robot::RobotPeriodic()
+{
   frc2::CommandScheduler::GetInstance().Run();
   m_container.Periodic();
 }
@@ -30,8 +32,8 @@ void Robot::RobotPeriodic() {
  */
 void Robot::DisabledInit()
 {
-  m_container.CloseLogFile();
-  Shuffleboard::StopRecording();
+  //m_container.CloseLogFile();
+  //Shuffleboard::StopRecording();
   m_container.TurretSetZeroAngle();
   m_container.GetDrive().m_enabled = false;
 }
@@ -44,26 +46,39 @@ void Robot::DisabledPeriodic() {}
  */
 void Robot::AutonomousInit()
 {
+  m_hasAutoRun = true;
+  frc::DataLogManager::LogNetworkTables(false);
+  frc::DataLogManager::Start();
+  // Record both DS control and joystick data
+  DriverStation::StartDataLog(DataLogManager::GetLog());
+
   m_container.TurretSetZeroAngle();
   //m_container.GyroSetZeroHeading();
 
   m_autonomousCommand = m_container.GetAutonomousCommand(m_container.m_chooser.GetSelected());
 
-  if (m_autonomousCommand != nullptr) {
+  if (m_autonomousCommand != nullptr)
+  {
     m_autonomousCommand->Schedule();
   }
 }
 
-void Robot::AutonomousPeriodic() {
+void Robot::AutonomousPeriodic()
+{
   m_container.GetDrive().m_enabled = true;
 }
 
 void Robot::TeleopInit()
 {
-  Shuffleboard::SetRecordingFileNameFormat("Team1259NetTblData${date}_${time}");
-  Shuffleboard::StartRecording();
+  if (m_hasAutoRun == false)
+  {
+    frc::DataLogManager::Start();
+  }
 
-  // if (m_container.HasAuotRun() == false)
+  //Shuffleboard::SetRecordingFileNameFormat("Team1259NetTblData${date}_${time}");
+  //Shuffleboard::StartRecording();
+
+  // if (m_container.HasAutoRun() == false)
   //   {
   //   // Test code -- NORMALLY THIS SHOULD BE SET AT t=0 OF AUTO
   //   m_container.TurretSetZeroAngle();  
@@ -72,7 +87,6 @@ void Robot::TeleopInit()
   //   printf("Resetting Odometry from Teleop: x=%.3f, y=%.3f, heading =%.1f\n", m_container.GetPose().X().to<double>(), m_container.GetPose().Y().to<double>(), m_container.GetPose().Rotation().Degrees().to<double>());
   //   }   
  
-
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to
   // continue until interrupted by another command, remove
@@ -88,7 +102,8 @@ void Robot::TeleopInit()
 /**
  * This function is called periodically during operator control.
  */
-void Robot::TeleopPeriodic() {
+void Robot::TeleopPeriodic()
+{
   m_container.GetDrive().m_enabled = true;
 }
 

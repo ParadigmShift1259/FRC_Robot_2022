@@ -52,7 +52,8 @@ void HomeTarget::Execute()
     // if (std::isnan(distance))
     if (distance != distance)
     {
-        printf("Not a Valid Distane\n");
+        //printf("Not a Valid Distane\n");
+        frc::DataLogManager::Log("Not a Valid Distane");
         return;
     }
 

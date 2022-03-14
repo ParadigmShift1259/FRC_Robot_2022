@@ -22,6 +22,8 @@ FlywheelSubsystem::FlywheelSubsystem()
         FlywheelConstants::kV * 1_V * 1_s / 1_m, 
         FlywheelConstants::kA * 1_V * 1_s * 1_s / 1_m
     )
+    , m_rpmSetpointLog(DataLogManager::GetLog(), "/FlyWheel/Setpoint")
+    , m_rpmMeasuredLog(DataLogManager::GetLog(), "/FlyWheel/MeasuredRPM")
 {
     m_flywheelmotor.SetIdleMode(CANSparkMax::IdleMode::kCoast);
     //m_flywheelmotor.SetClosedLoopRampRate(kRampRate);
@@ -90,8 +92,10 @@ void FlywheelSubsystem::Periodic()
     CalculateRPM();
 }
 
-void FlywheelSubsystem::SetRPM(double setpoint) {
+void FlywheelSubsystem::SetRPM(double setpoint)
+{
     m_setpoint = setpoint / FlywheelConstants::kGearRatio;
+    m_rpmSetpointLog.Append(m_setpoint);
     bool bSupressFlywheel = SmartDashboard::GetBoolean("SupressFlywheel", false);
     if (bSupressFlywheel)
     {
@@ -100,22 +104,26 @@ void FlywheelSubsystem::SetRPM(double setpoint) {
     m_flywheelPID.SetIAccum(0);
 }
 
-double FlywheelSubsystem::GetRPM()
+bool FlywheelSubsystem::IsAtMaintainPID()
 {
-    return m_setpoint * FlywheelConstants::kGearRatio;
+    double rpm = m_flywheelencoder.GetVelocity();
+    m_rpmMeasuredLog.Append(rpm);
+    return fabs(rpm - m_setpoint) <= kMaintainPIDError;
 }
 
-bool FlywheelSubsystem::IsAtMaintainPID() {
-    return fabs(m_flywheelencoder.GetVelocity() - m_setpoint) <= kMaintainPIDError;
-}
-
-bool FlywheelSubsystem::IsAtRPM() {
-    return fabs(m_flywheelencoder.GetVelocity() - m_setpoint) <= kAllowedError;
+bool FlywheelSubsystem::IsAtRPM()
+{
+    double rpm = m_flywheelencoder.GetVelocity();
+    m_rpmMeasuredLog.Append(rpm);
+    return fabs(rpm - m_setpoint) <= kAllowedError;
 }
 
 bool FlywheelSubsystem::IsAtRPMPositive()
 {
-    double error = m_flywheelencoder.GetVelocity() - m_setpoint;
+    double rpm = m_flywheelencoder.GetVelocity();
+    m_rpmMeasuredLog.Append(rpm);
+
+    double error = rpm - m_setpoint;
     frc::SmartDashboard::PutNumber("Flywheel error", error);
 
     // If error is negative, always return false

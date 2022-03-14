@@ -21,7 +21,7 @@ public:
     virtual frc::Pose2d GetPose(units::time::second_t timestamp) const = 0;
     virtual const StateHistColl& GetStateHist() const = 0;
     virtual units::degree_t GetTurretAngle() = 0;
-    virtual bool HasAuotRun() = 0;
+    //virtual bool HasAutoRun() = 0;
     virtual bool OdoValid() = 0;
     virtual void ResetOdometry(frc::Pose2d) = 0;
 };
