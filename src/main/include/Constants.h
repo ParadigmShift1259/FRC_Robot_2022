@@ -368,9 +368,9 @@ namespace TurretConstants
     // constexpr double kI = 0.001;
     // constexpr double kD = 10.0;
     constexpr double kP = 0.01;
-    constexpr double kI = 0.001;
+    constexpr double kI = 0.0001;
     constexpr double kD = 0.0;
-    constexpr double kF = 0.455;
+    constexpr double kF = 0.41; // 1023*(.2-.1)/(410-160) // 0.455;
 
     constexpr double kNeutralDeadband = 0.06; // Deadband percentage
     constexpr double kMMCruiseVel = 300; // deg per sec 
