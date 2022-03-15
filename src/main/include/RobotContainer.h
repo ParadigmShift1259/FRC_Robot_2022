@@ -9,6 +9,7 @@
 
 #include <frc/Filesystem.h>
 #include <frc/XboxController.h>
+#include <frc/Compressor.h>
 
 #include <frc/controller/PIDController.h>
 #include <frc/controller/ProfiledPIDController.h>
@@ -116,6 +117,8 @@ private:
     frc::XboxController m_primaryController{OIConstants::kPrimaryControllerPort};
     frc::XboxController m_secondaryController{OIConstants::kSecondaryControllerPort};
 
+    frc::Compressor m_compressor;
+
     Team1259::Gyro m_gyro;
     DriveSubsystem m_drive;
     bool m_fieldRelative = true;
@@ -154,6 +157,7 @@ private:
     frc2::InstantCommand m_turretToCenter{[this] { m_turret.TurnTo(0.0); }, {&m_turret} };
     frc2::InstantCommand m_turretToPosStop{[this] { m_turret.TurnToRelative(50.0); }, {&m_turret} };
     frc2::InstantCommand m_turretToNegStop{[this] { m_turret.TurnToRelative(-50.0); }, {&m_turret} };
+    frc2::InstantCommand m_runCompressor{[this] { m_compressor.EnableDigital(); m_bRunningCompressor = true;}, {} };
     // frc2::InstantCommand m_resetOdoAndGyro{[this] 
     // { 
     //     m_gyro.SetHeading((double)trajectory.InitialPose().Rotation().Degrees()); 
@@ -205,6 +209,8 @@ private:
     bool m_firing = false;
     bool m_finished = false;
     bool m_bLowSpeedDriving = false;
+    bool m_bRunningCompressor = false;
+
     radians_per_second_t m_maxRotSpeed { kDriveAngularSpeed };
 
     DebugFlag   m_dbgSeroTest{"ServoTest", false};

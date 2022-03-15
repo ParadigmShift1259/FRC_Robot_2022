@@ -44,7 +44,7 @@ void Robot::DisabledPeriodic() {}
  */
 void Robot::AutonomousInit()
 {
-  m_container.TurretSetZeroAngle();
+  //m_container.TurretSetZeroAngle();
   //m_container.GyroSetZeroHeading();
 
   m_autonomousCommand = m_container.GetAutonomousCommand(m_container.m_chooser.GetSelected());
@@ -66,7 +66,7 @@ void Robot::TeleopInit()
   // if (m_container.HasAuotRun() == false)
   //   {
   //   // Test code -- NORMALLY THIS SHOULD BE SET AT t=0 OF AUTO
-  //   m_container.TurretSetZeroAngle();  
+     m_container.TurretSetZeroAngle();  
   //   m_container.GyroSetZeroHeading();  
   //   m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 131_in, kFieldWidth/2, Rotation2d{0_deg})); // test code: 10 feet in front of hub
   //   printf("Resetting Odometry from Teleop: x=%.3f, y=%.3f, heading =%.1f\n", m_container.GetPose().X().to<double>(), m_container.GetPose().Y().to<double>(), m_container.GetPose().Rotation().Degrees().to<double>());

@@ -16,7 +16,6 @@ using namespace FlywheelConstants;
 
 FlywheelSubsystem::FlywheelSubsystem() 
     : m_flywheelmotor(kPrimaryMotorPort, CANSparkMax::MotorType::kBrushless)
-    , m_followerFlywheelMotor(kFollowerMotorPort, CANSparkMax::MotorType::kBrushless)
     , m_flywheelFF(
         kS * 1_V, 
         FlywheelConstants::kV * 1_V * 1_s / 1_m, 
@@ -28,7 +27,6 @@ FlywheelSubsystem::FlywheelSubsystem()
     m_flywheelmotor.SetClosedLoopRampRate(0.0);
     m_flywheelmotor.SetInverted(true);
 
-    m_followerFlywheelMotor.Follow(m_flywheelmotor, true);  // 2nd argument inverts the rotation
 
     m_flywheelPID.SetP(kP, 0);
     m_flywheelPID.SetI(kI, 0);

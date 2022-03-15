@@ -14,8 +14,10 @@ RobotContainer::RobotContainer()
     , m_drive(&m_gyro)
     , m_vision(&m_gyro, m_turret, m_hood, *this)
     , m_flywheel()
+    , m_compressor(CompressorConstans::kCompressorPort, frc::PneumaticsModuleType::REVPH)
 {
     m_fieldRelative = false;
+    //m_compressor.Disable();
 
     ConfigureButtonBindings();
     SetDefaultCommands();
@@ -48,8 +50,14 @@ void RobotContainer::Periodic()
     // SmartDashboard::PutData("TurretSS", &m_turret);
     // SmartDashboard::PutData("VisionSS", &m_vision);
     SmartDashboard::PutNumber("Hub angle ", m_vision.GetHubAngle());
-    
+    SmartDashboard::PutBoolean("bCompressorFull", !m_compressor.GetPressureSwitchValue());
+
     m_drive.Periodic();
+
+    // if (!m_compressor.GetPressureSwitchValue() && m_bRunningCompressor)
+    // {
+    //     m_compressor.Disable();
+    // }
 
     // static int direction = 0;
     // if(direction == 1)
@@ -192,7 +200,7 @@ void RobotContainer::ConfigSecondaryButtonBindings()
     JoystickButton(&secondary, xbox::kLeftBumper).WhenPressed(&m_turretToCenter);
     //JoystickButton(&secondary, xbox::kBumperRight).WhenPressed(&m_setTurretZero);
     JoystickButton(&secondary, xbox::kBack).WhenHeld(Unjam(&m_transfer, &m_intake));    
-    //JoystickButton(&secondary, xbox::kStart).WhenPressed();    
+    JoystickButton(&secondary, xbox::kStart).WhenPressed(&m_runCompressor);
 }
 
 const units::meters_per_second_t zeroMps{0.0};

@@ -18,6 +18,7 @@ void IntakeRelease::Execute() {
 
 void IntakeRelease::End(bool interrupted) {
   m_intake.Set(0);
+  m_intake.IntakeOut(false);
   m_transfer.SetFeeder(0);
   m_transfer.SetTransfer(0);
 }

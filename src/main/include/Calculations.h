@@ -23,7 +23,7 @@ using namespace units;
 
 /// Ballistics/Physics constants
 constexpr auto gravity = meters_per_second_squared_t(9.81);
-constexpr kilogram_t flywheelMass = pound_t(6.0);
+constexpr kilogram_t flywheelMass = pound_t(6.0); // Reset to 2.8
 //?constexpr kilogram_t flywheelMass = pound_t(4.7);
 
 constexpr meter_t flywheelRadius = 2.0_in;

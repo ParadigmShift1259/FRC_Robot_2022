@@ -3,6 +3,8 @@
 
 #include <frc2/command/SubsystemBase.h>
 #include <ctre/phoenix/motorcontrol/can/TalonSRX.h>
+#include <frc/Solenoid.h>
+#include <frc/Timer.h>
 
 #include "Constants.h"
 
@@ -22,7 +24,10 @@ public:
     /// \param speed         Desired motor speed to run, ranging from [-1, 1]
     void Set(double speed);
 
+    void IntakeOut(bool out);
 private:
     /// 665 that runs intake
     TalonSRX m_motor;
+    frc::Solenoid m_solenoid;
+    frc::Timer m_timer;
 };

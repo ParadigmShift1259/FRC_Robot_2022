@@ -325,6 +325,7 @@ namespace IntakeConstants
 {
     constexpr int kMotorPort = 14;   // Intake rollers CAN ID (Talon)
     constexpr int kMotorReverseConstant = 1;
+    constexpr int kSolenoidPort = 15;
 
     constexpr double kIngestLow = 0.3;
     constexpr double kIngestHigh = 0.80;
@@ -411,4 +412,9 @@ namespace ClimberConstants
     constexpr double kMotorCanId = 15;          // Climber CAN ID TalonSRX
     constexpr double kMotorReverseConstant = -1;
     constexpr double kMotorSpeed = 1.0;
+}
+
+namespace CompressorConstans
+{
+    constexpr int kCompressorPort = 1;
 }

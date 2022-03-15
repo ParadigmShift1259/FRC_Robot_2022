@@ -21,6 +21,5 @@ bool IntakeIngest::IsFinished()
 }
 
 void IntakeIngest::End(bool interrupted) {
-    m_intake.Set(0);
     m_bRunning = false;
 }
