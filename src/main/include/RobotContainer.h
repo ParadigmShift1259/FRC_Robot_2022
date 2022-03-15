@@ -92,9 +92,10 @@ public:
 
     Pose2d GetPose() { return m_drive.GetPose(); }
     Pose2d GetPose(units::time::second_t timestamp) const { return m_drive.GetPose(timestamp); }
-    const vector<frc::Trajectory::State>& GetStateHist() const { return m_drive.GetStateHist(); }
+    const StateHistColl& GetStateHist() const { return m_drive.GetStateHist(); }
+    units::degree_t GetTurretAngle() { return units::degree_t(m_turret.GetCurrentAngle()); }
     void ResetOdometry(frc::Pose2d pose) { m_drive.ResetOdometry(pose); }
-    bool HasAuotRun() { return m_hasAutoRun; }
+    //bool HasAutoRun() { return m_hasAutoRun; }
 
     double GetYvelovity() { return m_drive.GetYvelocity().to<double>(); }
     
@@ -204,7 +205,7 @@ private:
     
 
     bool m_onlyOneBall = false;    // Used in auto to shoot one ball
-    bool m_hasAutoRun = false;
+    //bool m_hasAutoRun = false;
     bool m_turretready = false;
     bool m_firing = false;
     bool m_finished = false;

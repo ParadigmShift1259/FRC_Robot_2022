@@ -28,8 +28,6 @@ public:
     /// Sets the flywheel to a desired rpm
     /// \param rpm         Desired set rpm
     void SetRPM(double rpm);
-    /// \return The current desired RPM of the flywheel
-    double GetRPM();
 
     /// \return Whether or not the flywheel in the zone to use the alternative "maintain" PID values
     bool IsAtMaintainPID();
@@ -56,4 +54,6 @@ private:
     double m_setpoint;
 
     Timer m_timer;  // Temp
+    wpi::log::DoubleLogEntry m_rpmSetpointLog;
+    wpi::log::DoubleLogEntry m_rpmMeasuredLog;
 };

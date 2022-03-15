@@ -207,8 +207,9 @@ radians_per_second_t Calculations::QuadraticFormula(double a, double b, double c
   return outPut;
 }
 
-void Calculations::CalculateAll() {
-  printf("Calculate All Called\n");
+void Calculations::CalculateAll()
+{
+  //printf("Calculate All Called\n");
 
   FILE *calcFile = fopen("/tmp/calcfile.txt", "w");
 

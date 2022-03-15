@@ -12,7 +12,7 @@ using namespace DriveConstants;
 using namespace std;
 using namespace frc;
 
-DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro)
+DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo)
     : m_frontLeft
       {
           kFrontLeftDriveMotorPort
@@ -56,6 +56,7 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro)
     , m_canifier(kCanifierID)
     , m_gyro(gyro)
     , m_odometry{kDriveKinematics, m_gyro->GetHeadingAsRot2d(), Pose2d()}
+    , m_odo(odo)
 {
 
     #ifdef MANUAL_MODULE_STATES
@@ -113,16 +114,17 @@ void DriveSubsystem::Periodic()
 //  n++;
 
     frc::Pose2d pose = m_odometry.GetPose();
-    frc::Trajectory::State state;
+    StateHist state;
     state.t = m_timer.GetFPGATimestamp();
     state.pose = pose;
 	auto& prevState = m_StateHist.back();
     state.velocity = (pose - prevState.pose).Translation().Norm() / (state.t - prevState.t);
     state.acceleration = (state.velocity - prevState.velocity) / (state.t - prevState.t);
+    state.m_turretAngle = m_odo.GetTurretAngle();
+    m_StateHist.push_back(state);
+
     m_velocity = (double)state.velocity;
     m_acceleration = (double)state.acceleration;
-
-    m_StateHist.push_back(state);
 }
 
 void DriveSubsystem::RotationDrive(meters_per_second_t xSpeed
@@ -324,7 +326,7 @@ frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const
 
 units::meters_per_second_t DriveSubsystem::GetSpeed() const
 {
-    frc::Trajectory::State lastOdoState = m_StateHist.back();
+    StateHist lastOdoState = m_StateHist.back();
     return lastOdoState.velocity;
 }
 

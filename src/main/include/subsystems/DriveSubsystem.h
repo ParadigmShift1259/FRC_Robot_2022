@@ -20,6 +20,7 @@
 
 #include "common/Util.h"
 #include "Gyro.h"
+#include "IOdometry.h"
 
 #include "Constants.h"
 #include "SwerveModule.h"
@@ -47,7 +48,7 @@ public:
         kRearRight
     };
 
-    DriveSubsystem(Team1259::Gyro *gyro);
+    DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo);
 
     /// Will be called periodically whenever the CommandScheduler runs.
     void Periodic() override;
@@ -114,7 +115,6 @@ public:
     /// \return The pose.
     Pose2d GetPose(units::time::second_t timestamp) const;
 
-
     units::meters_per_second_t GetSpeed(void) const;
 
     /// Converts PWM input on the CANifier to a pulse width
@@ -135,7 +135,7 @@ public:
     void SetMaxDriveSpeed(meters_per_second_t maxDriveSpeed) { m_maxDriveSpeed = maxDriveSpeed; }
     meters_per_second_t GetYvelocity() const { return m_yVelocity; }
 
-    const vector<frc::Trajectory::State>& GetStateHist() const { return m_StateHist; }
+    const StateHistColl& GetStateHist() const { return m_StateHist; }
 
     /// The kinematics object converts inputs into 4 individual swerve module turn angle and wheel speeds
     SwerveDriveKinematics<kNumSwerveModules> kDriveKinematics{
@@ -187,7 +187,8 @@ private:
     /// Whether or not rotation input was provided, used for @ref HeadingDrive
     bool m_rotationalInput;
     Timer m_timer;
-    vector<frc::Trajectory::State> m_StateHist;  // TO DO: change to new class derived from Trajectory::State with additional field for Turrent angle 
+    StateHistColl m_StateHist;
+    IOdometry& m_odo;
     double m_velocity;
     double m_acceleration;
     meters_per_second_t m_maxDriveSpeed { kDriveSpeed };
