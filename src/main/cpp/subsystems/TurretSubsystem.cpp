@@ -40,9 +40,9 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(kMMCruiseVel/10), kTimeout);  // encoder ticks per 100ms 
     m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(kMMAccel/10), kTimeout);     // encoder ticks per 100ms per sec
 
-    m_turretmotor.SetSelectedSensorPosition(DegreesToTicks(kStartingPositionDegrees), 0, kTimeout);
-    m_turretmotor.ConfigForwardSoftLimitThreshold(5595);
-    m_turretmotor.ConfigReverseSoftLimitThreshold(-5595);
+    //m_turretmotor.SetSelectedSensorPosition(DegreesToTicks(kStartingPositionDegrees), 0, kTimeout);
+    //m_turretmotor.ConfigForwardSoftLimitThreshold(5595);
+    //m_turretmotor.ConfigReverseSoftLimitThreshold(-5595);
     m_turretmotor.ConfigForwardSoftLimitEnable(true);
     m_turretmotor.ConfigReverseSoftLimitEnable(true);
 
@@ -88,7 +88,11 @@ void TurretSubsystem::Periodic()
         //double angleChange = (zeroPos - m_startingPos) * kDegreesPerAbsEncTick;
         //printf("angle %.3f start pos %d cur pos %d pos delta %d deg per tick %.3f\n", angleChange, m_startingPos, m_absEnc.GetValue(), zeroPos - m_startingPos, kDegreesPerAbsEncTick);
         //TurnToRelative(angleChange);
-        m_turretmotor.SetSelectedSensorPosition((m_startingPos - zeroPos) * kCtreTicksPerAbsEncTick);
+        double CTREpos = (m_startingPos - zeroPos) * kCtreTicksPerAbsEncTick;
+        m_turretmotor.SetSelectedSensorPosition(CTREpos);
+ // TO DO determine propper soft limits!       
+ //       m_turretmotor.ConfigForwardSoftLimitThreshold(CTREpos+5595);
+ //       m_turretmotor.ConfigReverseSoftLimitThreshold(CTREpos-5595);
         m_currentAngle = GetCurrentAngle();
         TurnTo(0.0);
     }
