@@ -45,20 +45,20 @@ void HomeTarget::Execute()
     if (!m_vision.GetValidTarget())
         return;
 
-
     double distToHubCenter = m_vision.GetHubDistance(true);
     double distance = distToHubCenter - kHubOffsetRimToCenter.to<double>();
 
     // if (std::isnan(distance))
     if (distance != distance)
     {
-        //printf("Not a Valid Distane\n");
+        printf("Not a Valid Distane\n");
         frc::DataLogManager::Log("Not a Valid Distane");
         return;
     }
 
     double offset = 0.0;
     double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub).to<double>();
+    //printf("flywheelspeed %.3f\n", flywheelspeed);
     m_flywheel->SetRPM(flywheelspeed);
 
     m_hood->SetByDistance(distToHubCenter);
@@ -66,8 +66,8 @@ void HomeTarget::Execute()
     SmartDashboard::PutBoolean("D_FIRE_AT_RPM", m_flywheel->IsAtRPM());
     SmartDashboard::PutBoolean("D_FIRE_AT_SET", m_turret->isAtSetpoint());
 
-    //if (m_flywheel->IsAtRPM() m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
-    if (m_flywheel->IsAtRPM() && m_turret->isAtSetpoint() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
+    if (m_flywheel->IsAtRPM() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
+    //if (m_flywheel->IsAtRPM() && m_turret->isAtSetpoint() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
     {
         *m_turretready = true;
     }

@@ -19,9 +19,9 @@ void TransferFirstBall::Initialize()
 
 void TransferFirstBall::Execute()
 {
-    m_transfer.SetFeeder(kFeederSpeed);
+    m_transfer.SetFeeder(kFeederSpeedIntaking);
     m_transfer.SetTransfer(kTransferSpeedIntaking);
-    m_intake.Set(kIngestHigh);
+    m_intake.Set(kIngestSpeed);
 }
 
 bool TransferFirstBall::IsFinished()

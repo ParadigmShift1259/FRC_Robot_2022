@@ -13,13 +13,15 @@ Unjam::Unjam(TransferSubsystem* transfer, IntakeSubsystem* intake)
 
 void Unjam::Execute() {
     m_transfer->SetTransfer(-1.0 * kTransferSpeedIntaking);
-    m_transfer->SetFeeder(-1.0 * kFeederSpeed);
-    m_intake->Set(kReleaseHigh);
+    m_transfer->SetFeeder(-1.0 * kFeederSpeedIntaking);
+    m_intake->IntakeOut(true);
+    m_intake->Set(kReleaseSpeed);
 }
 
 void Unjam::End(bool bInterrupted)
 {
     m_transfer->SetTransfer(0.0);
-    m_transfer->SetFeeder(0.);
+    m_transfer->SetFeeder(0.0);
     m_intake->Set(0.0);
+    m_intake->IntakeOut(false);
 }

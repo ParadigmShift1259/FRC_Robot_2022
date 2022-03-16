@@ -7,7 +7,7 @@
 
 using namespace FlywheelConstants;
 
-// Enable to tune the flywheel constants
+//Enable to tune the flywheel constants
 //#define TUNE_FLYWHEEL
 
 // Removes deprecated warning for CANEncoder and CANPIDController
@@ -86,6 +86,9 @@ void FlywheelSubsystem::Periodic()
 
     SmartDashboard::PutNumber("D_F_RPM", m_flywheelencoder.GetVelocity());
     // SmartDashboard::PutNumber("T_F_At_Target", IsAtRPM());
+
+// double flywheelspeed = SmartDashboard::GetNumber("Flywheel RPM Command", 0.0);
+// SetRPM(flywheelspeed);
 
     CalculateRPM();
 }

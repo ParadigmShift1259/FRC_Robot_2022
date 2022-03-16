@@ -4,7 +4,7 @@
 #include "commands/TransferSecondBall.h"
 #include "commands/IntakeIngest.h"
 #include "commands/IntakeDeploy.h"
-#include "commands/IntakeRelease.h"
+#include "commands/IntakeStop.h"
 
 #include <frc2/command/WaitCommand.h>
 
@@ -17,6 +17,6 @@ IntakeTransfer::IntakeTransfer(ISubsysAccess& subSysAccess, double speed)
     , IntakeIngest(subSysAccess.GetIntake())
     , TransferFirstBall(subSysAccess.GetTransfer(), subSysAccess.GetIntake(), speed)
     , TransferSecondBall(subSysAccess)
-    , IntakeRelease(subSysAccess)
+    , IntakeStop(subSysAccess)
   );
 }

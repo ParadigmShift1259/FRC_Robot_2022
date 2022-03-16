@@ -7,16 +7,13 @@
 
 #include "Constants.h"
 
-class IntakeRelease : public frc2::CommandHelper<frc2::CommandBase, IntakeRelease> {
+class IntakeStop : public frc2::CommandHelper<frc2::CommandBase, IntakeStop> {
  public:
-  explicit IntakeRelease(ISubsysAccess& subsystemAccess);
+  explicit IntakeStop(ISubsysAccess& subsystemAccess);
 
   void Execute() override;
   void End(bool interrupted) override;
 
  private:
   IntakeSubsystem& m_intake;
-  TransferSubsystem& m_transfer;
-  ISubsysAccess& m_subsystemAccess;
-
 };

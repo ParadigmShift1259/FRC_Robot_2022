@@ -79,14 +79,17 @@ void Robot::TeleopInit()
   //Shuffleboard::SetRecordingFileNameFormat("Team1259NetTblData${date}_${time}");
   //Shuffleboard::StartRecording();
 
-  // if (m_container.HasAutoRun() == false)
-  //   {
-  //   // Test code -- NORMALLY THIS SHOULD BE SET AT t=0 OF AUTO
-     m_container.TurretSetZeroAngle();  
-  //   m_container.GyroSetZeroHeading();  
-  //   m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 131_in, kFieldWidth/2, Rotation2d{0_deg})); // test code: 10 feet in front of hub
-  //   printf("Resetting Odometry from Teleop: x=%.3f, y=%.3f, heading =%.1f\n", m_container.GetPose().X().to<double>(), m_container.GetPose().Y().to<double>(), m_container.GetPose().Rotation().Degrees().to<double>());
-  //   }   
+//  if (m_container.HasAutoRun() == false)
+     {
+    // Test code -- NORMALLY THIS SHOULD BE SET AT t=0 OF AUTO
+    m_container.TurretSetZeroAngle();  
+    m_container.GyroSetZeroHeading();  
+    m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 131_in, kFieldWidth/2, Rotation2d{180_deg})); // test code: 10 feet in front of hub
+    printf("Resetting Odometry from Teleop: x=%.3f, y=%.3f, heading =%.1f\n", m_container.GetPose().X().to<double>(), m_container.GetPose().Y().to<double>(), m_container.GetPose().Rotation().Degrees().to<double>());
+    
+SmartDashboard::PutNumber("Hood Servo Pos Command", HoodConstants::kMin);
+SmartDashboard::PutNumber("Flywheel RPM Command", 0.0);
+    }   
  
   // This makes sure that the autonomous stops running when
   // teleop starts running. If you want the autonomous to

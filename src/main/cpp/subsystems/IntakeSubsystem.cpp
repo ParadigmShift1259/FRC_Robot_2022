@@ -13,9 +13,7 @@ IntakeSubsystem::IntakeSubsystem()
     : m_motor(kMotorPort)
     , m_solenoid(PneumaticsModuleType::REVPH, kSolenoidPort)
 {
-
     m_motor.SetNeutralMode(NeutralMode::Coast);
-
 }
 
 void IntakeSubsystem::Periodic()

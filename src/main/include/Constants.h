@@ -233,16 +233,14 @@ namespace VisionConstants
     // 6/30/21
     // Limelight X Offset: -0.04
     // Mounting angle of the limelight, in degrees
-    constexpr double kMountingAngle = 25.0;
     // Permanent X adjustment -0.05
     // Mounting height of the limelight from the ground, in inches
-    constexpr double kMountingHeight = 22;
     // Target center height, in inches
     // 6/30/21 Changed: Target bottom now instead for consistent tracking in worse conditions
    
-    constexpr inch_t kCameraHeight = inch_t{41.25};
+    constexpr inch_t kCameraHeight = inch_t{40};
     constexpr inch_t kCurrTargetHeight = inch_t{8*12 + 7};
-    constexpr degree_t kCameraPitch = degree_t{21.0};
+    constexpr degree_t kCameraPitch = degree_t{22};
 
     constexpr double kMinTargetDistance = 70;
     constexpr double kMaxTargetDistance = 380;
@@ -286,9 +284,11 @@ namespace FlywheelConstants
 
     // Launch PID values, used to first get to setpoint
     //constexpr double kP = 0.0002900;
-    constexpr double kP = 0.3;
+    //constexpr double kP = 0.3;
+    constexpr double kP = 0.0005;
 //    constexpr double kP = 0.0;
-    constexpr double kI = 0.003;
+    //constexpr double kI = 0.003;
+    constexpr double kI = 0.0;
     constexpr double kD = 0.0;
 
     // Maintain PID values, used to adjust for error once the robot is shooting
@@ -329,10 +329,8 @@ namespace IntakeConstants
     constexpr int kMotorReverseConstant = 1;
     constexpr int kSolenoidPort = 15;
 
-    constexpr double kIngestLow = 0.3;
-    constexpr double kIngestHigh = 0.80;
-    constexpr double kReleaseLow = -0.3;
-    constexpr double kReleaseHigh = -0.70;
+    constexpr double kIngestSpeed = 0.80;
+    constexpr double kReleaseSpeed = -0.80;
 }
 
 namespace TransferConstants
@@ -343,10 +341,10 @@ namespace TransferConstants
     constexpr int kFeederInputChannel = 0;
     constexpr int kTransferInputChannel = 1;
 
-    constexpr double kFeederSpeed = 0.5;
-    constexpr double kFeederSpeedFiring = 0.8;
-    constexpr double kSpeedFiring = 0.8;
-    constexpr double kTransferSpeedIntaking = 0.7;
+    constexpr double kFeederSpeedIntaking = 0.5;
+    constexpr double kFeederSpeedFiring = 1.0;
+    constexpr double kTransferSpeedIntaking = 0.5; //0.7;
+    constexpr double kTransferSpeedFiring = 0.8;
 
     // Time to go from 0 to full throttle
     constexpr double kTransferRampRate = 0.75;
@@ -370,7 +368,7 @@ namespace TurretConstants
     constexpr double kP = 0.01;
     constexpr double kI = 0.001;
     constexpr double kD = 0.0;
-    constexpr double kF = 0.455;
+    constexpr double kF = 0.45;
 
     constexpr double kNeutralDeadband = 0.06; // Deadband percentage
     constexpr double kMMCruiseVel = 300; // deg per sec 
@@ -402,7 +400,7 @@ namespace HoodConstants
     constexpr double kTestServoSpeed = 0.14;
     // Drives from Max to Min, where hood is smallest at 0.85, and greatest at 0.0485
     constexpr double kMax = 0.75;
-    constexpr double kMin = 0.0;
+    constexpr double kMin = 0.19;
 
     /// The fixed hood to fire in the trench given very heavy defense
     constexpr double kTrenchPosition = 0.223;

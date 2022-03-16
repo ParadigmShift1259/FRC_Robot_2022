@@ -16,4 +16,5 @@ public:
     virtual VisionSubsystem&     GetVision() = 0;
 
     virtual bool OnlyOneBall() = 0;
+    virtual void SetOneBallFlag() = 0;
 };

@@ -19,7 +19,7 @@ void TransferSecondBall::Initialize()
 void TransferSecondBall::Execute()
 {
     m_transfer.SetTransfer(kTransferSpeedIntaking);
-    m_intake.Set(kIngestHigh);
+    m_intake.Set(kIngestSpeed);
 }
 
 bool TransferSecondBall::IsFinished()

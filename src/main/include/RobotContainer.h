@@ -88,7 +88,8 @@ public:
     VisionSubsystem&     GetVision() override { return m_vision; }
     DriveSubsystem&     GetDrive() { return m_drive; }
     
-    bool OnlyOneBall() { return m_onlyOneBall; }
+    bool OnlyOneBall() override { return m_onlyOneBall; }
+    void SetOneBallFlag() override {m_onlyOneBall = true;}
 
     Pose2d GetPose() { return m_drive.GetPose(); }
     Pose2d GetPose(units::time::second_t timestamp) const { return m_drive.GetPose(timestamp); }

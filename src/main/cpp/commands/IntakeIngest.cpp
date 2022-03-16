@@ -11,7 +11,7 @@ IntakeIngest::IntakeIngest(IntakeSubsystem& subsystem)
 }
 
 void IntakeIngest::Execute() {
-    m_intake.Set(kIngestHigh);
+    m_intake.Set(kIngestSpeed);
     m_bRunning = true;
 }
 

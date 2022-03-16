@@ -26,9 +26,9 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.Config_kI(0, kI, kTimeout);
     m_turretmotor.Config_kD(0, kD, kTimeout);
     m_turretmotor.Config_kF(0, kF, kTimeout);
-    //m_turretmotor.Config_IntegralZone(0, 1000.0); // TO DO: remove or tune
-    //m_turretmotor.ConfigMaxIntegralAccumulator(0, 50000.0); // TO DO: remove or tune
-    //m_turretmotor.SetIntegralAccumulator(0.0, 0);
+    m_turretmotor.Config_IntegralZone(0, 1000.0); // TO DO: remove or tune
+    m_turretmotor.ConfigMaxIntegralAccumulator(0, 50000.0); // TO DO: remove or tune
+    m_turretmotor.SetIntegralAccumulator(0.0, 0);
     m_turretmotor.ConfigMotionSCurveStrength(1.0);
 
     //m_turretmotor.ConfigNeutralDeadband(kNeutralDeadband, kTimeout); // TO DO: remove or tune

@@ -8,12 +8,14 @@ using namespace IntakeConstants;
 IntakeRelease::IntakeRelease(ISubsysAccess& subsytemAccess)
  : m_intake(subsytemAccess.GetIntake())
  , m_transfer(subsytemAccess.GetTransfer())
+ , m_subsystemAccess(subsytemAccess)
 {
   AddRequirements({&subsytemAccess.GetIntake(), &subsytemAccess.GetTransfer()});
 }
 
 void IntakeRelease::Execute() {
-  m_intake.Set(kReleaseHigh);
+  m_subsystemAccess.SetOneBallFlag();
+  m_intake.Set(kReleaseSpeed);
 }
 
 void IntakeRelease::End(bool interrupted) {

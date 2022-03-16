@@ -182,7 +182,7 @@ void RobotContainer::ConfigSecondaryButtonBindings()
 
     // Keep the bindings in this order
     // A, B, X, Y, Left Bumper, Right Bumper, Back, Start
-    JoystickButton(&secondary, xbox::kA).WhenPressed(IntakeTransfer(*this, kTransferSpeedIntaking));
+    JoystickButton(&secondary, xbox::kA).WhenPressed(frc2::SequentialCommandGroup(m_resetOneBallFlag, IntakeTransfer(*this, kTransferSpeedIntaking)));
     JoystickButton(&secondary, xbox::kB).WhenHeld(IntakeRelease(*this));
     JoystickButton(&secondary, xbox::kX).WhenPressed(&m_runTransferAndFeeder);
     JoystickButton(&secondary, xbox::kX).WhenReleased(&m_stopTransferAndFeeder);

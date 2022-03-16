@@ -27,15 +27,16 @@ Fire::Fire( FlywheelSubsystem* flywheel
   );
 }
 
-// void Fire::Execute()
-// {
+//void Fire::Execute()
+//{
+//    printf("Firing\n");
 //    if (m_controller->GetBackButton())
 
 //    {
 //      printf("Fire cancelling?\n");
 //      Cancel();
 //    }
-// }
+//}
 
 // void Fire::End(bool interrupted)
 // {
