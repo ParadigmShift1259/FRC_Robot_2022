@@ -89,6 +89,8 @@ void Robot::TeleopInit()
     
 SmartDashboard::PutNumber("Hood Servo Pos Command", HoodConstants::kMin);
 SmartDashboard::PutNumber("Flywheel RPM Command", 0.0);
+SmartDashboard::PutNumber("LL Pitch Angle", 22.0);
+
     }   
  
   // This makes sure that the autonomous stops running when

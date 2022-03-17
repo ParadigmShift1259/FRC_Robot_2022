@@ -84,7 +84,7 @@ void TurretSubsystem::Periodic()
     if (!m_setZero)
     {
         m_setZero = true;
-        int zeroPos = 2527;
+        int zeroPos = 2500;
         //double angleChange = (zeroPos - m_startingPos) * kDegreesPerAbsEncTick;
         //printf("angle %.3f start pos %d cur pos %d pos delta %d deg per tick %.3f\n", angleChange, m_startingPos, m_absEnc.GetValue(), zeroPos - m_startingPos, kDegreesPerAbsEncTick);
         //TurnToRelative(angleChange);

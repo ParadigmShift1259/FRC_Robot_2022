@@ -42,7 +42,7 @@ void TransferFire::Execute()
     {
         //m_transfer->SetFeeder(kFeederSpeedFiring);
         m_transfer->SetFeeder(kFeederSpeedFiring);
-        if (m_timer.Get().to<double>() <= kTimePassed)
+        if (m_timer.Get().to<double>() >= kTimePassed)
         {
             m_transfer->SetTransfer(kTransferSpeedFiring);
         }        

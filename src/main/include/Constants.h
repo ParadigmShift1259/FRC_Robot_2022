@@ -238,7 +238,7 @@ namespace VisionConstants
     // Target center height, in inches
     // 6/30/21 Changed: Target bottom now instead for consistent tracking in worse conditions
    
-    constexpr inch_t kCameraHeight = inch_t{40};
+    constexpr inch_t kCameraHeight = inch_t{38};
     constexpr inch_t kCurrTargetHeight = inch_t{8*12 + 7};
     constexpr degree_t kCameraPitch = degree_t{22};
 
@@ -349,7 +349,7 @@ namespace TransferConstants
     // Time to go from 0 to full throttle
     constexpr double kTransferRampRate = 0.75;
 
-    constexpr double kTimePassed = 0.150;
+    constexpr double kTimePassed = 1.0; //0.150;
     constexpr double kTimeLaunch = 1.50;
 
     constexpr double kTimeout = 30.0;
