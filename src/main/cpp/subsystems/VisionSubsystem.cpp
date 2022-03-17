@@ -7,7 +7,7 @@
 #include <photonlib/PhotonUtils.h>
 
 VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, HoodSubsystem& hood, IOdometry& odometry) 
- : m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("gloworm"))
+ : m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("photonvision"))
  , m_led(true)
  , m_validTarget(false)
  , m_gyro(gyro)
@@ -21,7 +21,7 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
     m_logFile = stderr; // fopen("/tmp/visionLog.txt", "w");
 
    m_networktable->AddEntryListener(
-       "photonvision/gloworm/latencyMillis"
+       "gloworm/latencyMillis"
        ,[this](nt::NetworkTable* table
             , std::string_view name
             , nt::NetworkTableEntry entry
@@ -33,12 +33,12 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
 
 void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name, nt::NetworkTableEntry entry, std::shared_ptr<nt::Value> value, int flags)
 {
-    //Work();
+    Work();
 }
 
 void VisionSubsystem::Periodic()
 {
-    Work();
+    //Work();
 }
     
 void VisionSubsystem::Work()
@@ -55,7 +55,7 @@ void VisionSubsystem::Work()
 
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
     bool validTarget = result.HasTargets();
-//printf("valid target %d\n", validTarget);
+printf("valid target %d\n", validTarget);
     if (validTarget)
     {
         vector<frc::Translation2d> targetVectors;
@@ -218,8 +218,8 @@ void VisionSubsystem::Work()
         else if (validTarget) // if (m_odometry.OdoValid())
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
-            m_turret.TurnToRelative(hubAngle * 1.0);
-            turretCmdHoldoff = 2;  // limit turret command rate due to vision lag
+            m_turret.TurnToRelative(hubAngle * 0.9);
+            turretCmdHoldoff = 3;  // limit turret command rate due to vision lag
             m_hood.SetByDistance(GetHubDistance(true));
             //printf("Turret Angle %.2f   ", m_turret.GetCurrentAngle());
             //printf("Hub Angle: %.2f \n", hubAngle);
