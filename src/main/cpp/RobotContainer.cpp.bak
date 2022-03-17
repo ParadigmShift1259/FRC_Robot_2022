@@ -8,7 +8,6 @@
 #include "RobotContainer.h"
 #include <frc2/command/button/NetworkButton.h>
 #include <frc2/command/WaitCommand.h>
-#include <commands/IntakeDeploy.h>>
 
 RobotContainer::RobotContainer()
     : m_gyro()
@@ -169,7 +168,6 @@ void RobotContainer::ConfigPrimaryButtonBindings()
     JoystickButton(&primary, xbox::kBack).WhileHeld(&m_climb);
 #ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
     JoystickButton(&primary, xbox::kStart).WhileHeld(&m_windClimb);
-
 #endif
 }
 
@@ -216,112 +214,106 @@ void RobotContainer::ZeroDrive()
 frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
 {
 
-    // const frc::Translation2d kHubCenter = frc::Translation2d(VisionConstants::kFieldLength/2, VisionConstants::kFieldWidth/2);  // TO DO make a constant
+    const frc::Translation2d kHubCenter = frc::Translation2d(VisionConstants::kFieldLength/2, VisionConstants::kFieldWidth/2);  // TO DO make a constant
 
-    // vector<Pose2d> straightLineWaypoints
-    // {
-    //     frc::Pose2d(0_in, 0_in, 0_deg),
-    //     frc::Pose2d(40*12_in, 0_in, 0_deg)
-    // };
-
-    vector<Pose2d> ball1PickupAndShootWaypoints
-    {        
-        // frc::Pose2d(kHubCenter.X()-18_in, kHubCenter.Y()-94_in, frc::Rotation2d(-90_deg)),
-        frc::Pose2d(297_in, 68_in, frc::Rotation2d(-88.5_deg)),
-        // frc::Pose2d(kHubCenter.X()-18_in, 0.6_m, frc::Rotation2d(-88.5_deg))
-        frc::Pose2d(297_in, 22_in, frc::Rotation2d(-90_deg))
-    };
-
-    // vector<Pose2d> ball1ShootWaypoints
-    // {
-    //     frc::Pose2d(kHubCenter.X()-18_in, 0.6_m, frc::Rotation2d(-90_deg)),
-    //     frc::Pose2d(297_in, 22_in, frc::Rotation2d(-90_deg))        
-    //     frc::Pose2d(6.0_m, 1.0_m, frc::Rotation2d(45_deg))
-    // };
-
-    vector<Pose2d> ball2PickupAndShootWaypoints
+    vector<Pose2d> straightLineWaypoints
     {
-//        frc::Pose2d(297_in, 22_in, frc::Rotation2d(-90_deg)),
-        frc::Pose2d(297_in, 22_in, frc::Rotation2d(180_deg)),
-        // frc::Pose2d(4.0_m, 1.8_m, frc::Rotation2d(150_deg)),
-        //frc::Pose2d(173_in, 98_in, frc::Rotation2d(150_deg))
-        frc::Pose2d(173_in, 90_in, frc::Rotation2d(180_deg))
+        frc::Pose2d(0_in, 0_in, 0_deg),
+        frc::Pose2d(40*12_in, 0_in, 0_deg)
     };
 
-    vector<Pose2d> ball34PickupWaypoints
+    vector<Pose2d> ball1PickUpWaypoints
     {
-        // frc::Pose2d(4.0_m, 1.8_m, frc::Rotation2d(150_deg)),
-        //frc::Pose2d(173_in, 90_in, frc::Rotation2d(180_deg)),
-        frc::Pose2d(173_in, 90_in, frc::Rotation2d(224_deg)),
-        // frc::Pose2d(1.0_m, 1.2_m, frc::Rotation2d(223_deg)) // perpendicular to corner wall
-        //frc::Pose2d(59_in, 52_in, frc::Rotation2d(224_deg)) // perpendicular to corner wall
-        frc::Pose2d(40_in, 63_in, frc::Rotation2d(224_deg)) // perpendicular to corner wall
+        //frc::Pose2d(7_m, 1.771_m, frc::Rotation2d(-90_deg)),
+        frc::Pose2d(kHubCenter.X()-18_in, kHubCenter.Y()-94_in, frc::Rotation2d(-90_deg)),
+        frc::Pose2d(kHubCenter.X()-18_in, 0.6_m, frc::Rotation2d(-90_deg))
     };
 
-    vector<Pose2d> ball34ShootWaypoints
+    vector<Pose2d> ball1ShootWaypoints
     {
-        frc::Pose2d(40_in, 63_in, frc::Rotation2d(210_deg)), // perpendicular to corner wall
-        //frc::Pose2d(3.0_m, 2.0_m, frc::Rotation2d(180_deg))
-        frc::Pose2d(3.0_m, 2.0_m, frc::Rotation2d(210_deg))
+        frc::Pose2d(kHubCenter.X()-18_in, 0.6_m, frc::Rotation2d(-90_deg)),
+        frc::Pose2d(6.0_m, 1.0_m, frc::Rotation2d(45_deg))
     };
+
+    vector<Pose2d> ball2PickUpWaypoints
+    {
+        frc::Pose2d(6.0_m, 1.0_m, frc::Rotation2d(45_deg)),
+        frc::Pose2d(4.0_m, 1.8_m, frc::Rotation2d(150_deg))
+    };
+
+    vector<Pose2d> ball3PickUpWaypoints
+    {
+        frc::Pose2d(4.0_m, 1.8_m, frc::Rotation2d(150_deg)),
+        frc::Pose2d(1.0_m, 1.2_m, frc::Rotation2d(223_deg)) // perpendicular to corner wall
+    };
+
+    vector<Pose2d> ball3ShootWaypoints
+    {
+        frc::Pose2d(1.0_m, 1.2_m, frc::Rotation2d(223_deg)),
+        frc::Pose2d(3.0_m, 2.0_m, frc::Rotation2d(0_deg)),
+    };
+	
 
     auto config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
     config.SetKinematics(m_drive.kDriveKinematics);    
-    // Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLineWaypoints, config);
-    Trajectory ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1PickupAndShootWaypoints, config);
+    Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLineWaypoints, config);
+    Trajectory ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1PickUpWaypoints, config);
 
-    // config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
-    // Trajectory ball1ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball1ShootWaypoints, config);
+    config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
+    Trajectory ball1ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball1ShootWaypoints, config);
 
-    // config = TrajectoryConfig{units::velocity::meters_per_second_t{1.8}, AutoConstants::kMaxAcceleration};
-    // config.SetStartVelocity(units::velocity::meters_per_second_t{0});
-    // config.SetEndVelocity(units::velocity::meters_per_second_t{1.8});
-    Trajectory ball2Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball2PickupAndShootWaypoints, config);
+    config = TrajectoryConfig{units::velocity::meters_per_second_t{1.8}, AutoConstants::kMaxAcceleration};
+    config.SetStartVelocity(units::velocity::meters_per_second_t{0});
+    config.SetEndVelocity(units::velocity::meters_per_second_t{1.8});
+    Trajectory ball2PickUpTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball2PickUpWaypoints, config);
 
-    // config = TrajectoryConfig{units::velocity::meters_per_second_t{1.8}, AutoConstants::kMaxAcceleration};
-    // config.SetStartVelocity(units::velocity::meters_per_second_t{1.8});
-    // config.SetEndVelocity(units::velocity::meters_per_second_t{0});
-    Trajectory ball34PickupTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34PickupWaypoints, config);
+    config = TrajectoryConfig{units::velocity::meters_per_second_t{1.8}, AutoConstants::kMaxAcceleration};
+    config.SetStartVelocity(units::velocity::meters_per_second_t{1.8});
+    config.SetEndVelocity(units::velocity::meters_per_second_t{0});
+    Trajectory ball3PickUpTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball3PickUpWaypoints, config);
 
-    // config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
-    Trajectory ball34ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34ShootWaypoints, config);
+    config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
+    Trajectory ball3ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball3ShootWaypoints, config);
 
 
     switch (path)
     {
         case kEx1:
-            return GetIntakeAndFirePathCmd(ball1Traj, true);  // Save slot for move off the line
+            return GetAutoPathCmd(straightLine50ftTraj, true);  // Save slot for move off the line
 
         case kEx2:
-            return GetIntakeAndFirePathCmd(ball1Traj, true);  // 2 ball auto
+            return GetAutoPathCmd(ball1Traj, true);  // 2 ball auto
 //            return GetAutoPathCmd("Ball3Short", true);
 
         case kEx3:
             return new frc2::SequentialCommandGroup
             (
-                  std::move(*GetIntakeAndFirePathCmd(ball1Traj, true)) // (almost) 3 ball auto
+                  std::move(*GetIntakePathCmd(ball1Traj, true)) // (almost) 3 ball auto
                 // , m_setOneBallFlag
-                , m_setOneBallFlag
-                , std::move(*GetIntakeAndFirePathCmd(ball2Traj, false))
+                , std::move(*GetFirePathCmd(ball1ShootTraj, false))
                 //, std::move(*GetAutoPathCmd("OneBallTest", true))
                 // , m_resetOneBallFlag
-                , std::move(*GetIntakePathCmd(ball34PickupTraj, false))
+                , m_setOneBallFlag
+                , std::move(*GetIntakePathCmd(ball2PickUpTraj, false))
                 , m_resetOneBallFlag
-                , std::move(*GetFirePathCmd(ball34ShootTraj, false))
+                , std::move(*GetIntakePathCmd(ball3PickUpTraj, false))
+                , std::move(*GetFirePathCmd(ball3ShootTraj, false))
             );
 
         case kEx4:
             return new frc2::SequentialCommandGroup
             (
-                  std::move(*GetIntakeAndFirePathCmd(ball1Traj, true)) // (almost) 3 ball auto
-                // , m_setOneBallFlag
+                m_driveRotateCw                 // Shimmy so the intake deploys
+                , frc2::WaitCommand(0.250_s)
+                , m_driveRotateCcw
+                , frc2::WaitCommand(0.500_s)
+                , m_driveRotateCw
+                , frc2::WaitCommand(0.250_s)
+                , std::move(*GetAutoPathCmd(ball1Traj, true))
                 , m_setOneBallFlag
-                , std::move(*GetIntakeAndFirePathCmd(ball2Traj, false))
+                , std::move(*GetAutoPathCmd(ball1ShootTraj, false))
                 //, std::move(*GetAutoPathCmd("OneBallTest", true))
-                // , m_resetOneBallFlag
-                , m_resetOneBallFlag // wait for 4th ball bowled in from human player
-                , std::move(*GetIntakePathCmd(ball34PickupTraj, false))
-                , std::move(*GetFirePathCmd(ball34ShootTraj, false))
+                , m_resetOneBallFlag
             );
 
         // case kEx5:
@@ -360,6 +352,7 @@ frc2::ParallelCommandGroup* RobotContainer::GetIntakePathCmd(Trajectory trajecto
                       printf("t=%.3f Started IntakePathCmd ", timer.GetFPGATimestamp().to<double>());
                       printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
                       }, {})
+                  
                 , std::move(GetSwerveCommandPath(trajectory, primaryPath))
                 //, frc2::WaitCommand(0.2_s)
                 //, frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
@@ -409,7 +402,19 @@ frc2::SequentialCommandGroup* RobotContainer::GetFirePathCmd(Trajectory trajecto
 
 
 
-frc2::SequentialCommandGroup* RobotContainer::GetIntakeAndFirePathCmd(Trajectory trajectory, bool primaryPath)
+
+
+
+
+
+
+
+
+
+
+
+
+frc2::SequentialCommandGroup* RobotContainer::GetAutoPathCmd(Trajectory trajectory, bool primaryPath)
 {
     return new frc2::SequentialCommandGroup
     (
@@ -423,10 +428,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetIntakeAndFirePathCmd(Trajectory
                 , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
             )
         )
-        // , frc2::WaitCommand(0.500_s)
-        , frc2::InstantCommand([this]() { 
-            printf("Finished IntakeAndFirePathCmd\n");
-            }, {})
+        , frc2::WaitCommand(0.500_s)
         , std::move(Fire( &m_flywheel
                         , &m_turret
                         , &m_hood

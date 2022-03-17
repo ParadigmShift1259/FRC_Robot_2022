@@ -19,6 +19,7 @@ TransferFire::TransferFire(TransferSubsystem* subsystem,
 
 void TransferFire::Initialize()
 {
+#define COMMAND_TIMING
 #ifdef COMMAND_TIMING
    m_startTime = m_timer.GetFPGATimestamp().to<double>();
    printf("timestamp start transfer fire %.3f\n", m_startTime);

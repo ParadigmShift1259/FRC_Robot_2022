@@ -230,6 +230,13 @@ namespace VisionConstants
     // constexpr frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
  
     constexpr int kVisionFailLimit = 5;
+    // 6/30/21
+    // Limelight X Offset: -0.04
+    // Mounting angle of the limelight, in degrees
+    // Permanent X adjustment -0.05
+    // Mounting height of the limelight from the ground, in inches
+    // Target center height, in inches
+    // 6/30/21 Changed: Target bottom now instead for consistent tracking in worse conditions
    
     constexpr inch_t kCameraHeight = inch_t{38};
     constexpr inch_t kCurrTargetHeight = inch_t{8*12 + 7};

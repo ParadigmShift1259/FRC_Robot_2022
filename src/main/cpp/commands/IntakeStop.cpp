@@ -15,6 +15,11 @@ void IntakeStop::Execute() {
   m_intake.Set(0);
 }
 
+bool IntakeStop::IsFinished()
+{
+  return true;
+}
+
 void IntakeStop::End(bool interrupted) {
   m_intake.IntakeOut(false);
 }

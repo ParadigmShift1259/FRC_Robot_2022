@@ -61,7 +61,7 @@ void VisionSubsystem::Work()
         vector<frc::Translation2d> targetVectors;
         auto targets = result.GetTargets();
 
- fprintf(m_logFile, " target count: %d   ",  targets.size());
+ //fprintf(m_logFile, " target count: %d   ",  targets.size());
         // Gets camera-relative x,y translations for each vision target
         for (size_t i = 0; i < targets.size(); i++)
         {
@@ -74,7 +74,7 @@ void VisionSubsystem::Work()
                 printf("discarded pitch = %f \n", TargetPitch.to<double>());
         }
 
- fprintf(m_logFile, " pitch-filtered targets: %d   ", targetVectors.size());
+ //fprintf(m_logFile, " pitch-filtered targets: %d   ", targetVectors.size());
 
 
         // //find the center of the vision targets
@@ -215,7 +215,7 @@ void VisionSubsystem::Work()
         {
             turretCmdHoldoff--;
         }
-        else // if (m_odometry.OdoValid())
+        else if (validTarget) // if (m_odometry.OdoValid())
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
             m_turret.TurnToRelative(hubAngle * 1.0);
@@ -223,19 +223,19 @@ void VisionSubsystem::Work()
             m_hood.SetByDistance(GetHubDistance(true));
             //printf("Turret Angle %.2f   ", m_turret.GetCurrentAngle());
             //printf("Hub Angle: %.2f \n", hubAngle);
-            printf( " Hub angle: %f  range: %f\n", GetHubAngle(), GetHubDistance(true));
+            //printf( " Hub angle: %f  range: %f\n", GetHubAngle(), GetHubDistance(true));
         }
     }
 
     static int counter=0;
     if (counter++ % 25 == 0)
     {
-        printf("Odometry Pose: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
-        if (validTarget)
-            printf("Vision Pose..: x=%.3f, y=%.3f, heading =%.1f\n", visionRobotPose.X().to<double>(), visionRobotPose.Y().to<double>(), visionRobotPose.Rotation().Degrees().to<double>());
-        else
-            printf("NO Vision Pose");
-        printf(".\n");
+        // printf("Odometry Pose: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
+        // if (validTarget)
+        //     printf("Vision Pose..: x=%.3f, y=%.3f, heading =%.1f\n", visionRobotPose.X().to<double>(), visionRobotPose.Y().to<double>(), visionRobotPose.Rotation().Degrees().to<double>());
+        // else
+        //     printf("NO Vision Pose");
+        // printf(".\n");
 
         if (!m_validTarget && bLogInvalid)
         {
@@ -244,7 +244,7 @@ void VisionSubsystem::Work()
         }
         else if (m_dbgLogTargetData)
         {
-            fprintf(m_logFile, "Angle: %f, Range: %f, Robot X %f, Y: %f, Theta: %f\n", GetHubAngle() *180/3.14, GetHubDistance(true) * 39.37, m_robotPose.X().to<double>() * 39.37,m_robotPose.Y().to<double>() * 39.37,m_robotPose.Rotation().Degrees().to<double>()); 
+//            fprintf(m_logFile, "Angle: %f, Range: %f, Robot X %f, Y: %f, Theta: %f\n", GetHubAngle() *180/3.14, GetHubDistance(true) * 39.37, m_robotPose.X().to<double>() * 39.37,m_robotPose.Y().to<double>() * 39.37,m_robotPose.Rotation().Degrees().to<double>()); 
             // std::cout << "Center: (" << (double)m_cameraToHub.X() << "," << (double)m_cameraToHub.Y() << "). ";
             // std::cout << "Angle:  " << GetHubAngle() *180/3.14<< ", ";
             // std::cout << "Range: " << GetHubDistance(true) * 39.37 << ", ";

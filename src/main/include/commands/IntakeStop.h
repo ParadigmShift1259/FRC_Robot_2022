@@ -12,6 +12,7 @@ class IntakeStop : public frc2::CommandHelper<frc2::CommandBase, IntakeStop> {
   explicit IntakeStop(ISubsysAccess& subsystemAccess);
 
   void Execute() override;
+  bool IsFinished() override;
   void End(bool interrupted) override;
 
  private:
