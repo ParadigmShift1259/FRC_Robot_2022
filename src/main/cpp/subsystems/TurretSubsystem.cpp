@@ -40,12 +40,6 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.ConfigMotionCruiseVelocity(DegreesToTicks(kMMCruiseVel/10), kTimeout);  // encoder ticks per 100ms 
     m_turretmotor.ConfigMotionAcceleration(DegreesToTicks(kMMAccel/10), kTimeout);     // encoder ticks per 100ms per sec
 
-    //m_turretmotor.SetSelectedSensorPosition(DegreesToTicks(kStartingPositionDegrees), 0, kTimeout);
-    //m_turretmotor.ConfigForwardSoftLimitThreshold(5595);
-    //m_turretmotor.ConfigReverseSoftLimitThreshold(-5595);
-    m_turretmotor.ConfigForwardSoftLimitEnable(true);
-    m_turretmotor.ConfigReverseSoftLimitEnable(true);
-
 #define USE_MOTION_MAGIC
 #ifdef USE_MOTION_MAGIC
     m_turretmotor.Set(ControlMode::MotionMagic, DegreesToTicks(kStartingPositionDegrees));
@@ -90,9 +84,10 @@ void TurretSubsystem::Periodic()
         //TurnToRelative(angleChange);
         double CTREpos = (m_startingPos - zeroPos) * kCtreTicksPerAbsEncTick;
         m_turretmotor.SetSelectedSensorPosition(CTREpos);
- // TO DO determine propper soft limits!       
- //       m_turretmotor.ConfigForwardSoftLimitThreshold(CTREpos+5595);
- //       m_turretmotor.ConfigReverseSoftLimitThreshold(CTREpos-5595);
+        m_turretmotor.ConfigForwardSoftLimitThreshold(6000.0);
+        m_turretmotor.ConfigReverseSoftLimitThreshold(-6000.0);
+        m_turretmotor.ConfigForwardSoftLimitEnable(true);
+        m_turretmotor.ConfigReverseSoftLimitEnable(true);
         m_currentAngle = GetCurrentAngle();
         TurnTo(0.0);
     }
@@ -106,6 +101,7 @@ void TurretSubsystem::Periodic()
     //m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
     
     //m_turretmotor.Set(ControlMode::Position, 0.0);
+    frc::SmartDashboard::PutNumber("Output", m_turretmotor.GetMotorOutputPercent());
     frc::SmartDashboard::PutNumber("ClosedLoopError", m_turretmotor.GetClosedLoopError());
     frc::SmartDashboard::PutNumber("IntegralAccumulator", m_turretmotor.GetIntegralAccumulator());
 

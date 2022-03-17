@@ -349,7 +349,7 @@ namespace TransferConstants
     // Time to go from 0 to full throttle
     constexpr double kTransferRampRate = 0.75;
 
-    constexpr double kTimePassed = 1.0; //0.150;
+    constexpr double kTimePassed = 0.150;
     constexpr double kTimeLaunch = 1.50;
 
     constexpr double kTimeout = 30.0;
@@ -385,8 +385,8 @@ namespace TurretConstants
     // Offset of origin point of turret angle and robot angle, in degrees. Robot 0 is forward
     constexpr double kTurretToRobotAngleOffset = 0.0;
     // Maximum rotation of the turret relative to the turret, in degrees
-    constexpr double kMinAngle = -60.0;
-    constexpr double kMaxAngle = 60.0;
+    constexpr double kMinAngle = -75.0;
+    constexpr double kMaxAngle = 75.0;
 
     // initial configured angle of the turret relative to the turret, in degrees
     constexpr double kStartingPositionDegrees = 0.0;
