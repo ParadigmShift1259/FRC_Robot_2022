@@ -355,19 +355,29 @@ namespace TurretConstants
 {
     constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
+    // TO DO varies considerably based on battery voltage
+    constexpr int kAbsEncoderZero = 2600;
+    constexpr double kCtreTicksPerAbsEncTick = 12059.0/ 3462.0;
+
+    // Empirically measured 9752 motor ticks for 120 degrees of turret swing
+    constexpr int kTicksPerDegree = 9752.0 / 120.0;
+
     // constexpr double kP = 0.3;
     // constexpr double kI = 0.001;
     // constexpr double kD = 10.0;
-    constexpr double kP = 0.01;
-    constexpr double kI = 0.0001;
+    constexpr double kP = 0.5;
+    constexpr double kI = 0.002;
     constexpr double kD = 0.0;
-    constexpr double kF = 0.45;
+    constexpr double kF = 0.3;
+
+    constexpr double kIZone = 100; // ticks per 100ms
 
     constexpr double kNeutralDeadband = 0.06; // Deadband percentage
-    constexpr double kMMCruiseVel = 300; // deg per sec 
-    constexpr double kMMAccel = 100; // deg per sec^2
+    // Max deg per sec is 225
+    constexpr double kMMCruiseVel = 200; // deg per sec 
+    constexpr double kMMAccel = 500; // deg per sec^2
     constexpr double kMinOut = 0;
-    constexpr double kMaxOut = 0.4; //1.0; //0.900;
+    constexpr double kMaxOut = 1.0; //1.0; //0.900;
 
     constexpr double kTimeout = 30;
     constexpr double kInverted = true;
@@ -378,8 +388,8 @@ namespace TurretConstants
     // Offset of origin point of turret angle and robot angle, in degrees. Robot 0 is forward
     constexpr double kTurretToRobotAngleOffset = 0.0;
     // Maximum rotation of the turret relative to the turret, in degrees
-    constexpr double kMinAngle = -75.0;
-    constexpr double kMaxAngle = 75.0;
+    constexpr double kMinAngle = -60.0;
+    constexpr double kMaxAngle = 60.0;
 
     // initial configured angle of the turret relative to the turret, in degrees
     constexpr double kStartingPositionDegrees = 0.0;
