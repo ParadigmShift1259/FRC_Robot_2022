@@ -9,7 +9,7 @@
 
 class IntakeStop : public frc2::CommandHelper<frc2::CommandBase, IntakeStop> {
  public:
-  explicit IntakeStop(ISubsysAccess& subsystemAccess);
+  explicit IntakeStop(ISubsysAccess& subsystemAccess, bool retractIntake);
 
   void Execute() override;
   bool IsFinished() override;
@@ -17,4 +17,5 @@ class IntakeStop : public frc2::CommandHelper<frc2::CommandBase, IntakeStop> {
 
  private:
   IntakeSubsystem& m_intake;
+  bool m_retractIntake;
 };

@@ -8,14 +8,14 @@
 #include "RobotContainer.h"
 #include <frc2/command/button/NetworkButton.h>
 #include <frc2/command/WaitCommand.h>
-#include <commands/IntakeDeploy.h>>
+#include <commands/IntakeDeploy.h>
 
 RobotContainer::RobotContainer()
-    : m_gyro()
+    : m_compressor(CompressorConstans::kCompressorPort, frc::PneumaticsModuleType::REVPH)
+    , m_gyro()
     , m_drive(&m_gyro, *this)
     , m_vision(&m_gyro, m_turret, m_hood, *this)
     , m_flywheel()
-    , m_compressor(CompressorConstans::kCompressorPort, frc::PneumaticsModuleType::REVPH)
 {
     m_fieldRelative = false;
     //m_compressor.Disable();
@@ -184,7 +184,7 @@ void RobotContainer::ConfigSecondaryButtonBindings()
 
     // Keep the bindings in this order
     // A, B, X, Y, Left Bumper, Right Bumper, Back, Start
-    JoystickButton(&secondary, xbox::kA).WhenPressed(frc2::SequentialCommandGroup(m_resetOneBallFlag, IntakeTransfer(*this, kTransferSpeedIntaking)));
+    JoystickButton(&secondary, xbox::kA).WhenPressed(frc2::SequentialCommandGroup(m_resetOneBallFlag, IntakeTransfer(*this, true)));
     JoystickButton(&secondary, xbox::kB).WhenHeld(IntakeRelease(*this));
     JoystickButton(&secondary, xbox::kX).WhenPressed(&m_runTransferAndFeeder);
     JoystickButton(&secondary, xbox::kX).WhenReleased(&m_stopTransferAndFeeder);
@@ -352,7 +352,7 @@ frc2::ParallelCommandGroup* RobotContainer::GetIntakePathCmd(Trajectory trajecto
 {
     return new frc2::ParallelCommandGroup
         (
-              std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
+              std::move(IntakeTransfer(*this, false))
             , frc2::SequentialCommandGroup
             (
                   frc2::InstantCommand([this]() { 
@@ -415,7 +415,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetIntakeAndFirePathCmd(Trajectory
     (
         frc2::ParallelCommandGroup
         (
-              std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
+              std::move(IntakeTransfer(*this, false))
             , frc2::SequentialCommandGroup
             (
                   std::move(GetSwerveCommandPath(trajectory, primaryPath))

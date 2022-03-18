@@ -5,12 +5,10 @@
 using namespace IntakeConstants;
 using namespace TransferConstants;
 
-TransferFirstBall::TransferFirstBall(TransferSubsystem& transfer, IntakeSubsystem& intake, double speed)
+TransferFirstBall::TransferFirstBall(TransferSubsystem* transfer)
  : m_transfer(transfer)
- , m_intake(intake)
- , m_speed(speed)
 {
-  AddRequirements({&transfer, &intake});
+  AddRequirements({transfer});
 }
 
 void TransferFirstBall::Initialize()
@@ -19,17 +17,16 @@ void TransferFirstBall::Initialize()
 
 void TransferFirstBall::Execute()
 {
-    m_transfer.SetFeeder(kFeederSpeedIntaking);
-    m_transfer.SetTransfer(kTransferSpeedIntaking);
-    m_intake.Set(kIngestSpeed);
+    m_transfer->SetFeeder(kFeederSpeedIntaking);
+    m_transfer->SetTransfer(kTransferSpeedIntaking);
 }
 
 bool TransferFirstBall::IsFinished()
 {
-    return m_transfer.GetFeederPhotoeye();
+    return m_transfer->GetFeederPhotoeye();
 }
 
 void TransferFirstBall::End(bool interrupted)
 {
-    m_transfer.SetFeeder(0);
+    m_transfer->SetFeeder(0);
 }

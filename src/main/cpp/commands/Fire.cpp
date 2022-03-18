@@ -1,6 +1,10 @@
 #include "commands/Fire.h"
 #include <frc2/command/InstantCommand.h>
+#include <frc2/command/WaitCommand.h>
+
 #include "Constants.h"
+
+using namespace TransferConstants;
 
 Fire::Fire( FlywheelSubsystem* flywheel
           , TurretSubsystem* turret
@@ -22,7 +26,11 @@ Fire::Fire( FlywheelSubsystem* flywheel
       HomeTarget(flywheel, turret, hood, vision, m_turretready, m_firing, m_finished, yVelocityCb)
       // If m_transfer ready and turret ready are true, transfer launch drives all of the balls through
       // m_turretready is checked every loop until success
-    , TransferFire(transfer, m_turretready, m_firing, m_finished, launchtime)
+    //, TransferFire(transfer, m_turretready, m_firing, m_finished, launchtime)
+    , FireOneBall(transfer)
+    , TransferFirstBall(transfer)
+    , HomeTarget(flywheel, turret, hood, vision, m_turretready, m_firing, m_finished, yVelocityCb) //TO DO: If firing takes too long check for flywheel in transferFire
+    , FireOneBall(transfer)
     //, frc2::InstantCommand([this]() { m_flywheel->SetRPM(FlywheelConstants::kIdleRPM); }, {m_flywheel} )
   );
 }
