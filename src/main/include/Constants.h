@@ -233,7 +233,7 @@ namespace VisionConstants
    
     constexpr inch_t kCameraHeight = inch_t{38};
     constexpr inch_t kCurrTargetHeight = inch_t{8*12 + 7};
-    constexpr degree_t kCameraPitch = degree_t{22};
+    constexpr degree_t kCameraPitch = degree_t{24};  // *** FROM CAREFUL EXPIREMENT 18-Mar-22 THIS IS THE BEST VALUE with height of 37"-38"
 
     constexpr double kMinTargetDistance = 70;
     constexpr double kMaxTargetDistance = 380;
@@ -356,7 +356,7 @@ namespace TurretConstants
     constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
     // TO DO varies considerably based on battery voltage
-    constexpr int kAbsEncoderZero = 2300; // 2092;
+    constexpr int kAbsEncoderZero = 2426; // 2092;
     constexpr double kCtreTicksPerAbsEncTick = 9752.0 / 3023.0;
 
     // Empirically measured 9752 motor ticks for 120 degrees of turret swing

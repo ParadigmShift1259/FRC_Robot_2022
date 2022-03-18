@@ -64,13 +64,15 @@ void VisionSubsystem::Work()
         vector<frc::Translation2d> targetVectors;
         auto targets = result.GetTargets();
 
- //fprintf(m_logFile, " target count: %d   ",  targets.size());
+//degree_t cameraPitch = degree_t{SmartDashboard::GetNumber("Cam Pitch Angle", 0)};
+//inch_t cameraHeight = inch_t{SmartDashboard::GetNumber("Cam Height", 0)};
+//fprintf(m_logFile, " target count: %d   ",  targets.size());
         // Gets camera-relative x,y translations for each vision target
         for (size_t i = 0; i < targets.size(); i++)
         {
             degree_t TargetPitch = degree_t{targets[i].GetPitch()};
             meter_t range = photonlib::PhotonUtils::CalculateDistanceToTarget(
-                kCameraHeight, kCurrTargetHeight, kCameraPitch, TargetPitch);
+               kCameraHeight, kCurrTargetHeight, kCameraPitch, TargetPitch);
             if ((TargetPitch > units::degree_t{-13}) && (TargetPitch < units::degree_t{24}))
                 targetVectors.push_back(photonlib::PhotonUtils::EstimateCameraToTargetTranslation(range, frc::Rotation2d(degree_t{-targets[i].GetYaw()})));
             else
@@ -147,11 +149,13 @@ void VisionSubsystem::Work()
                 // frc::Transform2d compenstaion = Transform2d(lastOdoState.pose, delayedOdoPose);
 
                 Transform2d compenstaion; // zero transform for testing
-                robotvisionPose = robotvisionPose.TransformBy(compenstaion);             
+                Pose2d compensatedRobotvisionPose = robotvisionPose.TransformBy(compenstaion);             
 
-                // m_cameraToHub = kHubCenter - visionRobotPose.TransformBy(cameraTransform).Translation();
-                m_cameraToHub = kHubCenter - delayedOdoPose.Translation() - camToRobotCenter;
-                m_cameraToHub = m_cameraToHub.RotateBy(-fieldToCamRot); // transform from field-relative back to cam-relative
+                // m_cameraToHub = kHubCenter - robotvisionPose.TransformBy(cameraTransform).Translation();
+                Pose2d compensatedCameraPose = Pose2d(compensatedRobotvisionPose.Translation() - camToRobotCenter, fieldToCamRot);  // FIELD RELATIVE COORDINATES    
+//                Translation2d cameraToHubFR = kHubCenter - compensatedCameraPose.Translation(); // FIELD RELATIVE COORDINATES    
+Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RELATIVE COORDINATES      
+                m_cameraToHub = cameraToHubFR.RotateBy(-fieldToCamRot); // transform from field-relative back to cam-relative
 
                 // printf("latency ms: %.1f delayed odo pose: x %.3f y %.3f   ", 1000*result.GetLatency().to<double>(), delayedOdoPose.X().to<double>(), delayedOdoPose.Y().to<double>());
                 // printf("latency ms: %.1f compenstaion: x %.3f y %.3f    ", 1000*result.GetLatency().to<double>(), compenstaion.X().to<double>(), compenstaion.Y().to<double>());
@@ -225,7 +229,7 @@ void VisionSubsystem::Work()
         //     printf("Resetting Odometry from Vision: x=%.3f, y=%.3f, heading =%.1f", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
         //     }
 
-    SmartDashboard::PutNumber("VisionDistance: ", GetHubDistance(false));
+    SmartDashboard::PutNumber("VisionDistance: ", GetHubDistance(false) * 39.37);
 
     static int turretCmdHoldoff = 0;
 
@@ -243,7 +247,7 @@ void VisionSubsystem::Work()
             m_hood.SetByDistance(GetHubDistance(true));
             //printf("Turret Angle %.2f   ", m_turret.GetCurrentAngle());
             //printf("Hub Angle: %.2f \n", hubAngle);
-            //printf( " Hub angle: %f  range: %f\n", GetHubAngle(), GetHubDistance(true));
+            // printf( " Hub angle: %f  range: %f\n", GetHubAngle()*180/3.14159, GetHubDistance(true)*39.37);
         }
     }
 
