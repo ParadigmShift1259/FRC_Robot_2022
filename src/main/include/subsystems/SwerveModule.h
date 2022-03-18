@@ -74,11 +74,6 @@ public:
 private:
     /// Calculate the absolute angle, in radians, based on the pulse widths from @ref m_pulseWidthCallback
     double CalcAbsoluteAngle();
-    /// Determine the smallest magnitude delta angle that can be added to initial angle that will 
-    /// result in an angle equivalent (but not necessarily equal) to final angle. 
-    /// All angles in radians
-    /// Currently final - init difference is always chosen regardless of angle
-    double MinTurnRads(double init, double final, bool& bOutputReverse);
     /// Calculate the MPS of the drive motor based on its current encoder tick velocity
     /// \return             Meters per second
     meters_per_second_t CalcMetersPerSec();

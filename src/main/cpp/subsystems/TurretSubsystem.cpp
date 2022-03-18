@@ -84,10 +84,8 @@ void TurretSubsystem::Periodic()
     if (!m_setZero)
     {
         m_setZero = true;
-        //double angleChange = (zeroPos - m_startingPos) * kDegreesPerAbsEncTick;
-        //printf("angle %.3f start pos %d cur pos %d pos delta %d deg per tick %.3f\n", angleChange, m_startingPos, m_absEnc.GetValue(), zeroPos - m_startingPos, kDegreesPerAbsEncTick);
-        //TurnToRelative(angleChange);
         double CTREpos = (m_startingPos - kAbsEncoderZero) * kCtreTicksPerAbsEncTick;
+        printf("start abs %d cur abs %d abs delta %d ctre ticks %.3f ctre tick per abs tick %.3f\n", m_startingPos, m_absEnc.GetValue(), m_startingPos - kAbsEncoderZero, CTREpos, kCtreTicksPerAbsEncTick);
         m_turretmotor.SetSelectedSensorPosition(CTREpos);
         m_currentAngle = GetCurrentAngle();
         TurnTo(0.0);

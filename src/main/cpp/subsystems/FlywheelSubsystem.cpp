@@ -148,7 +148,8 @@ void FlywheelSubsystem::CalculateRPM()
     }
 
     SmartDashboard::PutNumber("FeedForward", FF);
-    m_flywheelPID.SetReference(m_setpoint, CANSparkMax::ControlType::kVelocity, pidslot, FF);
+// TO DO uncoment for flywheel
+//    m_flywheelPID.SetReference(m_setpoint, CANSparkMax::ControlType::kVelocity, pidslot, FF);
 
 #ifdef COMMAND_TIMING
     auto endTime = m_timer.GetFPGATimestamp().to<double>();

@@ -76,32 +76,23 @@ void SwerveModule::SetDesiredState(SwerveModuleState &state)
     m_drivePIDLoader.LoadFromNetworkTable(m_driveMotor);
     m_turnPIDLoader.LoadFromNetworkTable(m_turnPIDController);
 
-    // Get relative encoder position
-    double currentPosition = m_turnRelativeEncoder.GetPosition();
+    // Calculate optimized state based on current relative angle
+    Rotation2d currentAngle = Rotation2d{ m_turnRelativeEncoder.GetPosition() * 1_rad};
+    frc::SwerveModuleState optimizedState = SwerveModuleState::Optimize(state, currentAngle);
 
-    // Calculate new turn position given current and desired position
-    bool bOutputReverse = false;
-    double minTurnRads = MinTurnRads(currentPosition, state.angle.Radians().to<double>(), bOutputReverse);
-    double direction = 1.0; // Sent to TalonFX
-    if (bOutputReverse)
-        direction = -1.0;
-
-    // Set position reference of turnPIDController
-    double newPosition = currentPosition + minTurnRads;
-
-    if (state.speed != 0_mps) {
+    if (optimizedState.speed != 0_mps) {
         #ifdef DISABLE_DRIVE
         m_driveMotor.Set(TalonFXControlMode::Velocity, 0.0);
         #else
-        m_driveMotor.Set(TalonFXControlMode::Velocity, direction * CalcTicksPer100Ms(state.speed));
+        m_driveMotor.Set(TalonFXControlMode::Velocity, CalcTicksPer100Ms(optimizedState.speed));
         #endif
     }
     else
         m_driveMotor.Set(TalonFXControlMode::PercentOutput, 0.0);
 
     // Set the angle unless module is coming to a full stop
-    if (state.speed.to<double>() != 0.0)
-        m_turnPIDController.SetReference(newPosition, CANSparkMax::ControlType::kPosition);
+    if (optimizedState.speed.to<double>() != 0.0)
+        m_turnPIDController.SetReference(optimizedState.angle.Radians().to<double>(), CANSparkMax::ControlType::kPosition);
 
     // SmartDashboard::PutNumber("D_SM_SetpointMPS " + m_name, state.speed.to<double>());
     // SmartDashboard::PutNumber("D_SM_Error " + m_name, newPosition - m_turnRelativeEncoder.GetPosition());
@@ -125,40 +116,6 @@ double SwerveModule::CalcAbsoluteAngle()
 void SwerveModule::ResetRelativeToAbsolute()
 {
     m_turnRelativeEncoder.SetPosition(CalcAbsoluteAngle());
-}
-
-// Determine the smallest magnitude delta angle that can be added to initial angle that will 
-// result in an angle equivalent (but not necessarily equal) to final angle. 
-// All angles in radians
-// 
-// init final   angle1   angle2 
-double SwerveModule::MinTurnRads(double init, double final, bool& bOutputReverse)
-{
-    init = Util::ZeroTo2PiRads(init);
-    final = Util::ZeroTo2PiRads(final);
-
-    // The shortest turn angle may be acheived by reversing the motor output direction
-    double angle1 = final - init;
-    double angle2 = final + wpi::numbers::pi - init;
-
-    angle1 = Util::NegPiToPiRads(angle1);
-    angle2 = Util::NegPiToPiRads(angle2);
-
-    // Choose the smallest angle and determine reverse flag
-    //TODO: FINISHED ROBOT TUNING
-    // Eventually prefer angle 1 always during high speed to prevent 180s
-    // if (fabs(angle1) <= 2 * fabs(angle2))
-    // {
-        bOutputReverse = false;
-
-        return angle1;
-    // } 
-    // else
-    // {
-    //     bOutputReverse = true;
-
-    //     return angle2;
-    // }
 }
 
 meters_per_second_t SwerveModule::CalcMetersPerSec()
