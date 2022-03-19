@@ -86,7 +86,7 @@ public:
     TransferSubsystem&   GetTransfer() override { return m_transfer; }
     TurretSubsystem&     GetTurret() override { return m_turret; }
     VisionSubsystem&     GetVision() override { return m_vision; }
-    DriveSubsystem&     GetDrive() { return m_drive; }
+    DriveSubsystem&      GetDrive() { return m_drive; }
     
     bool OnlyOneBall() override { return m_onlyOneBall; }
     void SetOneBallFlag() override {m_onlyOneBall = true;}
@@ -205,7 +205,6 @@ private:
     frc2::InstantCommand m_setOneBallFlag{[this] { m_onlyOneBall = true; }, {} };
     frc2::InstantCommand m_resetOneBallFlag{[this] { m_onlyOneBall = false; }, {} };
     
-
     bool m_onlyOneBall = false;    // Used in auto to shoot one ball
     //bool m_hasAutoRun = false;
     bool m_turretready = false;

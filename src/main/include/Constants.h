@@ -222,7 +222,7 @@ namespace OIConstants
 // Vision Subsystem Constants
 namespace VisionConstants
 {
-    constexpr units::meter_t kHubOffsetRimToCenter = units::foot_t(2.5);  // Duluth adjustment to leesen dist by 1 ft
+    constexpr units::meter_t kHubOffsetRimToCenter = units::foot_t(2.0);  // Duluth was 2.5
     constexpr units::meter_t kTargetDistIntoHub = units::foot_t(2.0);     // Separate offset from target dist within cone
 
     // constexpr frc::Translation2d kHubCenter = frc::Translation2d(kFieldLength/2, kFieldWidth/2);
@@ -265,7 +265,7 @@ namespace FlywheelConstants
 
     constexpr double kRampRate = 1.0;
     // Total error allowed for the flywheel, in RPM
-    constexpr double kAllowedError = 100.0;//75;
+    constexpr double kAllowedError = 75.0; //100.0;
     constexpr double kMaintainPIDError = 300.0;
 
     // General multiplier added, adjusts for ball conditions and general firing
@@ -310,8 +310,7 @@ namespace FlywheelConstants
     constexpr double kWheelRevPerMotorRev = kGearRatio;
 
     /// Use MPSPerRPM to determine the ramp rates, current values are just placeholders
-//    constexpr double kIdleRPM = 3400;
-    constexpr double kIdleRPM = 1000;
+    constexpr double kIdleRPM = 3400;
     /// The fixed RPM to fire at the trench given very heavy defense
     constexpr double kTrenchRPM = 3400;
 }
@@ -403,7 +402,7 @@ namespace HoodConstants
     constexpr int kPWMPort = 8;                //!< Hood servo PWM channel
     constexpr double kTestServoSpeed = 0.14;
     // Drives from Max to Min, where hood is smallest at 0.85, and greatest at 0.0485
-    constexpr double kMax = 0.75;
+    constexpr double kMax = 0.9; //0.75;
     constexpr double kMin = 0.19;
 
     /// The fixed hood to fire in the trench given very heavy defense

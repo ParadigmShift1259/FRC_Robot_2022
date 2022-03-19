@@ -40,7 +40,6 @@ void HomeTarget::Initialize()
 
 void HomeTarget::Execute()
 {
-    #define USE_BLORP_SHOT // For auto practice with no shots
     // Homes flywheel, turret, and hood to the right angles through a formula
     SmartDashboard::PutBoolean("TEST_VIS_ACTIVE", m_vision.GetValidTarget());
 
@@ -58,21 +57,19 @@ void HomeTarget::Execute()
         return;
     }
 
-    double offset = 0.0;
-    double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub).to<double>();
-    //printf("flywheelspeed %.3f\n", flywheelspeed);
-    #ifdef USE_BLORP_SHOT
-    m_flywheel->SetRPM(1000);
-    #else
-    m_flywheel->SetRPM(flywheelspeed);
-    #endif
-
     m_hood->SetByDistance(distToHubCenter);
+    double flywheelspeed = m_hood->GetFlywheelSpeed();
+//#define USE_BLORP_SHOT // For auto practice with no shots
+#ifdef USE_BLORP_SHOT
+    flywheelspeed = 1000;
+#endif
+    m_flywheel->SetRPM(flywheelspeed);
 
     SmartDashboard::PutBoolean("D_FIRE_AT_RPM", m_flywheel->IsAtRPM());
     SmartDashboard::PutBoolean("D_FIRE_AT_SET", m_turret->isAtSetpoint());
 
     if (m_flywheel->IsAtRPM() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
+    //if (m_flywheel->IsAtRPMPositive() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
     //if (m_flywheel->IsAtRPM() && m_turret->isAtSetpoint() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
     {
         *m_turretready = true;

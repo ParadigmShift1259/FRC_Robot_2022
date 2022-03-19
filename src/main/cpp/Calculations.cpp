@@ -9,14 +9,9 @@
 #include <units/energy.h>
 
 using namespace units;
-// #define TRAJECTORY_TUNING
 
 Calculations::Calculations()
 {
-// #ifdef TRAJECTORY_TUNING
-  static bool bRunOnce = false;
-  if (!bRunOnce)
-  {
     wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_10(3);
     wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_4(3);
     wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_25(3);
@@ -93,10 +88,6 @@ Calculations::Calculations()
                         .WithSize(1, 1)
                         .WithPosition(3, 1)
                         .GetEntry();
-    bRunOnce = true;
-  }
-
-// #endif //def TRAJECTORY_TUNING
 }
 
 meter_t Calculations::HubHeightToMaxHeight()
@@ -182,17 +173,16 @@ revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t ta
   m_heightTarget = targetHeight;
   m_heightAboveHub = heightAboveHub;
 
-  #ifdef TRAJECTORY_TUNING
+//#define TRAJECTORY_TUNING
+#ifdef TRAJECTORY_TUNING
     m_xTarget = foot_t(m_xTargetDistanceEntry.GetDouble(defaultTargetDist.to<double>()));
     m_heightTarget = foot_t(m_heightTargetEntry.GetDouble(defaultTargetHeight.to<double>()));
     m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(defaultHeightAboveHub.to<double>()));
-  #endif
-  m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(defaultHeightAboveHub.to<double>()));
+#endif
   
   CalcInitVel();
 
   m_rotVelInit = radian_t(1.0) * m_velInit / flywheelRadius * (2.0 + (cargoRotInertiaFrac + 1.0) / (flywheelRotInertiaFrac * massRatio));
-  
   m_rpmInit = m_rotVelInit;
 
   m_initRpmEntry.SetDouble(m_rpmInit.to<double>());

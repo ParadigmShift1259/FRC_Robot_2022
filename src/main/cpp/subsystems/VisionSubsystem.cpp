@@ -95,21 +95,22 @@ void VisionSubsystem::Work()
         // frc::Translation2d averageTarget = Translation2d(meter_t{xMean}, meter_t{yMean});
 
         //Throw out outliers TODO only for odo
-        for (size_t i = 0; i < targetVectors.size(); i++)
-        {
-            units::meter_t rTolerance = 12.0_in;
+        // SEC 2022 Mar 19 This was discarding all targets
+        // for (size_t i = 0; i < targetVectors.size(); i++)
+        // {
+        //     units::meter_t rTolerance = 20.0_in;
             
-            Translation2d r = targetVectors[i] - m_cameraToHub;
+        //     Translation2d r = targetVectors[i] - m_cameraToHub;
 
-            if (units::math::fabs(r.Norm() - kVisionTargetRadius) > rTolerance || 
-                (GetVectorAngle(r) < units::radian_t{GetHubAngle() + wpi::numbers::pi/2} && GetVectorAngle(r) > units::radian_t{GetHubAngle() - wpi::numbers::pi/2}))
-            {
-                targetVectors.erase(targetVectors.begin() + i);
-                i--;
-                //if (bLogInvalid)
-                    //std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
-            }
-        }
+        //     if (units::math::fabs(r.Norm() - kVisionTargetRadius) > rTolerance || 
+        //         (GetVectorAngle(r) < units::radian_t{GetHubAngle() + wpi::numbers::pi/2} && GetVectorAngle(r) > units::radian_t{GetHubAngle() - wpi::numbers::pi/2}))
+        //     {
+        //         targetVectors.erase(targetVectors.begin() + i);
+        //         i--;
+        //         if (bLogInvalid)
+        //             std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
+        //     }
+        // }
 
 // fprintf(m_logFile, " outlier-filtered targets: %d   ", targetVectors.size());
         if (targetVectors.size() >= 3)
@@ -240,6 +241,7 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
             turretCmdHoldoff--;
         }
         else if (m_odometry.OdoValid())
+        //else if (validTarget)
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
             m_turret.TurnToRelative(hubAngle * 1.0); // can apply P constant < 1.0 if needed for vision tracking stability 

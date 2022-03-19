@@ -10,8 +10,6 @@
 #include "subsystems/HoodSubsystem.h"
 #include "subsystems/VisionSubsystem.h"
 
-#include "Calculations.h"
-
 #include <functional>
 
 using GetYvelocityCallback = std::function<double()>;
@@ -41,8 +39,7 @@ private:
     bool* m_firing;
     bool* m_finished;
     GetYvelocityCallback m_yVelocityCb;
-  	Calculations m_calculation;
-
+  
     Timer m_timer;  // Temp
     double m_startTime = 0.0;
 };

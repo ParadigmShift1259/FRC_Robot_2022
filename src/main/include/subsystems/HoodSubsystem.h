@@ -25,8 +25,11 @@ public:
     /// \param distHubCenter    Distance to center of hub
     void SetByDistance(double distHubCenter);
 
+    double GetFlywheelSpeed() { return m_flywheelSpeed; }
+
 private:
     /// Servo that moves hood up and down
     frc::Servo m_servo;
    	Calculations m_calculation;
+    double m_flywheelSpeed;
 };

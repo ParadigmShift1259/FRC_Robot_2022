@@ -36,7 +36,7 @@ RobotContainer::RobotContainer()
 
     SmartDashboard::PutNumber("fudge", 0.0);
     SmartDashboard::PutBoolean("UseFudgeFactor", false);
-    //SmartDashboard::PutBoolean("SupressFlywheel", false);
+    SmartDashboard::PutBoolean("SupressFlywheel", false);
 
     SmartDashboard::PutBoolean("LowSpeedDriveing", m_bLowSpeedDriving);
 }
