@@ -40,6 +40,7 @@ void HomeTarget::Initialize()
 
 void HomeTarget::Execute()
 {
+    #define USE_BLORP_SHOT // For auto practice with no shots
     // Homes flywheel, turret, and hood to the right angles through a formula
     SmartDashboard::PutBoolean("TEST_VIS_ACTIVE", m_vision.GetValidTarget());
 
@@ -60,7 +61,11 @@ void HomeTarget::Execute()
     double offset = 0.0;
     double flywheelspeed = offset + m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub).to<double>();
     //printf("flywheelspeed %.3f\n", flywheelspeed);
+    #ifdef USE_BLORP_SHOT
+    m_flywheel->SetRPM(1000);
+    #else
     m_flywheel->SetRPM(flywheelspeed);
+    #endif
 
     m_hood->SetByDistance(distToHubCenter);
 
