@@ -94,22 +94,22 @@ void VisionSubsystem::Work()
         // double yMean = yTotal/targetVectors.size();
         // frc::Translation2d averageTarget = Translation2d(meter_t{xMean}, meter_t{yMean});
 
-        //Throw out outliers
-        // for (size_t i = 0; i < targetVectors.size(); i++)
-        // {
-        //     units::meter_t rTolerance = 12.0_in;
+        //Throw out outliers TODO only for odo
+        for (size_t i = 0; i < targetVectors.size(); i++)
+        {
+            units::meter_t rTolerance = 12.0_in;
             
-        //     Translation2d r = targetVectors[i] - m_cameraToHub;
+            Translation2d r = targetVectors[i] - m_cameraToHub;
 
-        //     if (units::math::fabs(r.Norm() - kVisionTargetRadius) > rTolerance || 
-        //         (GetVectorAngle(r) < units::radian_t{GetHubAngle() + wpi::numbers::pi/2} && GetVectorAngle(r) > units::radian_t{GetHubAngle() - wpi::numbers::pi/2}))
-        //     {
-        //         targetVectors.erase(targetVectors.begin() + i);
-        //         i--;
-        //         //if (bLogInvalid)
-        //             //std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
-        //     }
-        // }
+            if (units::math::fabs(r.Norm() - kVisionTargetRadius) > rTolerance || 
+                (GetVectorAngle(r) < units::radian_t{GetHubAngle() + wpi::numbers::pi/2} && GetVectorAngle(r) > units::radian_t{GetHubAngle() - wpi::numbers::pi/2}))
+            {
+                targetVectors.erase(targetVectors.begin() + i);
+                i--;
+                //if (bLogInvalid)
+                    //std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
+            }
+        }
 
 // fprintf(m_logFile, " outlier-filtered targets: %d   ", targetVectors.size());
         if (targetVectors.size() >= 3)
@@ -124,10 +124,9 @@ void VisionSubsystem::Work()
 #define USE_ODO_COMPENSATION
 #ifdef USE_ODO_COMPENSATION
                 visionTimestamp = visionTimestamp - result.GetLatency();
-                // Pose2d delayedOdoPose = m_odometry.GetPose(visionTimestamp);
-                Pose2d delayedOdoPose = m_odometry.GetPose();
-
-                degree_t angleTurret = degree_t{m_turret.GetCurrentAngle()}; // TO DO keep history of turret angle and use that instead of current turrent angle
+                StateHist delayedState = m_odometry.GetState(visionTimestamp);
+                frc::Pose2d delayedOdoPose = delayedState.pose;
+                degree_t angleTurret = delayedState.m_turretAngle;
                 Rotation2d robotRot = delayedOdoPose.Rotation(); // robot heading FIELD RELATIVE
                 Rotation2d fieldToCamRot = robotRot + Rotation2d(angleTurret + 180_deg);  
 
@@ -149,10 +148,10 @@ void VisionSubsystem::Work()
                 // frc::Transform2d compenstaion = Transform2d(lastOdoState.pose, delayedOdoPose);
 
                 Transform2d compenstaion; // zero transform for testing
-                Pose2d compensatedRobotvisionPose = robotvisionPose.TransformBy(compenstaion);             
+                // Not used Pose2d compensatedRobotvisionPose = robotvisionPose.TransformBy(compenstaion);             
 
                 // m_cameraToHub = kHubCenter - robotvisionPose.TransformBy(cameraTransform).Translation();
-                Pose2d compensatedCameraPose = Pose2d(compensatedRobotvisionPose.Translation() - camToRobotCenter, fieldToCamRot);  // FIELD RELATIVE COORDINATES    
+                // Not used Pose2d compensatedCameraPose = Pose2d(compensatedRobotvisionPose.Translation() - camToRobotCenter, fieldToCamRot);  // FIELD RELATIVE COORDINATES    
 //                Translation2d cameraToHubFR = kHubCenter - compensatedCameraPose.Translation(); // FIELD RELATIVE COORDINATES    
 Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RELATIVE COORDINATES      
                 m_cameraToHub = cameraToHubFR.RotateBy(-fieldToCamRot); // transform from field-relative back to cam-relative
@@ -201,18 +200,18 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
         }
     }
 
-#ifdef USE_ODO_COMPENSATION
     if (m_odometry.OdoValid())
             {
             // use odometry instead of vision
-            m_robotPose = m_odometry.GetPose(); // TO DO keep history of turret angle and use that instead of current turrent angle    
-            // double angleTurret = Util::DegreesToRadians(m_turret.GetCurrentAngle());
+            StateHist lastOdoState = m_odometry.GetState();
+            degree_t angleTurret = lastOdoState.m_turretAngle;
+
+            m_robotPose = lastOdoState.pose;
             // frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
             // frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{angleTurret});
             // frc::Rotation2d fieldToCamAngle = m_robotPose.Rotation() + frc::Rotation2d(units::radian_t{angleTurret});  
             // m_cameraToHub = kHubCenter - m_robotPose.TransformBy(camreaTransform.Inverse()).Translation();
 
-            degree_t angleTurret = degree_t{m_turret.GetCurrentAngle()}; // TO DO keep history of turret angle and use that instead of current turrent angle
             Rotation2d robotRot = m_robotPose.Rotation(); // robot heading FIELD RELATIVE
             Rotation2d fieldToCamRot = robotRot + Rotation2d(angleTurret + 180_deg);  
             Translation2d camToTurretCenterRRC = Translation2d(-5_in, 0_in).RotateBy(Rotation2d{angleTurret});  // ROBOT RELATIVE COORDINATES
@@ -229,7 +228,7 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
         //     m_odometry.ResetOdometry(visionRobotPose);
         //     printf("Resetting Odometry from Vision: x=%.3f, y=%.3f, heading =%.1f", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
         //     }
-#endif  //def USE_ODO_COMPENSATION
+
     SmartDashboard::PutNumber("VisionDistance: ", GetHubDistance(false) * 39.37);
 
     static int turretCmdHoldoff = 0;
@@ -241,7 +240,6 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
             turretCmdHoldoff--;
         }
         else if (m_odometry.OdoValid())
-//        else if (validTarget)
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
             m_turret.TurnToRelative(hubAngle * 1.0); // can apply P constant < 1.0 if needed for vision tracking stability 
@@ -256,7 +254,6 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
     static int counter=0;
     if (counter++ % 25 == 0)
     {
-#ifdef USE_ODO_COMPENSATION        
         printf("Odometry Pose: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>()* 39.37, m_odometry.GetPose().Y().to<double>()* 39.37, m_odometry.GetPose().Rotation().Degrees().to<double>());
         if (validTarget)
             {
@@ -266,7 +263,6 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
         else
             printf("NO Vision Pose\n");
         //printf(".\n");
-#endif  //def USE_ODO_COMPENSATION
 
         if (!m_validTarget && bLogInvalid)
         {

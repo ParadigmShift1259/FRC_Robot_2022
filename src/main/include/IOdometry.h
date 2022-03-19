@@ -19,6 +19,8 @@ public:
 
     virtual frc::Pose2d GetPose() = 0;
     virtual frc::Pose2d GetPose(units::time::second_t timestamp) const = 0;
+    virtual StateHist GetState() const = 0;
+    virtual StateHist GetState(units::time::second_t timestamp) const = 0;
     virtual const StateHistColl& GetStateHist() const = 0;
     virtual units::degree_t GetTurretAngle() = 0;
     //virtual bool HasAutoRun() = 0;

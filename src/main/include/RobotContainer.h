@@ -93,6 +93,8 @@ public:
 
     Pose2d GetPose() { return m_drive.GetPose(); }
     Pose2d GetPose(units::time::second_t timestamp) const { return m_drive.GetPose(timestamp); }
+    StateHist GetState() const { return m_drive.GetState(); }
+    StateHist GetState(units::time::second_t timestamp) const { return m_drive.GetState(timestamp); }
     const StateHistColl& GetStateHist() const { return m_drive.GetStateHist(); }
     units::degree_t GetTurretAngle() { return units::degree_t(m_turret.GetCurrentAngle()); }
     void ResetOdometry(frc::Pose2d pose) { m_drive.ResetOdometry(pose); }
@@ -119,13 +121,12 @@ private:
     frc::XboxController m_primaryController{OIConstants::kPrimaryControllerPort};
     frc::XboxController m_secondaryController{OIConstants::kSecondaryControllerPort};
 
-    frc::Compressor m_compressor;
-
     Team1259::Gyro m_gyro;
     DriveSubsystem m_drive;
     bool m_fieldRelative = true;
     VisionSubsystem m_vision; 
     FlywheelSubsystem m_flywheel;
+    frc::Compressor m_compressor;
     IntakeSubsystem m_intake;
     TransferSubsystem m_transfer;
     TurretSubsystem m_turret = TurretSubsystem(&m_gyro);
