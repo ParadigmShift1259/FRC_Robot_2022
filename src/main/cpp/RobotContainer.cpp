@@ -268,7 +268,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     auto config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
     config.SetKinematics(m_drive.kDriveKinematics);    
     // Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLineWaypoints, config);
-    Trajectory ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1PickupAndShootWaypoints, config);
+    Trajectory ball1Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball1PickupAndShootWaypoints[0], {}, ball1PickupAndShootWaypoints[1], config);
 
     // config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
     // Trajectory ball1ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball1ShootWaypoints, config);
@@ -276,15 +276,16 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     // config = TrajectoryConfig{units::velocity::meters_per_second_t{1.8}, AutoConstants::kMaxAcceleration};
     // config.SetStartVelocity(units::velocity::meters_per_second_t{0});
     // config.SetEndVelocity(units::velocity::meters_per_second_t{1.8});
-    Trajectory ball2Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball2PickupAndShootWaypoints, config);
+    Trajectory ball2Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball2PickupAndShootWaypoints[0], {}, ball2PickupAndShootWaypoints[1], config);
 
     // config = TrajectoryConfig{units::velocity::meters_per_second_t{1.8}, AutoConstants::kMaxAcceleration};
     // config.SetStartVelocity(units::velocity::meters_per_second_t{1.8});
     // config.SetEndVelocity(units::velocity::meters_per_second_t{0});
-    Trajectory ball34PickupTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34PickupWaypoints, config);
+    Trajectory ball34PickupTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34PickupWaypoints[0], {}, ball34PickupWaypoints[1], config);
 
+    config.SetReversed(true);
     // config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
-    Trajectory ball34ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34ShootWaypoints, config);
+    Trajectory ball34ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34ShootWaypoints[0], {}, ball34ShootWaypoints[1], config);
 
 
     switch (path)
