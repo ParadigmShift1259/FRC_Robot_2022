@@ -177,7 +177,7 @@ namespace AutoConstants
     constexpr meters_per_second_t kMaxSpeed = meters_per_second_t(3.6); // feet_per_second_t(13.6);
     constexpr auto kIntakeDriveSpeed = meters_per_second_t(0.5);
 
-    constexpr auto kMaxAcceleration = meters_per_second_squared_t(1.0);
+    constexpr auto kMaxAcceleration = meters_per_second_squared_t(1.2);
 
     // constexpr auto kMaxSpeed = meters_per_second_t(2.0);
     // constexpr auto kMaxAcceleration = meters_per_second_squared_t(3.0);
@@ -265,8 +265,8 @@ namespace FlywheelConstants
 
     constexpr double kRampRate = 1.0;
     // Total error allowed for the flywheel, in RPM
-    constexpr double kAllowedError = 75;
-    constexpr double kMaintainPIDError = 300;
+    constexpr double kAllowedError = 100.0;//75;
+    constexpr double kMaintainPIDError = 300.0;
 
     // General multiplier added, adjusts for ball conditions and general firing
     constexpr double kHomingRPMMultiplier = 1.0175;
@@ -310,7 +310,7 @@ namespace FlywheelConstants
     constexpr double kWheelRevPerMotorRev = kGearRatio;
 
     /// Use MPSPerRPM to determine the ramp rates, current values are just placeholders
-    constexpr double kIdleRPM = 2000;
+    constexpr double kIdleRPM = 3400;
     /// The fixed RPM to fire at the trench given very heavy defense
     constexpr double kTrenchRPM = 3400;
 }
@@ -356,7 +356,7 @@ namespace TurretConstants
     constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
     // TO DO varies considerably based on battery voltage
-    constexpr int kAbsEncoderZero = 2426; // 2092;
+    constexpr int kAbsEncoderZero = 2660; // 2092;
     constexpr double kCtreTicksPerAbsEncTick = 9752.0 / 3023.0;
 
     // Empirically measured 9752 motor ticks for 120 degrees of turret swing
@@ -379,7 +379,7 @@ namespace TurretConstants
     constexpr double kMinOut = 0;
     constexpr double kMaxOut = 1.0; //1.0; //0.900;
 
-    constexpr double kTimeout = 30;
+    constexpr double kTimeout = 15.0;
     constexpr double kInverted = true;
     constexpr double kSensorPhase = true;
 

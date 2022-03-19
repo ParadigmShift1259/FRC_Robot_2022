@@ -5,8 +5,9 @@
 
 using namespace IntakeConstants;
 
-IntakeStop::IntakeStop(ISubsysAccess& subsytemAccess)
+IntakeStop::IntakeStop(ISubsysAccess& subsytemAccess, bool retractIntake)
  : m_intake(subsytemAccess.GetIntake())
+ , m_retractIntake(retractIntake)
 {
   AddRequirements({&subsytemAccess.GetIntake(), &subsytemAccess.GetTransfer()});
 }
@@ -21,5 +22,5 @@ bool IntakeStop::IsFinished()
 }
 
 void IntakeStop::End(bool interrupted) {
-  m_intake.IntakeOut(false);
+  m_intake.IntakeOut(m_retractIntake);
 }

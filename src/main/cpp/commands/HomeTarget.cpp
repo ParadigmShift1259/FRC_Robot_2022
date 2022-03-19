@@ -46,7 +46,7 @@ void HomeTarget::Execute()
     if (!m_vision.GetValidTarget())
         return;
 
-    double distToHubCenter = m_vision.GetHubDistance(true);
+    double distToHubCenter = m_vision.GetHubDistance(false);
     double distance = distToHubCenter - kHubOffsetRimToCenter.to<double>();
 
     // if (std::isnan(distance))

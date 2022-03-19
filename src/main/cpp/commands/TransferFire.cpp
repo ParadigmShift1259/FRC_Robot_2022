@@ -29,6 +29,8 @@ void TransferFire::Initialize()
     m_timer.Stop();
     *m_firing = false;
     *m_finished = false;
+    m_oneBallFired = false;
+    m_transfer->SetFeeder(kFeederSpeedFiring);
 }
 
 void TransferFire::Execute()
@@ -42,11 +44,22 @@ void TransferFire::Execute()
     if (*m_firing)
     {
         //m_transfer->SetFeeder(kFeederSpeedFiring);
-        m_transfer->SetFeeder(kFeederSpeedFiring);
-        if (m_timer.Get().to<double>() >= kTimePassed)
+        // m_transfer->SetFeeder(kFeederSpeedFiring);
+        // if (m_timer.Get().to<double>() >= kTimePassed)
+        // {
+        //     m_transfer->SetTransfer(kTransferSpeedFiring);
+        // }     
+        if (!m_transfer->GetFeederPhotoeye() && !m_oneBallFired)
         {
-            m_transfer->SetTransfer(kTransferSpeedFiring);
-        }        
+            m_transfer->SetFeeder(kFeederSpeedIntaking);
+            m_transfer->SetTransfer(kTransferSpeedIntaking);
+            m_oneBallFired = true;
+        }
+        else if (m_oneBallFired)
+        {
+            m_transfer->SetFeeder(0.0);
+            m_transfer->SetTransfer(0.0);
+        }
     }
     else
     {

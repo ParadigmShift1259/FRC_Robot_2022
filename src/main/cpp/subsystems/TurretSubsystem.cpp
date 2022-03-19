@@ -6,7 +6,7 @@
 
 using namespace TurretConstants;
 
-// #define TUNE_TURRET_PID
+//#define TUNE_TURRET_PID
 
 TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro) 
     : m_turretmotor(kMotorPort)
@@ -22,7 +22,6 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.SetStatusFramePeriod(StatusFrameEnhanced::Status_13_Base_PIDF0, 10.0, 1.0);
     //m_turretmotor.SetStatusFramePeriod(StatusFrameEnhanced::Status_10_MotionMagic, 10.0, 1.0);
 
-    // set pid values for motion magic
     m_turretmotor.Config_kP(0, kP, kTimeout);
     m_turretmotor.Config_kI(0, kI, kTimeout);
     m_turretmotor.Config_kD(0, kD, kTimeout);
@@ -80,14 +79,14 @@ void TurretSubsystem::Periodic()
     //double db = frc::SmartDashboard::GetNumber("TurretDeadbandPercent", kNeutralDeadband);
     //m_turretmotor.ConfigNeutralDeadband(db, kTimeout);
 
-
+    frc::SmartDashboard::PutNumber("TurretAbsEnc", m_absEnc.GetValue());
     if (!m_setZero)
     {
-        m_setZero = true;
         double CTREpos = (m_startingPos - kAbsEncoderZero) * kCtreTicksPerAbsEncTick;
         printf("start abs %d cur abs %d abs delta %d ctre ticks %.3f ctre tick per abs tick %.3f\n", m_startingPos, m_absEnc.GetValue(), m_startingPos - kAbsEncoderZero, CTREpos, kCtreTicksPerAbsEncTick);
         m_turretmotor.SetSelectedSensorPosition(CTREpos);
         m_currentAngle = GetCurrentAngle();
+        m_setZero = true;
         TurnTo(0.0);
     }
 
@@ -171,18 +170,21 @@ void TurretSubsystem::SetZeroAngle()
 
 void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)
 {
-    // Clamp the desired angle to the physical limits 
-    if (angle >= minAngle && angle <= maxAngle)
-        m_currentAngle = angle;
-    else if (angle < minAngle)
-        m_currentAngle = minAngle;
-    else if (angle > maxAngle)
-        m_currentAngle = maxAngle;
+    if (m_setZero)
+    {
+        // Clamp the desired angle to the physical limits 
+        if (angle >= minAngle && angle <= maxAngle)
+            m_currentAngle = angle;
+        else if (angle < minAngle)
+            m_currentAngle = minAngle;
+        else if (angle > maxAngle)
+            m_currentAngle = maxAngle;
 #ifdef USE_MOTION_MAGIC
-    m_turretmotor.Set(ControlMode::MotionMagic, DegreesToTicks(m_currentAngle));
+        m_turretmotor.Set(ControlMode::MotionMagic, DegreesToTicks(m_currentAngle));
 #else
-    m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
+        m_turretmotor.Set(ControlMode::Position, DegreesToTicks(m_currentAngle));
 #endif
+    }
 }
 
 void TurretSubsystem::TurnToField(double desiredAngle)

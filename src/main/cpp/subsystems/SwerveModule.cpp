@@ -116,6 +116,7 @@ double SwerveModule::CalcAbsoluteAngle()
 void SwerveModule::ResetRelativeToAbsolute()
 {
     m_turnRelativeEncoder.SetPosition(CalcAbsoluteAngle());
+
 }
 
 meters_per_second_t SwerveModule::CalcMetersPerSec()

@@ -8,7 +8,8 @@
 #include "RobotContainer.h"
 #include <frc2/command/button/NetworkButton.h>
 #include <frc2/command/WaitCommand.h>
-#include <commands/IntakeDeploy.h>>
+#include <frc2/command/ConditionalCommand.h>
+#include <commands/IntakeDeploy.h>
 
 RobotContainer::RobotContainer()
     : m_gyro()
@@ -22,6 +23,7 @@ RobotContainer::RobotContainer()
 
     ConfigureButtonBindings();
     SetDefaultCommands();
+    //SmartDashboard::PutNumber("FireOnedelay", 2.000);
 
     m_chooser.SetDefaultOption("Path 1", EAutoPath::kEx1);
     m_chooser.AddOption("Path 2", EAutoPath::kEx2);
@@ -184,7 +186,7 @@ void RobotContainer::ConfigSecondaryButtonBindings()
 
     // Keep the bindings in this order
     // A, B, X, Y, Left Bumper, Right Bumper, Back, Start
-    JoystickButton(&secondary, xbox::kA).WhenPressed(frc2::SequentialCommandGroup(m_resetOneBallFlag, IntakeTransfer(*this, kTransferSpeedIntaking)));
+    JoystickButton(&secondary, xbox::kA).WhenPressed(frc2::SequentialCommandGroup(m_resetOneBallFlag, IntakeTransfer(*this, true)));
     JoystickButton(&secondary, xbox::kB).WhenHeld(IntakeRelease(*this));
     JoystickButton(&secondary, xbox::kX).WhenPressed(&m_runTransferAndFeeder);
     JoystickButton(&secondary, xbox::kX).WhenReleased(&m_stopTransferAndFeeder);
@@ -314,7 +316,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
         case kEx4:
             return new frc2::SequentialCommandGroup
             (
-                  std::move(*GetIntakeAndFirePathCmd(ball1Traj, true)) // (almost) 3 ball auto
+                  std::move(*GetIntakeAndFirePathCmd(ball1Traj, true))
                 // , m_setOneBallFlag
                 , m_setOneBallFlag
                 , std::move(*GetIntakeAndFirePathCmd(ball2Traj, false))
@@ -353,7 +355,7 @@ frc2::ParallelCommandGroup* RobotContainer::GetIntakePathCmd(Trajectory trajecto
 {
     return new frc2::ParallelCommandGroup
         (
-              std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
+              std::move(IntakeTransfer(*this, false))
             , frc2::SequentialCommandGroup
             (
                   frc2::InstantCommand([this]() { 
@@ -416,7 +418,7 @@ frc2::SequentialCommandGroup* RobotContainer::GetIntakeAndFirePathCmd(Trajectory
     (
         frc2::ParallelCommandGroup
         (
-              std::move(IntakeTransfer(*this, TransferConstants::kTransferSpeedIntaking))
+              std::move(IntakeTransfer(*this, false))
             , frc2::SequentialCommandGroup
             (
                   std::move(GetSwerveCommandPath(trajectory, primaryPath))
@@ -428,16 +430,20 @@ frc2::SequentialCommandGroup* RobotContainer::GetIntakeAndFirePathCmd(Trajectory
         , frc2::InstantCommand([this]() { 
             printf("Finished IntakeAndFirePathCmd\n");
             }, {})
-        , std::move(Fire( &m_flywheel
-                        , &m_turret
-                        , &m_hood
-                        , &m_transfer
-                        , m_vision
-                        , &m_turretready
-                        , &m_firing
-                        , &m_finished
-                        , [this]() { return GetYvelovity(); }
-                        , TransferConstants::kTimeLaunch))
+
+        , frc2::ConditionalCommand(std::move(FireOneBall(&m_transfer))
+                                 , std::move(Fire( &m_flywheel
+                                                 , &m_turret
+                                                 , &m_hood
+                                                 , &m_transfer
+                                                 , m_vision
+                                                 , &m_turretready
+                                                 , &m_firing
+                                                 , &m_finished
+                                                 , [this]() { return GetYvelovity(); }
+                                                 , TransferConstants::kTimeLaunch))
+                                 , [this](){return m_onlyOneBall;}
+        )
     );
 }
 
@@ -472,7 +478,7 @@ SwerveCtrlCmd RobotContainer::GetSwerveCommandPath(Trajectory trajectory, bool p
         // Init absolute gyro angle isn't required by ResetOdometry() but IS required due to directly reading the gyro elsewhere
         m_gyro.SetHeading((double)trajectory.InitialPose().Rotation().Degrees()); 
         m_drive.ResetOdometry(trajectory.InitialPose());
-        printf("initial Pose: %f\n\n\n\n", m_drive.GetPose().Rotation().Degrees().to<double>());
+        printf("initial Pose: X=%f, Y=%f, theta=%f\n\n\n\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
         //m_hasAutoRun = true;
     }
 

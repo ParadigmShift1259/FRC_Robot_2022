@@ -81,11 +81,12 @@ void FlywheelSubsystem::Periodic()
     SmartDashboard::PutNumber("T_F_Ireflect", i);
     SmartDashboard::PutNumber("T_F_Dreflect", d);
 #else
-    //SmartDashboard::PutNumber("T_F_Setpoint", m_setpoint);
+    SmartDashboard::PutNumber("T_F_Setpoint", m_setpoint);
 #endif
 
     SmartDashboard::PutNumber("D_F_RPM", m_flywheelencoder.GetVelocity());
     // SmartDashboard::PutNumber("T_F_At_Target", IsAtRPM());
+    frc::SmartDashboard::PutNumber("Flywheel error", 0.0);
 
 // double flywheelspeed = SmartDashboard::GetNumber("Flywheel RPM Command", 0.0);
 // SetRPM(flywheelspeed);
@@ -116,6 +117,8 @@ bool FlywheelSubsystem::IsAtRPM()
 {
     double rpm = m_flywheelencoder.GetVelocity();
     m_rpmMeasuredLog.Append(rpm);
+    double error = rpm - m_setpoint;
+    frc::SmartDashboard::PutNumber("Flywheel error", error);
     return fabs(rpm - m_setpoint) <= kAllowedError;
 }
 

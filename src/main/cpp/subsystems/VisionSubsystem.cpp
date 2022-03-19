@@ -54,8 +54,6 @@ void VisionSubsystem::Work()
     Pose2d robotvisionPose;
     Pose2d cameraPose;
 
-
-
     photonlib::PhotonPipelineResult result = camera.GetLatestResult();
     bool validTarget = result.HasTargets();
     // printf("valid target %d\n", validTarget);
@@ -80,7 +78,6 @@ void VisionSubsystem::Work()
         }
 
  //fprintf(m_logFile, " pitch-filtered targets: %d   ", targetVectors.size());
-
 
         // //find the center of the vision targets
         // double xTotal = 0;
@@ -201,6 +198,7 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
         }
     }
 
+#ifdef USE_ODO_COMPENSATION
     if (m_odometry.OdoValid())
             {
             // use odometry instead of vision
@@ -228,7 +226,7 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
         //     m_odometry.ResetOdometry(visionRobotPose);
         //     printf("Resetting Odometry from Vision: x=%.3f, y=%.3f, heading =%.1f", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
         //     }
-
+#endif  //def USE_ODO_COMPENSATION
     SmartDashboard::PutNumber("VisionDistance: ", GetHubDistance(false) * 39.37);
 
     static int turretCmdHoldoff = 0;
@@ -240,11 +238,12 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
             turretCmdHoldoff--;
         }
         else if (m_odometry.OdoValid())
+//        else if (validTarget)
         {
             auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
             m_turret.TurnToRelative(hubAngle * 1.0); // can apply P constant < 1.0 if needed for vision tracking stability 
-            turretCmdHoldoff = 3;  // limit turret command rate due to vision lag
-            m_hood.SetByDistance(GetHubDistance(true));
+            turretCmdHoldoff = 0; // 3;  // limit turret command rate due to vision lag
+            m_hood.SetByDistance(GetHubDistance(false));
             //printf("Turret Angle %.2f   ", m_turret.GetCurrentAngle());
             //printf("Hub Angle: %.2f \n", hubAngle);
             // printf( " Hub angle: %f  range: %f\n", GetHubAngle()*180/3.14159, GetHubDistance(true)*39.37);
@@ -254,6 +253,7 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
     static int counter=0;
     if (counter++ % 25 == 0)
     {
+#ifdef USE_ODO_COMPENSATION        
         printf("Odometry Pose: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>()* 39.37, m_odometry.GetPose().Y().to<double>()* 39.37, m_odometry.GetPose().Rotation().Degrees().to<double>());
         if (validTarget)
             {
@@ -262,7 +262,8 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
             }  
         else
             printf("NO Vision Pose\n");
-        printf(".\n");
+        //printf(".\n");
+#endif  //def USE_ODO_COMPENSATION
 
         if (!m_validTarget && bLogInvalid)
         {

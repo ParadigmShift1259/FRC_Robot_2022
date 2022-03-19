@@ -26,4 +26,5 @@ public:
     bool* m_finished;
     double m_launchtime;
     double m_startTime = 0.0;   // Temp
+    bool m_oneBallFired;
 };
