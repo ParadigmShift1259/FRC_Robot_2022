@@ -310,8 +310,7 @@ namespace FlywheelConstants
     constexpr double kWheelRevPerMotorRev = kGearRatio;
 
     /// Use MPSPerRPM to determine the ramp rates, current values are just placeholders
-//    constexpr double kIdleRPM = 3400;
-    constexpr double kIdleRPM = 1000;
+    constexpr double kIdleRPM = 3400;
     /// The fixed RPM to fire at the trench given very heavy defense
     constexpr double kTrenchRPM = 3400;
 }
@@ -421,4 +420,5 @@ namespace ClimberConstants
 namespace CompressorConstans
 {
     constexpr int kCompressorPort = 1;
+
 }

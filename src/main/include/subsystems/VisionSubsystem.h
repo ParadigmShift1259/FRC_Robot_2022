@@ -13,9 +13,12 @@
 #include <networktables/NetworkTableEntry.h>
 #include <networktables/EntryListenerFlags.h>
 #include <photonlib/PhotonCamera.h>
+#include <photonlib/PhotonTrackedTarget.h>
+
 #include <vector>
 
 #include <wpi/numbers>
+#include <wpi/span.h>
 
 #include "Constants.h"
 #include "common/Util.h"
@@ -29,6 +32,11 @@ using namespace std;
 using namespace frc;
 using namespace units;
 using namespace VisionConstants;
+
+const frc::Translation2d kHubCenter = frc::Translation2d(kFieldLength/2, kFieldWidth/2);  // TO DO make a constant
+const meter_t kHubRadius = foot_t(2.0);
+const frc::Translation2d turretCenterToRobotCenter = frc::Translation2d(3_in, 0_in);   // TO DO make a constant
+
 
 class VisionSubsystem : public frc2::SubsystemBase
 {
@@ -70,7 +78,15 @@ protected:
     void Work();
 
 private:    
-    //shared_ptr<nt::NetworkTable> m_dashboard;
+    void GetVisionTargetCoords(wpi::span<const photonlib::PhotonTrackedTarget>& targets, vector<frc::Translation2d>& targetVectors);   // TODO targetCoords
+    frc::Translation2d FindAverageOfTargets(vector<frc::Translation2d>& targetVectors);
+    // TODO make it FindMedianOfTargets
+    void FilterTargets(vector<frc::Translation2d>& targetVectors, frc::Translation2d center, meter_t rMax, degree_t minangle, degree_t maxangle);
+    void GetFieldReleativeRobotAndCameraPoses(frc::Translation2d& cameraToHub, photonlib::PhotonPipelineResult& result, Rotation2d& fieldToCamRot, Translation2d& camToRobotCenter);
+    Translation2d CompensateMotionForLatency(Rotation2d& fieldToCamRot, Translation2d& camToRobotCenter);
+    Translation2d Targeting();
+    void SteerTurretAndAdjusthood();
+
     shared_ptr<nt::NetworkTable> m_networktable;
     bool m_led;
 
@@ -80,7 +96,10 @@ private:
     Pose2d m_robotPose;
     photonlib::PhotonCamera camera{"gloworm"};
     frc::Translation2d m_cameraToHub;
-    
+    Pose2d m_robotvisionPose;
+    Pose2d m_cameraPose;
+    units::time::second_t m_visionTimestamp;
+
     /// Gyro to determine field relative angles, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
     TurretSubsystem& m_turret;
