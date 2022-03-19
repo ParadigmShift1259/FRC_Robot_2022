@@ -177,7 +177,7 @@ namespace AutoConstants
     constexpr meters_per_second_t kMaxSpeed = meters_per_second_t(3.6); // feet_per_second_t(13.6);
     constexpr auto kIntakeDriveSpeed = meters_per_second_t(0.5);
 
-    constexpr auto kMaxAcceleration = meters_per_second_squared_t(1.2);
+    constexpr auto kMaxAcceleration = meters_per_second_squared_t(1.1);
 
     // constexpr auto kMaxSpeed = meters_per_second_t(2.0);
     // constexpr auto kMaxAcceleration = meters_per_second_squared_t(3.0);
@@ -310,7 +310,8 @@ namespace FlywheelConstants
     constexpr double kWheelRevPerMotorRev = kGearRatio;
 
     /// Use MPSPerRPM to determine the ramp rates, current values are just placeholders
-    constexpr double kIdleRPM = 3400;
+//    constexpr double kIdleRPM = 3400;
+    constexpr double kIdleRPM = 1000;
     /// The fixed RPM to fire at the trench given very heavy defense
     constexpr double kTrenchRPM = 3400;
 }
