@@ -356,7 +356,7 @@ namespace TurretConstants
     constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
     // TO DO varies considerably based on battery voltage
-    constexpr int kAbsEncoderZero = 2660; // 2092;
+    constexpr int kAbsEncoderZero = 2770; //2660; // 2092;
     constexpr double kCtreTicksPerAbsEncTick = 9752.0 / 3023.0;
 
     // Empirically measured 9752 motor ticks for 120 degrees of turret swing
