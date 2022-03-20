@@ -64,7 +64,7 @@ void VisionSubsystem::Work()
 
         if (m_odometry.OdoValid())
         {
-            FilterTargets(targetVectors, m_cameraToHub, 12.0_in, degree_t(wpi::numbers::pi/2), degree_t(wpi::numbers::pi/2));//TODO larger than 12 inches? 20-30?
+            FilterTargets(targetVectors, m_cameraToHub, 20.0_in, degree_t(wpi::numbers::pi/2), degree_t(wpi::numbers::pi/2));//TODO larger than 12 inches? 20-30?
         }
         else
         {
@@ -73,7 +73,7 @@ void VisionSubsystem::Work()
         }
 
 // fprintf(m_logFile, " outlier-filtered targets: %d   ", targetVectors.size());
-        if (targetVectors.size() >= 3)
+        if (targetVectors.size() >= 3 && targetVectors.size() <= 6)
         {
             frc::Translation2d cameraToHub = FitCircle(targetVectors, meter_t{0.01}, 20);
             if (cameraToHub != frc::Translation2d())
