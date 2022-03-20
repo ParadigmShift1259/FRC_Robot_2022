@@ -82,9 +82,9 @@ void Robot::TeleopInit()
 //  if (m_container.HasAutoRun() == false)
      {
     // Test code -- NORMALLY THIS SHOULD BE SET AT t=0 OF AUTO
-//    m_container.TurretSetZeroAngle();  
-//    m_container.GyroSetZeroHeading();  
-    // m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 132_in, kFieldWidth/2, Rotation2d{180_deg})); // test code: robot center 11 feet directly in front of hub
+   m_container.TurretSetZeroAngle();  
+   m_container.GyroSetZeroHeading();  
+   m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 132_in, kFieldWidth/2, Rotation2d{180_deg})); // test code: robot center 11 feet directly in front of hub
 //  Pose2d autoStartPose = Pose2d(297_in, 68_in, frc::Rotation2d(-88.5_deg));
 //  m_container.ResetOdometry(autoStartPose); // test code: robot center 11 feet directly in front of hub
 //    printf("Resetting Odometry from Teleop: x=%.3f, y=%.3f, heading =%.1f\n", m_container.GetPose().X().to<double>(), m_container.GetPose().Y().to<double>(), m_container.GetPose().Rotation().Degrees().to<double>());

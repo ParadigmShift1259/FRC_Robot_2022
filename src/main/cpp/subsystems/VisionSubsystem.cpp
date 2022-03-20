@@ -286,7 +286,7 @@ Translation2d  VisionSubsystem::Targeting()
     StateHist lastOdoState = m_odometry.GetState();
     degree_t angleTurret = lastOdoState.m_turretAngle;
 
-    m_robotPose = lastOdoState.pose;
+    m_robotPose = m_odometry.GetPose();//lastOdoState.pose;
     // frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
     // frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{angleTurret});
     // frc::Rotation2d fieldToCamAngle = m_robotPose.Rotation() + frc::Rotation2d(units::radian_t{angleTurret});  
