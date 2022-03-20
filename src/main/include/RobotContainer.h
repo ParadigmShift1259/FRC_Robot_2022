@@ -91,13 +91,15 @@ public:
     bool OnlyOneBall() override { return m_onlyOneBall; }
     void SetOneBallFlag() override {m_onlyOneBall = true;}
 
-    Pose2d GetPose() { return m_drive.GetPose(); }
-    Pose2d GetPose(units::time::second_t timestamp) const { return m_drive.GetPose(timestamp); }
-    StateHist GetState() const { return m_drive.GetState(); }
-    StateHist GetState(units::time::second_t timestamp) const { return m_drive.GetState(timestamp); }
-    const StateHistColl& GetStateHist() const { return m_drive.GetStateHist(); }
-    units::degree_t GetTurretAngle() { return units::degree_t(m_turret.GetCurrentAngle()); }
-    void ResetOdometry(frc::Pose2d pose) { m_drive.ResetOdometry(pose); }
+    Pose2d GetPose() override { return m_drive.GetPose(); }
+    Pose2d GetPose(units::time::second_t timestamp) const override { return m_drive.GetPose(timestamp); }
+    StateHist GetState() const override { return m_drive.GetState(); }
+    StateHist GetState(units::time::second_t timestamp) const override { return m_drive.GetState(timestamp); }
+    const StateHistColl& GetStateHist() const override { return m_drive.GetStateHist(); }
+    units::degree_t GetTurretAngle() override { return units::degree_t(m_turret.GetCurrentAngle()); }
+    void ResetOdometry(frc::Pose2d pose) override { m_drive.ResetOdometry(pose); }
+    void AddVisionMeasurement(const Pose2d& visionRobotPose, units::second_t timestamp) override { m_drive.AddVisionMeasurement(visionRobotPose, timestamp);}
+
     //bool HasAutoRun() { return m_hasAutoRun; }
 
     double GetYvelovity() { return m_drive.GetYvelocity().to<double>(); }

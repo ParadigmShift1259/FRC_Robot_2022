@@ -6,6 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "subsystems/DriveSubsystem.h"
+#include "frc/StateSpaceUtil.h"
 #include <iostream>
 
 using namespace DriveConstants;
@@ -55,10 +56,19 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo)
       }
     , m_canifier(kCanifierID)
     , m_gyro(gyro)
+#ifdef USE_SWERVE_POSE_ESTIMATOR
+    , m_odometry{m_gyro->GetHeadingAsRot2d()
+                , Pose2d()
+                , kDriveKinematics
+                , wpi::array<double, 3>(0.01, 0.01, 0.01)
+                , wpi::array<double, 1>(0.1)
+                , wpi::array<double, 3>(0.1, 0.1, 0.1)}
+#else
     , m_odometry{kDriveKinematics, m_gyro->GetHeadingAsRot2d(), Pose2d()}
+#endif
+
     , m_odo(odo)
 {
-
     #ifdef MANUAL_MODULE_STATES
     SmartDashboard::PutNumber("T_D_MFL", 0);
     SmartDashboard::PutNumber("T_D_MFR", 0);
@@ -113,7 +123,11 @@ void DriveSubsystem::Periodic()
 //   printf("t=%.3f Module Speeds: FL=%.2f FR=%.2f RL=%.2f RR=%.2f\n", m_timer.GetFPGATimestamp().to<double>(), m_frontLeft.GetState().speed.to<double>(), m_rearLeft.GetState().speed.to<double>(), m_rearRight.GetState().speed.to<double>(), m_frontRight.GetState().speed.to<double>());
 //  n++;
 
+#ifdef USE_SWERVE_POSE_ESTIMATOR
+    frc::Pose2d pose = m_odometry.GetEstimatedPosition();
+#else
     frc::Pose2d pose = m_odometry.GetPose();
+#endif
     StateHist state;
     state.t = m_timer.GetFPGATimestamp();
     state.pose = pose;
@@ -271,7 +285,11 @@ bool DriveSubsystem::OdoValid()
 
 Pose2d DriveSubsystem::GetPose()
 {
+#ifdef USE_SWERVE_POSE_ESTIMATOR
+    return m_odometry.GetEstimatedPosition();
+#else
     return m_odometry.GetPose();
+#endif
 }
 
 frc::Pose2d DriveSubsystem::GetPose(units::time::second_t timestamp) const

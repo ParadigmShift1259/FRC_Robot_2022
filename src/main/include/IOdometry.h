@@ -26,4 +26,5 @@ public:
     //virtual bool HasAutoRun() = 0;
     virtual bool OdoValid() = 0;
     virtual void ResetOdometry(frc::Pose2d) = 0;
+    virtual void AddVisionMeasurement(const frc::Pose2d& visionRobotPose, units::second_t timestamp) = 0;
 };

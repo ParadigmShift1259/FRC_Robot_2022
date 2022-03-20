@@ -12,7 +12,16 @@
 #include <frc/geometry/Rotation2d.h>
 #include <frc/kinematics/ChassisSpeeds.h>
 #include <frc/kinematics/SwerveDriveKinematics.h>
+
+#define USE_SWERVE_POSE_ESTIMATOR
+#ifdef USE_SWERVE_POSE_ESTIMATOR
+#include <frc/estimator/SwerveDrivePoseEstimator.h>
+using SwerveOdo = frc::SwerveDrivePoseEstimator<4>;
+#else
 #include <frc/kinematics/SwerveDriveOdometry.h>
+using SwerveOdo = SwerveDriveOdometry<4>;
+#endif
+
 #include <frc/SmartDashBoard/SmartDashboard.h>
 #include <frc2/command/SubsystemBase.h>
 
@@ -139,6 +148,8 @@ public:
 
     const StateHistColl& GetStateHist() const { return m_StateHist; }
 
+    void AddVisionMeasurement(const Pose2d& visionRobotPose, units::second_t timestamp) {m_odometry.AddVisionMeasurement(visionRobotPose, timestamp); }
+    
     /// The kinematics object converts inputs into 4 individual swerve module turn angle and wheel speeds
     SwerveDriveKinematics<kNumSwerveModules> kDriveKinematics{
         Translation2d( kWheelBase / 2,  kTrackWidth / 2),    // +x, +y FL
@@ -175,7 +186,7 @@ private:
     /// Gyro to determine field relative driving, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
     /// Odometry class for tracking robot pose
-    SwerveDriveOdometry<DriveConstants::kNumSwerveModules> m_odometry;
+    SwerveOdo m_odometry;
     bool m_odoValid;
 
     /// PID to control overall robot chassis rotation 

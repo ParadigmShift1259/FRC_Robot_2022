@@ -37,7 +37,9 @@ void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name,
     SmartDashboard::PutNumber("Dt", (Timer::GetFPGATimestamp() - ntcallbackTimestamp).to<double>());
     // printf("Dt: %f\n", (Timer::GetFPGATimestamp() - visionTimestamp).to<double>());
     Work();
+
     ntcallbackTimestamp = Timer::GetFPGATimestamp();
+    m_odometry.AddVisionMeasurement(m_robotvisionPose, ntcallbackTimestamp - second_t(value->GetDouble()));
 }
 
 void VisionSubsystem::Periodic()
