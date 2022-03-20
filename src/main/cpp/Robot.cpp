@@ -76,11 +76,14 @@ void Robot::TeleopInit()
     frc::DataLogManager::Start();
   }
 
+  //Shuffleboard::SetRecordingFileNameFormat("Team1259NetTblData${date}_${time}");
+  //Shuffleboard::StartRecording();
+
   if (m_hasAutoRun == false)
   {
     // Test code -- NORMALLY THIS SHOULD BE SET AT t=0 OF AUTO
     m_container.TurretSetZeroAngle();  
-    //m_container.GyroSetZeroHeading();  
+    m_container.GyroSetZeroHeading();  
     m_container.ResetOdometry(frc::Pose2d(kFieldLength/2 - 132_in, kFieldWidth/2, Rotation2d{180_deg})); // test code: robot center 11 feet directly in front of hub
     //Pose2d autoStartPose = Pose2d(297_in, 68_in, frc::Rotation2d(-88.5_deg));
     //m_container.ResetOdometry(autoStartPose); // test code: robot center 11 feet directly in front of hub
