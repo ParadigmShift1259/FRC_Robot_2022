@@ -90,6 +90,7 @@ void Robot::TeleopInit()
     // SmartDashboard::PutNumber("Flywheel RPM Command", 0.0);
     // SmartDashboard::PutNumber("Cam Pitch Angle", 22.0);
     // SmartDashboard::PutNumber("Cam Height", 38.0);
+    SmartDashboard::PutNumber("Vision Target Rtol", 20.0);  
   }   
  
   // This makes sure that the autonomous stops running when

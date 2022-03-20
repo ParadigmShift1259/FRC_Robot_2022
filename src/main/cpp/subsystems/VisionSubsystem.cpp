@@ -96,21 +96,24 @@ void VisionSubsystem::Work()
 
         //Throw out outliers TODO only for odo
         // SEC 2022 Mar 19 This was discarding all targets
-        // for (size_t i = 0; i < targetVectors.size(); i++)
-        // {
-        //     units::meter_t rTolerance = 20.0_in;
+        for (size_t i = 0; i < targetVectors.size(); i++)
+        {
+            units::meter_t rTolerance = units::inch_t{SmartDashboard::GetNumber("Vision Target Rtol", 20.0)}; // 20.0_in;
             
-        //     Translation2d r = targetVectors[i] - m_cameraToHub;
+            Translation2d r = targetVectors[i] - m_cameraToHub;
 
-        //     if (units::math::fabs(r.Norm() - kVisionTargetRadius) > rTolerance || 
-        //         (GetVectorAngle(r) < units::radian_t{GetHubAngle() + wpi::numbers::pi/2} && GetVectorAngle(r) > units::radian_t{GetHubAngle() - wpi::numbers::pi/2}))
-        //     {
-        //         targetVectors.erase(targetVectors.begin() + i);
-        //         i--;
-        //         if (bLogInvalid)
-        //             std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
-        //     }
-        // }
+            if (units::math::fabs(r.Norm() - kVisionTargetRadius) > rTolerance || 
+                (GetVectorAngle(r) < units::radian_t{GetHubAngle() + wpi::numbers::pi/2} 
+                && GetVectorAngle(r) > units::radian_t{GetHubAngle() - wpi::numbers::pi/2}))
+            {
+                targetVectors.erase(targetVectors.begin() + i);
+                i--;
+                if (bLogInvalid)
+                {
+                    std::cout << "X: " << targetVectors[i].X().to<double>() * 39.37<< ", Y: " << targetVectors[i].Y().to<double>() *39.37<< ", R: " << r.Norm().to<double>()*39.37 << ", Angle: " << GetVectorAngle(r).to<double>()*180/3.14 <<std::endl;
+                }                  //std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
+            }
+        }
 
 // fprintf(m_logFile, " outlier-filtered targets: %d   ", targetVectors.size());
         if (targetVectors.size() >= 3)
@@ -221,6 +224,7 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
             Pose2d cameraPose = Pose2d(m_robotPose.Translation() - camToRobotCenter, fieldToCamRot);  // FIELD RELATIVE COORDINATES    
             Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RELATIVE COORDINATES    
             m_cameraToHub = cameraToHubFR.RotateBy(-fieldToCamRot); // transform from field-relative back to cam-relative
+            //std::cout << "CTH X: " << m_cameraToHub.X().to<double>()<< ", Y:" << m_cameraToHub.Y().to<double>() << "\n";
             }
         // else if (validTarget == true)  **** // CAN'T INITIALIZE ODO WITH VISION SINCE VISION NEEDS GYRO TO DETERMINE POSE ***** 
         //     {
@@ -249,7 +253,7 @@ Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RE
             m_hood.SetByDistance(GetHubDistance(false));
             //printf("Turret Angle %.2f   ", m_turret.GetCurrentAngle());
             //printf("Hub Angle: %.2f \n", hubAngle);
-            printf( " Hub angle: %f  range: %f\n", GetHubAngle()*180/3.14159, GetHubDistance(true)*39.37);
+            //printf( " Hub angle: %f  range: %f\n", GetHubAngle()*180/3.14159, GetHubDistance(true)*39.37);
         }
     }
 
