@@ -149,7 +149,8 @@ public:
     const StateHistColl& GetStateHist() const { return m_StateHist; }
 
     void AddVisionMeasurement(const Pose2d& visionRobotPose, units::second_t timestamp) {m_odometry.AddVisionMeasurement(visionRobotPose, timestamp); }
-    
+    void SetVisionMeasurementStdDevs( const wpi::array<double, 3>& visionMeasurementStdDevs) {m_odometry.SetVisionMeasurementStdDevs(visionMeasurementStdDevs); } 
+
     /// The kinematics object converts inputs into 4 individual swerve module turn angle and wheel speeds
     SwerveDriveKinematics<kNumSwerveModules> kDriveKinematics{
         Translation2d( kWheelBase / 2,  kTrackWidth / 2),    // +x, +y FL

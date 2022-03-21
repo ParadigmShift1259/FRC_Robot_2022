@@ -5,6 +5,7 @@
 #include <fmt/core.h>
 #include <vector>
 #include <photonlib/PhotonUtils.h>
+//#include "frc/StateSpaceUtil.h"
 
 VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, HoodSubsystem& hood, IOdometry& odometry) 
  : m_networktable(nt::NetworkTableInstance::GetDefault().GetTable("photonvision"))
@@ -35,21 +36,20 @@ void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name,
 {
     static units::time::second_t ntcallbackTimestamp = Timer::GetFPGATimestamp();
     SmartDashboard::PutNumber("Dt", (Timer::GetFPGATimestamp() - ntcallbackTimestamp).to<double>());
-    // printf("Dt: %f\n", (Timer::GetFPGATimestamp() - visionTimestamp).to<double>());
-    Work();
-
     ntcallbackTimestamp = Timer::GetFPGATimestamp();
-    m_odometry.AddVisionMeasurement(m_robotvisionPose, ntcallbackTimestamp - second_t(value->GetDouble()));
+
+    // printf("Dt: %f\n", (Timer::GetFPGATimestamp() - visionTimestamp).to<double>());
+    Work(ntcallbackTimestamp);
 }
 
 void VisionSubsystem::Periodic()
 {
-    //Work();
+    // Work(Timer::GetFPGATimestamp());
 }
     
-void VisionSubsystem::Work()
+void VisionSubsystem::Work(units::time::second_t timestamp)
 {
-    m_visionTimestamp = Timer::GetFPGATimestamp();
+    second_t visionTimestamp = Timer::GetFPGATimestamp();
 
     bool bLogInvalid = m_dbgLogInvalid;
 
@@ -66,10 +66,11 @@ void VisionSubsystem::Work()
 
         if (m_odometry.OdoValid())
         {
-            FilterTargets(targetVectors, m_cameraToHub, 20.0_in, degree_t(wpi::numbers::pi/2), degree_t(wpi::numbers::pi/2));//TODO larger than 12 inches? 20-30?
+//            FilterTargets(targetVectors, m_cameraToHub, 20.0_in, degree_t(wpi::numbers::pi/2), degree_t(wpi::numbers::pi/2)); 
         }
         else
         {
+            // TO DO: use median instead of average and adjust radius
             frc::Translation2d averageTarget = FindAverageOfTargets(targetVectors);
             FilterTargets(targetVectors, averageTarget, kHubRadius * 1.5, degree_t(0.0), degree_t(360.0));
         }
@@ -78,21 +79,30 @@ void VisionSubsystem::Work()
         if (targetVectors.size() >= 3 && targetVectors.size() <= 6)
         {
             frc::Translation2d cameraToHub = FitCircle(targetVectors, meter_t{0.01}, 20);
-            if (cameraToHub != frc::Translation2d())
+            if (cameraToHub != frc::Translation2d())  // FitCircle returns (0,0) translation to indicate failue
             {
                 m_consecNoTargets = 0;
                 m_validTarget = true;
+                m_visionTimestamp = timestamp - result.GetLatency();
 
                 Rotation2d fieldToCamRot;
                 Translation2d camToRobotCenter;
-                GetFieldReleativeRobotAndCameraPoses(cameraToHub, result, fieldToCamRot, camToRobotCenter);
+                GetFieldReleativeRobotAndCameraPoses(cameraToHub, fieldToCamRot, camToRobotCenter);
 
                 m_cameraToHub = CompensateMotionForLatency(fieldToCamRot, camToRobotCenter);    // Use odo comp
-                //m_cameraToHub = cameraToHub; // Use pure vision
 
-                // printf("latency ms: %.1f delayed odo pose: x %.3f y %.3f   ", 1000*result.GetLatency().to<double>(), delayedOdoPose.X().to<double>(), delayedOdoPose.Y().to<double>());
-                // printf("latency ms: %.1f compenstaion: x %.3f y %.3f    ", 1000*result.GetLatency().to<double>(), compenstaion.X().to<double>(), compenstaion.Y().to<double>());
-                // printf("compensated camera pose: x %.3f y %.3f\n", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
+                if(m_odometry.GetState(m_visionTimestamp).velocity < meters_per_second_t{.1})
+                    {
+//                    m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.01, 0.01, 0.01));
+                    m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
+                    }
+                else
+                    {
+//                    m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.05, 0.05, 0.01));
+                    m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
+                    }
+
+                //m_cameraToHub = cameraToHub; // Use pure vision
 
                 // do Hub distance smoothing
                 if (m_smoothedRange > 0)
@@ -100,7 +110,7 @@ void VisionSubsystem::Work()
                 else
                     m_smoothedRange = GetHubDistance(false);
             }
-            else
+            else // FitCircle() failed
             {
                 frc::DataLogManager::Log("Circle fit failed");
                 if (bLogInvalid)
@@ -162,15 +172,15 @@ void VisionSubsystem::Work()
     static int counter=0;
     if (counter++ % 25 == 0 && m_dbgLogTargetData)
     {
-        printf("Odometry Pose: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>()* 39.37, m_odometry.GetPose().Y().to<double>()* 39.37, m_odometry.GetPose().Rotation().Degrees().to<double>());
+        printf("Odometry Pose: x=%.3f, y=%.3f, theta=%.1f\n", m_odometry.GetPose().X().to<double>()* 39.37, m_odometry.GetPose().Y().to<double>()* 39.37, m_odometry.GetPose().Rotation().Degrees().to<double>());
         if (validTarget)
             {
-            printf("Vision Pose..: x=%.3f, y=%.3f, heading =%.1f\n", m_robotvisionPose.X().to<double>()* 39.37, m_robotvisionPose.Y().to<double>()* 39.37, m_robotvisionPose.Rotation().Degrees().to<double>());
-            printf("camera pose x %.3f y %.3f theta %.3f\n", m_cameraPose.X().to<double>()* 39.37, m_cameraPose.Y().to<double>()* 39.37, m_cameraPose.Rotation().Degrees().to<double>());
+            printf("Vision Pose..: x=%.3f, y=%.3f, theta=%.1f\n", m_robotvisionPose.X().to<double>()* 39.37, m_robotvisionPose.Y().to<double>()* 39.37, m_robotvisionPose.Rotation().Degrees().to<double>());
+//            printf("camera pose..: x=%.3f, y=%.3f, theta %.3f\n", m_cameraPose.X().to<double>()* 39.37, m_cameraPose.Y().to<double>()* 39.37, m_cameraPose.Rotation().Degrees().to<double>());
             }  
         else
             printf("NO Vision Pose\n");
-        //printf(".\n");
+        printf(".\n");
 
         if (!m_validTarget && bLogInvalid)
         {
@@ -245,12 +255,11 @@ void VisionSubsystem::FilterTargets(vector<frc::Translation2d>& targetVectors, f
     }
 }
 
-void  VisionSubsystem::GetFieldReleativeRobotAndCameraPoses(frc::Translation2d& cameraToHub, photonlib::PhotonPipelineResult& result, Rotation2d& fieldToCamRot, Translation2d& camToRobotCenter)
+void  VisionSubsystem::GetFieldReleativeRobotAndCameraPoses(frc::Translation2d& cameraToHub, Rotation2d& fieldToCamRot, Translation2d& camToRobotCenter)
 {
     // cameraToHub is the vector from cam to hub IN CAMERA-RELATIVE COORDINATE SYSTEM!
     // printf("camera pose from circle fit: x %.3f y %.3f    ", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
-    second_t visionTimestamp = m_visionTimestamp - result.GetLatency();
-    StateHist delayedState = m_odometry.GetState(visionTimestamp);
+    StateHist delayedState = m_odometry.GetState(m_visionTimestamp);
     frc::Pose2d delayedOdoPose = delayedState.pose;
     degree_t angleTurret = delayedState.m_turretAngle;
     Rotation2d robotRot = delayedOdoPose.Rotation(); // robot heading FIELD RELATIVE
@@ -270,12 +279,26 @@ void  VisionSubsystem::GetFieldReleativeRobotAndCameraPoses(frc::Translation2d& 
 Translation2d  VisionSubsystem::CompensateMotionForLatency(Rotation2d& fieldToCamRot, Translation2d& camToRobotCenter)
 {
     // Use wheel odo to correct robotvisionPose for movement since image was captured
-    //frc::Pose2d lastOdoState = m_odometry.GetPose(); // auto& lastOdoState = m_odometry.GetStateHist().back();  
-    // frc::Transform2d compenstaion = Transform2d(lastOdoState.pose, delayedOdoPose);
+    StateHist currentState = m_odometry.GetState();
+    StateHist delayedState = m_odometry.GetState(m_visionTimestamp);
+    // degree_t angleTurret = delayedState.m_turretAngle;
+ 
+    Transform2d compenstaion = Transform2d(delayedState.pose, currentState.pose);
 
-    Transform2d compenstaion; // zero transform for testing
-    Pose2d compensatedRobotvisionPose = m_robotvisionPose.TransformBy(compenstaion);             
+    Pose2d compensatedRobotvisionPose = m_robotvisionPose.TransformBy(compenstaion);
 
+    static int ctr=0;
+    if (compenstaion.Translation().Norm() > .01_m && ctr++ % 10 == 0)
+        {
+        // Transform2d compenstaion; // zero transform for testing
+        printf("current pose: x %.3f y %.3f\n", currentState.pose.X().to<double>(), currentState.pose.Y().to<double>());
+        printf("delayed pose: x %.3f y %.3f\n", delayedState.pose.X().to<double>(), delayedState.pose.Y().to<double>());
+        printf("compenstaion: x %.3f y %.3f\n", compenstaion.X().to<double>(), compenstaion.Y().to<double>());
+        printf("vision  pose: x %.3f y %.3f\n", m_robotvisionPose.X().to<double>(), m_robotvisionPose.Y().to<double>());
+        printf("comp'd Vpose: x %.3f y %.3f\n", compensatedRobotvisionPose.X().to<double>(), compensatedRobotvisionPose.Y().to<double>());
+        printf(".\n");
+        }
+     
     Pose2d compensatedCameraPose = Pose2d(compensatedRobotvisionPose.Translation() - camToRobotCenter, fieldToCamRot);  // FIELD RELATIVE COORDINATES    
     Translation2d cameraToHubFR = kHubCenter - compensatedCameraPose.Translation(); // FIELD RELATIVE COORDINATES    
 
@@ -312,9 +335,9 @@ void  VisionSubsystem::SteerTurretAndAdjusthood()
     m_hood.SetByDistance(GetHubDistance(false));
     if (m_dbgLogTargetData)
     {
-        //printf("Turret Angle %.2f   ", m_turret.GetCurrentAngle());
-        //printf("Hub Angle: %.2f \n", hubAngle);
-        printf( " Hub angle: %f  range: %f\n", GetHubAngle()*180/3.14159, GetHubDistance(true)*39.37);
+        // printf("Turret Angle %.2f   ", m_turret.GetCurrentAngle());
+        // printf("Hub Angle: %.2f \n", hubAngle);
+        // printf( " Hub angle: %f  range: %f\n", GetHubAngle()*180/3.14159, GetHubDistance(true)*39.37);
     }
 }
 

@@ -61,8 +61,8 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo)
                 , Pose2d()
                 , kDriveKinematics
                 , wpi::array<double, 3>(0.01, 0.01, 0.01)
-                , wpi::array<double, 1>(0.1)
-                , wpi::array<double, 3>(0.1, 0.1, 0.1)}
+                , wpi::array<double, 1>(0.01)
+                , wpi::array<double, 3>(0.05, 0.05, 0.01)}
 #else
     , m_odometry{kDriveKinematics, m_gyro->GetHeadingAsRot2d(), Pose2d()}
 #endif
@@ -315,7 +315,7 @@ StateHist DriveSubsystem::GetState(units::time::second_t timestamp) const
         return firstOdoState;
     else 
         {
-        i = m_StateHist.size() * (double)((timestamp - firstOdoState.t) * (lastOdoState.t - firstOdoState.t));
+        i = m_StateHist.size() * (double)((timestamp - firstOdoState.t) / (lastOdoState.t - firstOdoState.t));
         if (i >= m_StateHist.size())
             return lastOdoState;  // probably not needed but just to be safe
         else if (i == 0)

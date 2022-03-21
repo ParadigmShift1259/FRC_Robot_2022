@@ -75,14 +75,14 @@ protected:
     /// Converts degrees to radians
     /// \param degrees Degrees to convert
     double DegreesToRadians(double degrees);
-    void Work();
+    void Work(units::time::second_t ntcallbackTimestamp);
 
 private:    
     void GetVisionTargetCoords(wpi::span<const photonlib::PhotonTrackedTarget>& targets, vector<frc::Translation2d>& targetVectors);   // TODO targetCoords
     frc::Translation2d FindAverageOfTargets(vector<frc::Translation2d>& targetVectors);
     // TODO make it FindMedianOfTargets
     void FilterTargets(vector<frc::Translation2d>& targetVectors, frc::Translation2d center, meter_t rMax, degree_t minangle, degree_t maxangle);
-    void GetFieldReleativeRobotAndCameraPoses(frc::Translation2d& cameraToHub, photonlib::PhotonPipelineResult& result, Rotation2d& fieldToCamRot, Translation2d& camToRobotCenter);
+    void GetFieldReleativeRobotAndCameraPoses(frc::Translation2d& cameraToHub, Rotation2d& fieldToCamRot, Translation2d& camToRobotCenter);
     Translation2d CompensateMotionForLatency(Rotation2d& fieldToCamRot, Translation2d& camToRobotCenter);
     Translation2d Targeting();
     void SteerTurretAndAdjusthood();
