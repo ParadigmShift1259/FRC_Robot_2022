@@ -42,9 +42,11 @@ constexpr degree_t maxAngle = degree_t(60.0);
 constexpr degree_t minAngle = degree_t(33.3);
 
 constexpr foot_t robotHeight = foot_t(3.0);
-constexpr foot_t defaultTargetDist = foot_t(4.0);
+//constexpr foot_t defaultTargetDist = foot_t(2.5);
+//constexpr foot_t defaultTargetHeight = inch_t(80.0);
+constexpr foot_t defaultTargetDist = foot_t(2.0);
 constexpr foot_t defaultTargetHeight = foot_t(8.67);
-constexpr foot_t defaultHeightAboveHub = foot_t(10.0);
+constexpr foot_t defaultHeightAboveHub = foot_t(9.2);
 
 class Calculations
 {
@@ -60,7 +62,7 @@ class Calculations
   meters_per_second_t CalcInitVel();
   meters_per_second_t CalcInitVelWithAngle();
   degree_t GetInitAngle();                                                            //!< Call after GetInitVelWithAngle or GetInitRPMS
-  revolutions_per_minute_t CalcInitRPMs(meter_t distance, meter_t targetDist, meter_t targetHeight = defaultTargetHeight, meter_t heightAboveHub = defaultHeightAboveHub);        //!< Calculates the RPMs needed to shoot the specified distance
+  revolutions_per_minute_t CalcInitRPMs(meter_t distance, meter_t targetDist, meter_t heightAboveHub = defaultHeightAboveHub, meter_t targetHeight = defaultTargetHeight);        //!< Calculates the RPMs needed to shoot the specified distance
   radians_per_second_t QuadraticFormula(double a, double b, double c, bool subtract);
 
   void CalculateAll();

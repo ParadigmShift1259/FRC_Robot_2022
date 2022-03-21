@@ -7,8 +7,7 @@
 
 using namespace FlywheelConstants;
 
-//Enable to tune the flywheel constants
-//#define TUNE_FLYWHEEL
+
 
 // Removes deprecated warning for CANEncoder and CANPIDController
 #pragma GCC diagnostic push
@@ -47,6 +46,8 @@ FlywheelSubsystem::FlywheelSubsystem()
 
     SmartDashboard::PutNumber("T_F_Setpoint", m_setpoint);
 
+//Enable to tune the flywheel constants
+// #define TUNE_FLYWHEEL
 #ifdef TUNE_FLYWHEEL
     SmartDashboard::PutNumber("T_F_S", kS);
     SmartDashboard::PutNumber("T_F_V", FlywheelConstants::kV);

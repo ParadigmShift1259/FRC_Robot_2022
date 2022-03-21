@@ -17,9 +17,12 @@ void HoodSubsystem::Periodic()
 {
     SmartDashboard::PutNumber("Hood Servo Pos", m_servo.Get());
 
-// double hoodangle = SmartDashboard::GetNumber("Hood Servo Pos Command", 0.19);
-// hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
-// SetServoPosition(hoodangle);
+// #define HOOD_TUNING
+#ifdef HOOD_TUNING
+    double hoodangle = SmartDashboard::GetNumber("Hood Servo Pos Command", 0.9);
+    hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
+    SetServoPosition(hoodangle);
+#endif
 }
 
 void HoodSubsystem::SetServoPosition(double position) 
@@ -39,7 +42,7 @@ void HoodSubsystem::SetByDistance(double distHubCenter)
 
     if (distance > 0)
     {
-        m_flywheelSpeed = m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub).to<double>();
+        m_flywheelSpeed = m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub, foot_t(8.6) + foot_t(distance / 10.0)).to<double>(); //TODO: Make 8.6 and 10 constants
         degree_t initAngle = m_calculation.GetInitAngle();
         double x = initAngle.to<double>();
         if (x != x)
@@ -67,5 +70,6 @@ void HoodSubsystem::SetByDistance(double distHubCenter)
         SmartDashboard::PutNumber("Init Angle: ", initAngle.to<double>());
         SmartDashboard::PutNumber("Hood Angle:", hoodangle);
         SmartDashboard::PutNumber("Hoodangle Constant", c);
+
    }
 }

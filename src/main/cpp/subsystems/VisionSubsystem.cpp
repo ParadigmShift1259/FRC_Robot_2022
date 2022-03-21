@@ -160,7 +160,7 @@ void VisionSubsystem::Work()
     }
 
     static int counter=0;
-    if (counter++ % 25 == 0)
+    if (counter++ % 25 == 0 && m_dbgLogTargetData)
     {
         printf("Odometry Pose: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>()* 39.37, m_odometry.GetPose().Y().to<double>()* 39.37, m_odometry.GetPose().Rotation().Degrees().to<double>());
         if (validTarget)
@@ -305,17 +305,18 @@ Translation2d  VisionSubsystem::Targeting()
     return cameraToHubFR.RotateBy(-fieldToCamRot); // transform from field-relative back to cam-relative
 }
 
-
 void  VisionSubsystem::SteerTurretAndAdjusthood()
 {
     auto hubAngle = GetHubAngle() * 180.0 / wpi::numbers::pi;
     m_turret.TurnToRelative(hubAngle * 1.0); // can apply P constant < 1.0 if needed for vision tracking stability 
     m_hood.SetByDistance(GetHubDistance(false));
-    //printf("Turret Angle %.2f   ", m_turret.GetCurrentAngle());
-    //printf("Hub Angle: %.2f \n", hubAngle);
-    printf( " Hub angle: %f  range: %f\n", GetHubAngle()*180/3.14159, GetHubDistance(true)*39.37);
+    if (m_dbgLogTargetData)
+    {
+        //printf("Turret Angle %.2f   ", m_turret.GetCurrentAngle());
+        //printf("Hub Angle: %.2f \n", hubAngle);
+        printf( " Hub angle: %f  range: %f\n", GetHubAngle()*180/3.14159, GetHubDistance(true)*39.37);
+    }
 }
-
 
 bool VisionSubsystem::GetValidTarget()
 {

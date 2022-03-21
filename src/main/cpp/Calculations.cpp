@@ -166,7 +166,7 @@ degree_t Calculations::GetInitAngle()
   return m_angleInit;
 }
 
-revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t targetDist, meter_t targetHeight/* = defaultTargetHeight*/, meter_t heightAboveHub/* = defaultHeightAboveHub*/)
+revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t targetDist, meter_t heightAboveHub/* = defaultHeightAboveHub*/, meter_t targetHeight/* = defaultTargetHeight*/)
 {
   m_xInput = distance;
   m_xTarget = targetDist;
