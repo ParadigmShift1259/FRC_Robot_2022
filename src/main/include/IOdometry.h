@@ -4,6 +4,7 @@
 #include <frc/trajectory/Trajectory.h>
 #include <units/time.h>
 // #include "frc/StateSpaceUtil.h"
+#include <wpi/array.h>
 
 #include "StateWithTurretAngle.h"
 
@@ -28,5 +29,5 @@ public:
     virtual bool OdoValid() = 0;
     virtual void ResetOdometry(frc::Pose2d) = 0;
     virtual void AddVisionMeasurement(const frc::Pose2d& visionRobotPose, units::second_t timestamp) = 0;
-//    virtual void SetVisionMeasurementStdDevs( const wpi::array<double, 3>& visionMeasurementStdDevs) = 0; 
+    virtual void SetVisionMeasurementStdDevs( const wpi::array<double, 3>& visionMeasurementStdDevs) = 0; 
 };

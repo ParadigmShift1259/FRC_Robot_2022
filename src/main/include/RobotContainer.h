@@ -99,6 +99,7 @@ public:
     units::degree_t GetTurretAngle() override { return units::degree_t(m_turret.GetCurrentAngle()); }
     void ResetOdometry(frc::Pose2d pose) override { m_drive.ResetOdometry(pose); }
     void AddVisionMeasurement(const Pose2d& visionRobotPose, units::second_t timestamp) override { m_drive.AddVisionMeasurement(visionRobotPose, timestamp);}
+    void SetVisionMeasurementStdDevs( const wpi::array<double, 3>& visionMeasurementStdDevs) override { m_drive.SetVisionMeasurementStdDevs(visionMeasurementStdDevs); }
 
     //bool HasAutoRun() { return m_hasAutoRun; }
 

@@ -191,15 +191,26 @@ void RobotContainer::ConfigSecondaryButtonBindings()
     JoystickButton(&secondary, xbox::kX).WhenPressed(&m_runTransferAndFeeder);
     JoystickButton(&secondary, xbox::kX).WhenReleased(&m_stopTransferAndFeeder);
     JoystickButton(&secondary, xbox::kY).WhenPressed(
-        Fire( &m_flywheel
-            , &m_turret
-            , &m_hood
-            , &m_transfer
-            , m_vision
-            , &m_turretready
-            , &m_firing
-            , &m_finished
-            , [this]() { return GetYvelovity(); } )
+        frc2::ConditionalCommand(frc2::SequentialCommandGroup(std::move(HomeTarget( &m_flywheel
+                                                                                    , &m_turret
+                                                                                    , &m_hood
+                                                                                    , m_vision
+                                                                                    , &m_turretready
+                                                                                    , &m_firing
+                                                                                    , &m_finished
+                                                                                    , [this]() { return GetYvelovity(); }))
+                                                                , std::move(FireOneBall(&m_transfer)))
+                              , std::move(Fire( &m_flywheel
+                                              , &m_turret
+                                              , &m_hood
+                                              , &m_transfer
+                                              , m_vision
+                                              , &m_turretready
+                                              , &m_firing
+                                              , &m_finished
+                                              , [this]() { return GetYvelovity(); }
+                                              , TransferConstants::kTimeLaunch))
+                              , [this](){return m_onlyOneBall;})
     );
     JoystickButton(&secondary, xbox::kLeftBumper).WhenPressed(&m_turretToCenter);
     //JoystickButton(&secondary, xbox::kBumperRight).WhenPressed(&m_setTurretZero);
@@ -250,6 +261,37 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
         frc::Pose2d(3.0_m, 2.0_m, frc::Rotation2d(210_deg))
     };
 
+    vector<Pose2d> BallStealHgWaypoints1
+    {
+        frc::Pose2d(240_in, 202_in, frc::Rotation2d(150_deg)), // perpendicular to corner wall
+        frc::Pose2d(193_in, 246_in, frc::Rotation2d(150_deg))
+    };
+
+    vector<Pose2d> BallStealHgWaypoints2
+    {
+    Pose2d(193_in, 246_in, 140_deg),
+    Pose2d(201.91_in, 258.87_in, 55.3048464687661_deg),
+    Pose2d(210.82_in, 271.74_in, 55.304846468766_deg),
+    Pose2d(220_in, 285_in, 27.652423234383_deg),
+    Pose2d(238_in, 285_in, 0_deg)
+    };
+
+    vector<Pose2d> BallStealHgWaypoints3
+    {
+    Pose2d(238_in, 285_in, 0_deg),
+    Pose2d(225.13_in, 240.45_in, -106.113418233089_deg),
+    Pose2d(212.26_in, 195.9_in, -106.113418233089_deg),
+    Pose2d(199_in, 150_in, -120.556709116545_deg),
+    Pose2d(179_in, 130_in, -110_deg)
+    };
+
+    vector<Pose2d> BallStealHgWaypoints4
+    {
+    Pose2d(179_in, 130_in, -110_deg),
+    Pose2d(100_in, 179_in, -54_deg)
+    };
+
+
     auto config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
     config.SetKinematics(m_drive.kDriveKinematics);    
     // Trajectory straightLine50ftTraj = frc::TrajectoryGenerator::GenerateTrajectory(straightLineWaypoints, config);
@@ -272,6 +314,12 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     // config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
     Trajectory ball34ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34ShootWaypoints[0], {}, ball34ShootWaypoints[1], config);
 
+    config.SetReversed(false);
+    Trajectory BallStealHgTraj1 = frc::TrajectoryGenerator::GenerateTrajectory(BallStealHgWaypoints1, config);
+    Trajectory BallStealHgTraj2 = frc::TrajectoryGenerator::GenerateTrajectory(BallStealHgWaypoints2, config);
+    Trajectory BallStealHgTraj3 = frc::TrajectoryGenerator::GenerateTrajectory(BallStealHgWaypoints3, config);
+    Trajectory BallStealHgTraj4 = frc::TrajectoryGenerator::GenerateTrajectory(BallStealHgWaypoints4, config);
+    
 
     switch (path)
     {
@@ -307,24 +355,21 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
                 // , m_resetOneBallFlag
                 , m_resetOneBallFlag // wait for 4th ball bowled in from human player
                 , std::move(*GetIntakePathCmd(ball34PickupTraj, false))
+                , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})                
                 , std::move(*GetFirePathCmd(ball34ShootTraj, false))
             );
 
-        // case kEx5:
-        //     return new frc2::SequentialCommandGroup
-        //     (
-        //         m_driveRotateCw                 // Shimmy so the intake deploys
-        //         , frc2::WaitCommand(0.250_s)
-        //         , m_driveRotateCcw
-        //         , frc2::WaitCommand(0.500_s)
-        //         , m_driveRotateCw
-        //         , frc2::WaitCommand(0.250_s)
-        //         , std::move(*GetAutoPathCmd("Ball1Short", true))
-        //         , m_setOneBallFlag
-        //         , std::move(*GetAutoPathCmd("Ball3Short", false))
-        //         //, std::move(*GetAutoPathCmd("OneBallTest", true))
-        //         , m_resetOneBallFlag
-        //     );
+         case kEx5:  // *** UNTESTED ***
+             return new frc2::SequentialCommandGroup
+             (
+                std::move(*GetIntakeAndFirePathCmd(BallStealHgTraj1, true)) 
+                , m_setOneBallFlag
+                , std::move(*GetIntakePathCmd(BallStealHgTraj2, false))
+                , m_setOneBallFlag
+                , std::move(*GetIntakePathCmd(BallStealHgTraj3, false))
+                , std::move(*GetFirePathCmd(BallStealHgTraj4, false))
+
+             );
 
         default:
             return new frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive});
@@ -414,7 +459,15 @@ frc2::SequentialCommandGroup* RobotContainer::GetIntakeAndFirePathCmd(Trajectory
             printf("Finished IntakeAndFirePathCmd\n");
             }, {})
 
-        , frc2::ConditionalCommand(std::move(FireOneBall(&m_transfer))
+        , frc2::ConditionalCommand(frc2::SequentialCommandGroup(std::move(HomeTarget( &m_flywheel
+                                                                                    , &m_turret
+                                                                                    , &m_hood
+                                                                                    , m_vision
+                                                                                    , &m_turretready
+                                                                                    , &m_firing
+                                                                                    , &m_finished
+                                                                                    , [this]() { return GetYvelovity(); }))
+                                                              , std::move(FireOneBall(&m_transfer)))
                                  , std::move(Fire( &m_flywheel
                                                  , &m_turret
                                                  , &m_hood

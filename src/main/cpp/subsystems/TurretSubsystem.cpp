@@ -29,7 +29,7 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     m_turretmotor.Config_IntegralZone(0, kIZone, kTimeout);
     m_turretmotor.ConfigMaxIntegralAccumulator(0, 50000.0); // TO DO: remove or tune
     m_turretmotor.SetIntegralAccumulator(0.0, 0);
-    m_turretmotor.ConfigMotionSCurveStrength(1.0);
+    m_turretmotor.ConfigMotionSCurveStrength(kMotionSCurveStrength);
 
     // set soft limits of turret
     m_turretmotor.ConfigForwardSoftLimitThreshold(DegreesToTicks(kMaxAngle));

@@ -298,8 +298,8 @@ void DriveSubsystem::ResetEncoders()
 bool DriveSubsystem::OdoValid()
 {
     // check for reasonableness becuase sometimes SwerveDrivePoseEstimator diverges, explodes or becomes NaN
-    if (GetPose().X() >= 0_m && GetPose().X() <= VisionConstants::kFieldLength
-        && GetPose().Y() >= 0_m && GetPose().Y() <= VisionConstants::kFieldWidth)
+    if (! (GetPose().X() >= 0_m && GetPose().X() <= VisionConstants::kFieldLength
+        && GetPose().Y() >= 0_m && GetPose().Y() <= VisionConstants::kFieldWidth))
         m_odoValid = false;
 
     return m_odoValid;

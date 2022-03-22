@@ -178,6 +178,10 @@ revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t ta
     m_xTarget = foot_t(m_xTargetDistanceEntry.GetDouble(defaultTargetDist.to<double>()));
     m_heightTarget = foot_t(m_heightTargetEntry.GetDouble(defaultTargetHeight.to<double>()));
     m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(defaultHeightAboveHub.to<double>()));
+#else
+    m_xTargetDistanceEntry.SetDouble(m_xTarget.to<double>());
+    m_heightTargetEntry.SetDouble(m_heightTarget.to<double>());
+    m_heightAboveHubEntry.SetDouble(m_heightAboveHub.to<double>());
 #endif
   
   CalcInitVel();

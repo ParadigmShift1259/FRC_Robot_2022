@@ -20,7 +20,7 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
     m_consecNoTargets = 0;
 
     m_logFile = stderr; // fopen("/tmp/visionLog.txt", "w");
-    m_targeting = kOdometry;
+    m_targeting = kOdometry; // kPureVision;
 
     wpi::log::DataLog& log = DataLogManager::GetLog();
 
@@ -37,25 +37,39 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
     m_logCircleFitResultDist = wpi::log::DoubleLogEntry(log, "/vision/circleFitDist");
     m_logCircleFitResultAngle = wpi::log::DoubleLogEntry(log, "/vision/circleFitAngle");
 
-    m_networktable->AddEntryListener(
-       "gloworm/latencyMillis"
-       ,[this](nt::NetworkTable* table
-            , std::string_view name
-            , nt::NetworkTableEntry entry
-            , std::shared_ptr<nt::Value> value
-            , int flags)
-        { NTcallback(table, name, entry, value, flags); }
-        , nt::EntryListenerFlags::kUpdate);
+    // m_networktable->AddEntryListener(
+    //    "gloworm/latencyMillis"
+    //    ,[this](nt::NetworkTable* table
+    //         , std::string_view name
+    //         , nt::NetworkTableEntry entry
+    //         , std::shared_ptr<nt::Value> value
+    //         , int flags)
+    //     { NTcallback(table, name, entry, value, flags); }
+    //     , nt::EntryListenerFlags::kUpdate);
 }
 
 void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name, nt::NetworkTableEntry entry, std::shared_ptr<nt::Value> value, int flags)
 {
-    static units::time::second_t ntcallbackTimestamp = Timer::GetFPGATimestamp();
-    SmartDashboard::PutNumber("Dt", (Timer::GetFPGATimestamp() - ntcallbackTimestamp).to<double>());
-    ntcallbackTimestamp = Timer::GetFPGATimestamp();
+    // static units::time::second_t ntcallbackTimestamp = Timer::GetFPGATimestamp();
+    // SmartDashboard::PutNumber("Dt", (Timer::GetFPGATimestamp() - ntcallbackTimestamp).to<double>());
+    // ntcallbackTimestamp = Timer::GetFPGATimestamp();
 
-    // printf("Dt: %f\n", (Timer::GetFPGATimestamp() - visionTimestamp).to<double>());
-    Work(ntcallbackTimestamp);
+    // // printf("Dt: %f\n", (Timer::GetFPGATimestamp() - visionTimestamp).to<double>());
+    // Work(ntcallbackTimestamp);
+
+    // m_logRobotvisionPoseX.Append(m_robotvisionPose.X().to<double>());
+    // m_logRobotvisionPoseY.Append(m_robotvisionPose.Y().to<double>());
+    // m_logRobotvisionPoseTheta.Append(m_robotvisionPose.Rotation().Degrees().to<double>());
+    // m_logCameraPoseX.Append(m_cameraPose.X().to<double>());
+    // m_logCameraPoseY.Append(m_cameraPose.Y().to<double>());
+    // m_logCameraPoseTheta.Append(m_cameraPose.Rotation().Degrees().to<double>());
+    // m_logCameraToHubDist.Append(m_cameraToHub.Norm().to<double>());
+    // m_logCameraToHubAngle.Append(GetVectorAngle(m_cameraToHub).to<double>()*180/3.14159);
+}
+
+void VisionSubsystem::Periodic()
+{
+    Work(Timer::GetFPGATimestamp());
 
     m_logRobotvisionPoseX.Append(m_robotvisionPose.X().to<double>());
     m_logRobotvisionPoseY.Append(m_robotvisionPose.Y().to<double>());
@@ -65,11 +79,6 @@ void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name,
     m_logCameraPoseTheta.Append(m_cameraPose.Rotation().Degrees().to<double>());
     m_logCameraToHubDist.Append(m_cameraToHub.Norm().to<double>());
     m_logCameraToHubAngle.Append(GetVectorAngle(m_cameraToHub).to<double>()*180/3.14159);
-}
-
-void VisionSubsystem::Periodic()
-{
-    // Work(Timer::GetFPGATimestamp());
 }
     
 void VisionSubsystem::Work(units::time::second_t timestamp)
@@ -123,12 +132,12 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
                 if(m_odometry.GetState(m_visionTimestamp).velocity < meters_per_second_t{.1})
                     {
 //                    m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.01, 0.01, 0.01));
-                    m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
+//                    m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
                     }
                 else
                     {
 //                    m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.05, 0.05, 0.01));
-                    m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
+//                    m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
                     }
 
                 m_cameraToHub = CompensateForLatencyAndMotion();    // Use wheel odo to correct for movement since image was captured
@@ -143,7 +152,7 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
             {
                 frc::DataLogManager::Log("Circle fit failed");
                 if (bLogInvalid)
-                    fprintf(m_logFile, "Circle fit failed \n");
+                    printf("Circle fit failed \n");
                     //std::cout << "Circle fit failed " << std::endl;
                 validTarget =  false;
             }
@@ -152,7 +161,7 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
         {
             frc::DataLogManager::Log(fmt::format("Only {} vision targets", targetVectors.size()));
             if (bLogInvalid)
-                fprintf(m_logFile, "Only %d  vision targets\n", targetVectors.size());
+                printf("Only %d  vision targets\n", targetVectors.size());
                 //std::cout << fprintf(m_logFile, "Only " << targetVectors.size() << " vision targets" << std::endl;
             validTarget =  false; 
         }
@@ -170,8 +179,15 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
     if (!m_odometry.OdoValid())
     {   
         // This assumes gyro was properly zeroed previously and is still valid, otherwise odometry coordinates will have arbitrary rotation w.r.t. true field!
+        if (m_dbgLogTargetData)
+        {
+        printf("Odometry Invalid: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
+        }
         m_odometry.ResetOdometry(m_robotvisionPose);
-        printf("Resetting Odometry from Vision: x=%.3f, y=%.3f, heading =%.1f", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
+        if (m_dbgLogTargetData)
+        {
+            printf("Resetting Odometry from Vision: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
+        }
         frc::DataLogManager::Log(fmt::format("Resetting Odometry from Vision: x={}, y={}, heading={}", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>()));
     }
 
@@ -269,7 +285,7 @@ void VisionSubsystem::FilterTargets(vector<frc::Translation2d>& targetVectors, f
             i--;
             //if (bLogInvalid)
                 //std::cout << "Target Discarded" << std::endl; // This floods at 30+ FPS!!!
-            frc::DataLogManager::Log(fmt::format("Discarded target: r={}, angle={}", r.Norm().to<double>(), GetVectorAngle(r).to<double>()));
+            frc::DataLogManager::Log(fmt::format("Discarded target: r={}, angle={}", r.Norm().to<double>()*39.37, GetVectorAngle(r).to<double>()*180/3.14));
         }
     }
 }
