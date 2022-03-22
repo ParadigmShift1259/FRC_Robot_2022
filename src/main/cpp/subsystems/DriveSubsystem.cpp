@@ -125,6 +125,7 @@ void DriveSubsystem::Periodic()
 
 #ifdef USE_SWERVE_POSE_ESTIMATOR
     frc::Pose2d pose = m_odometry.GetEstimatedPosition();
+    OdoValid(); // (checks for resonableness and clears m_odoValid if necessary) 
 #else
     frc::Pose2d pose = m_odometry.GetPose();
 #endif
@@ -280,6 +281,11 @@ void DriveSubsystem::ResetEncoders()
 
 bool DriveSubsystem::OdoValid()
 {
+    // check for reasonableness becuase sometimes SwerveDrivePoseEstimator diverges, explodes or becomes NaN
+    if (GetPose().X() >= 0_m && GetPose().X() <= VisionConstants::kFieldLength
+        && GetPose().Y() >= 0_m && GetPose().Y() <= VisionConstants::kFieldWidth)
+        m_odoValid = false;
+
     return m_odoValid;
 }
 
@@ -379,6 +385,7 @@ double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
 void DriveSubsystem::ResetOdometry(Pose2d pose)
 {
     m_odometry.ResetPosition(pose, m_gyro->GetHeadingAsRot2d());
+    m_StateHist.clear();
     m_odoValid = true;
 }
 

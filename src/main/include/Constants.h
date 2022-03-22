@@ -253,8 +253,15 @@ namespace VisionConstants
     constexpr units::meter_t kVisionTargetDiameter = 53.375_in;
     constexpr units::meter_t kVisionTargetHeight = 77.5_in;
 
-    constexpr units::meter_t kVisionTargetRadius = kVisionTargetDiameter / 2; //Should be meters type
-    constexpr units::meter_t kMaxTargetSpread = 1.1 * kVisionTargetRadius;
+    constexpr units::meter_t kVisionTargetRadius = kVisionTargetDiameter / 2;
+    constexpr units::meter_t kMaxTargetRadialSpreadPureVision = 1.1 * kVisionTargetRadius;  // distance from average of all vision targets to each target
+    constexpr units::degree_t kMaxTargetAngleSpreadPureVision = 120_deg;  // angle from average of all vision targets to each target
+    constexpr units::meter_t kMaxTargetRadialSpreadOdo = 2.5 * kVisionTargetRadius; // Distance from expected Hub center to vision target
+    constexpr units::degree_t kMaxTargetAngleSpreadOdo = 100_deg;  // Angle from expected Hub center to vision target
+
+    constexpr int kTurretCmdHoldoff = 3;
+    constexpr double kTurretCmdP = 0.9;
+    constexpr units::meter_t kMaxTargetRange = 10_m;
 }
 
 // Flywheel Subsystem constants

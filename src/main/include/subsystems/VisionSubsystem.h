@@ -71,6 +71,12 @@ public:
 
     void CloseLogFile() { if (m_logFile) fclose(m_logFile);  }
 
+    enum TargetingMode : int { kOff = 0, kPureVision = 1, kOdometry = 2 };
+
+    void SetTargetingMode(TargetingMode mode);
+
+    TargetingMode GetTargetingMode(void);
+
 protected:
     /// Converts degrees to radians
     /// \param degrees Degrees to convert
@@ -81,9 +87,9 @@ private:
     void GetVisionTargetCoords(wpi::span<const photonlib::PhotonTrackedTarget>& targets, vector<frc::Translation2d>& targetVectors);   // TODO targetCoords
     frc::Translation2d FindAverageOfTargets(vector<frc::Translation2d>& targetVectors);
     // TODO make it FindMedianOfTargets
-    void FilterTargets(vector<frc::Translation2d>& targetVectors, frc::Translation2d center, meter_t rMax, degree_t minangle, degree_t maxangle);
-    void GetFieldReleativeRobotAndCameraPoses(frc::Translation2d& cameraToHub, Rotation2d& fieldToCamRot, Translation2d& camToRobotCenter);
-    Translation2d CompensateMotionForLatency(Rotation2d& fieldToCamRot, Translation2d& camToRobotCenter);
+    void FilterTargets(vector<frc::Translation2d>& targetVectors, frc::Translation2d center, meter_t rMax, degree_t angTol);
+    void UpdateFieldReleativeRobotAndCameraPoses(frc::Translation2d& cameraToHub);
+    Translation2d CompensateForLatencyAndMotion();
     Translation2d Targeting();
     void SteerTurretAndAdjusthood();
 
@@ -106,6 +112,7 @@ private:
     HoodSubsystem& m_hood;
     IOdometry& m_odometry;
     FILE* m_logFile = nullptr;
+    TargetingMode m_targeting;
 
     DebugFlag   m_dbgLogInvalid{"VisLogInvalid", true};
     DebugFlag   m_dbgLogTargetData{"VisLogTargetData", true};
