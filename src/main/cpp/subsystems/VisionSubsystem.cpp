@@ -22,7 +22,22 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
     m_logFile = stderr; // fopen("/tmp/visionLog.txt", "w");
     m_targeting = kOdometry;
 
-   m_networktable->AddEntryListener(
+    wpi::log::DataLog& log = DataLogManager::GetLog();
+
+    m_logNumRawTargets = wpi::log::IntegerLogEntry(log, "/vision/numRawTargets");
+    m_logNumFilteredTargets = wpi::log::IntegerLogEntry(log, "/vision/numFilteredTargets");
+    m_logRobotvisionPoseX = wpi::log::DoubleLogEntry(log, "/vision/robotPoseX");
+    m_logRobotvisionPoseY = wpi::log::DoubleLogEntry(log, "/vision/robotPoseY");
+    m_logRobotvisionPoseTheta = wpi::log::DoubleLogEntry(log, "/vision/robotPoseTheta");
+    m_logCameraPoseX = wpi::log::DoubleLogEntry(log, "/vision/cameraPoseX");
+    m_logCameraPoseY = wpi::log::DoubleLogEntry(log, "/vision/cameraPoseY");
+    m_logCameraPoseTheta = wpi::log::DoubleLogEntry(log, "/vision/cameraPoseTheta");
+    m_logCameraToHubDist = wpi::log::DoubleLogEntry(log, "/vision/cameraToHubDist");
+    m_logCameraToHubAngle = wpi::log::DoubleLogEntry(log, "/vision/cameraToHubAngle");
+    m_logCircleFitResultDist = wpi::log::DoubleLogEntry(log, "/vision/circleFitDist");
+    m_logCircleFitResultAngle = wpi::log::DoubleLogEntry(log, "/vision/circleFitAngle");
+
+    m_networktable->AddEntryListener(
        "gloworm/latencyMillis"
        ,[this](nt::NetworkTable* table
             , std::string_view name
@@ -41,6 +56,15 @@ void VisionSubsystem::NTcallback(nt::NetworkTable* table, std::string_view name,
 
     // printf("Dt: %f\n", (Timer::GetFPGATimestamp() - visionTimestamp).to<double>());
     Work(ntcallbackTimestamp);
+
+    m_logRobotvisionPoseX.Append(m_robotvisionPose.X().to<double>());
+    m_logRobotvisionPoseY.Append(m_robotvisionPose.Y().to<double>());
+    m_logRobotvisionPoseTheta.Append(m_robotvisionPose.Rotation().Degrees().to<double>());
+    m_logCameraPoseX.Append(m_cameraPose.X().to<double>());
+    m_logCameraPoseY.Append(m_cameraPose.Y().to<double>());
+    m_logCameraPoseTheta.Append(m_cameraPose.Rotation().Degrees().to<double>());
+    m_logCameraToHubDist.Append(m_cameraToHub.Norm().to<double>());
+    m_logCameraToHubAngle.Append(GetVectorAngle(m_cameraToHub).to<double>()*180/3.14159);
 }
 
 void VisionSubsystem::Periodic()
@@ -63,6 +87,8 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
         auto targets = result.GetTargets();
         GetVisionTargetCoords(targets, targetVectors);
 
+        m_logNumRawTargets.Append(targetVectors.size());
+
  //fprintf(m_logFile, " pitch-filtered targets: %d   ", targetVectors.size());
 
         if (m_targeting == kOdometry && m_odometry.OdoValid())
@@ -76,6 +102,8 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
             FilterTargets(targetVectors, averageTarget, kMaxTargetRadialSpreadPureVision, kMaxTargetAngleSpreadPureVision);
         }
 
+        m_logNumFilteredTargets.Append(targetVectors.size());
+
 // fprintf(m_logFile, " outlier-filtered targets: %d   ", targetVectors.size());
         if (targetVectors.size() >= 3 && targetVectors.size() <= 6)
         {
@@ -84,6 +112,8 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
             {
                 // cameraToHub is the vector from cam to hub IN CAMERA-RELATIVE COORDINATE SYSTEM!
                 // printf("camera pose from circle fit: x %.3f y %.3f    ", m_cameraToHub.X().to<double>(), m_cameraToHub.Y().to<double>());
+                m_logCircleFitResultDist.Append(cameraToHub.Norm().to<double>());
+                m_logCircleFitResultAngle.Append(GetVectorAngle(cameraToHub).to<double>()*180/3.14159);
                 m_consecNoTargets = 0;
                 m_validTarget = true;
                 m_visionTimestamp = timestamp - result.GetLatency();
@@ -303,18 +333,18 @@ Translation2d  VisionSubsystem::Targeting()
     StateHist lastOdoState = m_odometry.GetState();
     degree_t angleTurret = lastOdoState.m_turretAngle;
 
-    m_robotPose = lastOdoState.pose;
+    Pose2d robotPose = lastOdoState.pose;
     // frc::Translation2d camToTurretCenter = frc::Translation2d(meter_t{(cos(angleTurret) * inch_t{-12})}, meter_t{(sin(angleTurret) * inch_t{-12})});
     // frc::Transform2d camreaTransform = frc::Transform2d(camToTurretCenter + turretCenterToRobotCenter, radian_t{angleTurret});
     // frc::Rotation2d fieldToCamAngle = m_robotPose.Rotation() + frc::Rotation2d(units::radian_t{angleTurret});  
     // m_cameraToHub = kHubCenter - m_robotPose.TransformBy(camreaTransform.Inverse()).Translation();
 
-    Rotation2d robotRot = m_robotPose.Rotation(); // robot heading FIELD RELATIVE
+    Rotation2d robotRot = robotPose.Rotation(); // robot heading FIELD RELATIVE
     Rotation2d fieldToCamRot = robotRot + Rotation2d(angleTurret + 180_deg);  
     Translation2d camToTurretCenterRRC = Translation2d(-5_in, 0_in).RotateBy(Rotation2d{angleTurret});  // ROBOT RELATIVE COORDINATES
     Translation2d camToRobotCenterRRC = camToTurretCenterRRC + turretCenterToRobotCenter;  // ROBOT RELATIVE COORDINATES
     Translation2d camToRobotCenter = camToRobotCenterRRC.RotateBy(robotRot);  // FIELD RELATIVE COORDINATES                
-    Pose2d cameraPose = Pose2d(m_robotPose.Translation() - camToRobotCenter, fieldToCamRot);  // FIELD RELATIVE COORDINATES    
+    Pose2d cameraPose = Pose2d(robotPose.Translation() - camToRobotCenter, fieldToCamRot);  // FIELD RELATIVE COORDINATES    
     Translation2d cameraToHubFR = kHubCenter - cameraPose.Translation(); // FIELD RELATIVE COORDINATES    
 
     return cameraToHubFR.RotateBy(-fieldToCamRot); // transform from field-relative back to cam-relative

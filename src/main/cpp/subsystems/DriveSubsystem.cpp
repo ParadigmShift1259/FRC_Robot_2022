@@ -98,6 +98,15 @@ DriveSubsystem::DriveSubsystem(Team1259::Gyro *gyro, IOdometry& odo)
 
     m_odoValid = false;
 
+    wpi::log::DataLog& log = DataLogManager::GetLog();
+
+    m_logRobotPoseX = wpi::log::DoubleLogEntry(log, "/odometry/robotPoseX");
+    m_logRobotPoseY = wpi::log::DoubleLogEntry(log, "/odometry/robotPoseY");
+    m_logRobotPoseTheta = wpi::log::DoubleLogEntry(log, "/odometry/robotPoseTheta");   
+    m_logRobotSpeed = wpi::log::DoubleLogEntry(log, "/odometry/robotSpeed");
+    m_logRobotAccel = wpi::log::DoubleLogEntry(log, "/odometry/robotAccel");
+    m_logTurretAngle = wpi::log::DoubleLogEntry(log, "/odometry/turretAngle");
+
     // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_3_PwmInputs0, 10);
     // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_4_PwmInputs1, 10);
     // m_canifier.SetStatusFramePeriod(CANifierStatusFrame::CANifierStatusFrame_Status_5_PwmInputs2, 10);
@@ -140,6 +149,13 @@ void DriveSubsystem::Periodic()
 
     m_velocity = (double)state.velocity;
     m_acceleration = (double)state.acceleration;
+
+    m_logRobotPoseX.Append(pose.X().to<double>());
+    m_logRobotPoseY.Append(pose.Y().to<double>());
+    m_logRobotPoseTheta.Append(pose.Rotation().Degrees().to<double>());
+    m_logRobotSpeed.Append(m_velocity);
+    m_logRobotAccel.Append(m_acceleration);
+    m_logTurretAngle.Append(state.m_turretAngle.to<double>());
 }
 
 void DriveSubsystem::RotationDrive(meters_per_second_t xSpeed

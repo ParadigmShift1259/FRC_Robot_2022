@@ -228,42 +228,25 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
 
     vector<Pose2d> ball1PickupAndShootWaypoints
     {        
-        // frc::Pose2d(kHubCenter.X()-18_in, kHubCenter.Y()-94_in, frc::Rotation2d(-90_deg)),
         frc::Pose2d(297_in, 68_in, frc::Rotation2d(-88.5_deg)),
-        // frc::Pose2d(kHubCenter.X()-18_in, 0.6_m, frc::Rotation2d(-88.5_deg))
         frc::Pose2d(297_in, 22_in, frc::Rotation2d(-90_deg))
     };
 
-    // vector<Pose2d> ball1ShootWaypoints
-    // {
-    //     frc::Pose2d(kHubCenter.X()-18_in, 0.6_m, frc::Rotation2d(-90_deg)),
-    //     frc::Pose2d(297_in, 22_in, frc::Rotation2d(-90_deg))        
-    //     frc::Pose2d(6.0_m, 1.0_m, frc::Rotation2d(45_deg))
-    // };
-
     vector<Pose2d> ball2PickupAndShootWaypoints
     {
-//        frc::Pose2d(297_in, 22_in, frc::Rotation2d(-90_deg)),
         frc::Pose2d(297_in, 22_in, frc::Rotation2d(180_deg)),
-        // frc::Pose2d(4.0_m, 1.8_m, frc::Rotation2d(150_deg)),
-        //frc::Pose2d(173_in, 98_in, frc::Rotation2d(150_deg))
         frc::Pose2d(173_in, 90_in, frc::Rotation2d(180_deg))
     };
 
     vector<Pose2d> ball34PickupWaypoints
     {
-        // frc::Pose2d(4.0_m, 1.8_m, frc::Rotation2d(150_deg)),
-        //frc::Pose2d(173_in, 90_in, frc::Rotation2d(180_deg)),
         frc::Pose2d(173_in, 90_in, frc::Rotation2d(224_deg)),
-        // frc::Pose2d(1.0_m, 1.2_m, frc::Rotation2d(223_deg)) // perpendicular to corner wall
-        //frc::Pose2d(59_in, 52_in, frc::Rotation2d(224_deg)) // perpendicular to corner wall
         frc::Pose2d(35_in, 55_in, frc::Rotation2d(224_deg)) // perpendicular to corner wall
     };
 
     vector<Pose2d> ball34ShootWaypoints
     {
         frc::Pose2d(35_in, 55_in, frc::Rotation2d(210_deg)), // perpendicular to corner wall
-        //frc::Pose2d(3.0_m, 2.0_m, frc::Rotation2d(180_deg))
         frc::Pose2d(3.0_m, 2.0_m, frc::Rotation2d(210_deg))
     };
 

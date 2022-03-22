@@ -207,4 +207,11 @@ private:
     double m_acceleration;
     meters_per_second_t m_maxDriveSpeed { kDriveSpeed };
     meters_per_second_t m_yVelocity {0.0};
+
+    wpi::log::DoubleLogEntry m_logRobotPoseX;
+    wpi::log::DoubleLogEntry m_logRobotPoseY;
+    wpi::log::DoubleLogEntry m_logRobotPoseTheta;
+    wpi::log::DoubleLogEntry m_logRobotSpeed;
+    wpi::log::DoubleLogEntry m_logRobotAccel;
+    wpi::log::DoubleLogEntry m_logTurretAngle;
 };

@@ -42,7 +42,7 @@ void HoodSubsystem::SetByDistance(double distHubCenter)
 
     if (distance > 0)
     {
-        m_flywheelSpeed = m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub, foot_t(8.6) + foot_t(distance / 10.0)).to<double>(); //TODO: Make 8.6 and 10 constants
+        m_flywheelSpeed = m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub, foot_t(11.0) - foot_t(distance / 10.0)).to<double>(); //TODO: Make 11.0 and 10 constants
         degree_t initAngle = m_calculation.GetInitAngle();
         double x = initAngle.to<double>();
         if (x != x)

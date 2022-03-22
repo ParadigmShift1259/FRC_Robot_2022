@@ -99,7 +99,6 @@ private:
     int m_consecNoTargets;
     bool m_validTarget;
     double m_smoothedRange;
-    Pose2d m_robotPose;
     photonlib::PhotonCamera camera{"gloworm"};
     frc::Translation2d m_cameraToHub;
     Pose2d m_robotvisionPose;
@@ -117,4 +116,17 @@ private:
     DebugFlag   m_dbgLogInvalid{"VisLogInvalid", true};
     DebugFlag   m_dbgLogTargetData{"VisLogTargetData", true};
     DebugFlag   m_dbgUseUseVisionForTurret{"UseVisionForTurret", true};
+
+    wpi::log::IntegerLogEntry m_logNumRawTargets;
+    wpi::log::IntegerLogEntry m_logNumFilteredTargets;
+    wpi::log::DoubleLogEntry m_logRobotvisionPoseX;
+    wpi::log::DoubleLogEntry m_logRobotvisionPoseY;
+    wpi::log::DoubleLogEntry m_logRobotvisionPoseTheta;
+    wpi::log::DoubleLogEntry m_logCameraPoseX;
+    wpi::log::DoubleLogEntry m_logCameraPoseY;
+    wpi::log::DoubleLogEntry m_logCameraPoseTheta;
+    wpi::log::DoubleLogEntry m_logCameraToHubDist;
+    wpi::log::DoubleLogEntry m_logCameraToHubAngle;
+    wpi::log::DoubleLogEntry m_logCircleFitResultDist;
+    wpi::log::DoubleLogEntry m_logCircleFitResultAngle;
 };
