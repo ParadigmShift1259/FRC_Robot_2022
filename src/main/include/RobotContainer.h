@@ -219,4 +219,5 @@ private:
     radians_per_second_t m_maxRotSpeed { kDriveAngularSpeed };
 
     DebugFlag   m_dbgSeroTest{"ServoTest", false};
+    DebugFlag   m_dbgContinousFlywheel{"ContinousFlywheel", true};
 };

@@ -40,9 +40,13 @@ void HoodSubsystem::SetByDistance(double distHubCenter)
         return;
     }
 
-    if (distance > 0)
+    if (distance > 0.0)
     {
-        m_flywheelSpeed = m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub, foot_t(11.0) - foot_t(distance / 10.0)).to<double>(); //TODO: Make 11.0 and 10 constants
+        foot_t heightAboveHub = meter_t(distance).convert<foot>() * slope + foot_t(offset);
+        SmartDashboard::PutNumber("HAH dist", distance * 39.37008);
+        SmartDashboard::PutNumber("HAH", heightAboveHub.to<double>());
+        m_flywheelSpeed = m_calculation.CalcInitRPMs(meter_t(distance), kTargetDistIntoHub, heightAboveHub).to<double>();
+        SmartDashboard::PutNumber("FW Speed", m_flywheelSpeed);
         degree_t initAngle = m_calculation.GetInitAngle();
         double x = initAngle.to<double>();
         if (x != x)
@@ -51,7 +55,7 @@ void HoodSubsystem::SetByDistance(double distHubCenter)
             return;
         }
 
-        double c = SmartDashboard::GetNumber("Hoodangle Constant", 0.159);
+        //double c = SmartDashboard::GetNumber("Hoodangle Constant", 0.159);
         double hoodangle = -2.58 + 0.159 * x + -0.00298 * x * x + 0.0000216 * x * x * x;
         if (hoodangle != hoodangle)
         {
@@ -69,7 +73,6 @@ void HoodSubsystem::SetByDistance(double distHubCenter)
 
         SmartDashboard::PutNumber("Init Angle: ", initAngle.to<double>());
         SmartDashboard::PutNumber("Hood Angle:", hoodangle);
-        SmartDashboard::PutNumber("Hoodangle Constant", c);
-
+        //SmartDashboard::PutNumber("Hoodangle Constant", c);
    }
 }

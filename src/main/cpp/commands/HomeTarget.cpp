@@ -68,7 +68,8 @@ void HomeTarget::Execute()
     SmartDashboard::PutBoolean("D_FIRE_AT_RPM", m_flywheel->IsAtRPM());
     SmartDashboard::PutBoolean("D_FIRE_AT_SET", m_turret->isAtSetpoint());
 
-    if (m_flywheel->IsAtRPM() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
+    if (m_flywheel->IsAtRPM())
+    //if (m_flywheel->IsAtRPM() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
     //if (m_flywheel->IsAtRPMPositive() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
     //if (m_flywheel->IsAtRPM() && m_turret->isAtSetpoint() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
     {
@@ -85,6 +86,7 @@ bool HomeTarget::IsFinished()
 
 void HomeTarget::End(bool interrupted)
 {
+    *m_turretready = false;
 #ifdef COMMAND_TIMING
     auto endTime = m_timer.GetFPGATimestamp().to<double>();
     auto elapsed = endTime - m_startTime;

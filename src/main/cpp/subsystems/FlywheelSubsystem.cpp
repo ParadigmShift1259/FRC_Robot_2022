@@ -7,8 +7,6 @@
 
 using namespace FlywheelConstants;
 
-
-
 // Removes deprecated warning for CANEncoder and CANPIDController
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
@@ -24,10 +22,8 @@ FlywheelSubsystem::FlywheelSubsystem()
     , m_rpmMeasuredLog(DataLogManager::GetLog(), "/FlyWheel/MeasuredRPM")
 {
     m_flywheelmotor.SetIdleMode(CANSparkMax::IdleMode::kCoast);
-    //m_flywheelmotor.SetClosedLoopRampRate(kRampRate);
     m_flywheelmotor.SetClosedLoopRampRate(0.0);
     m_flywheelmotor.SetInverted(true);
-
 
     m_flywheelPID.SetP(kP, 0);
     m_flywheelPID.SetI(kI, 0);
@@ -45,6 +41,9 @@ FlywheelSubsystem::FlywheelSubsystem()
     m_setpoint = kIdleRPM / kGearRatio;
 
     SmartDashboard::PutNumber("T_F_Setpoint", m_setpoint);
+    
+    //SmartDashboard::PutNumber("FeedForward", 4.0);// SEC temp Mar 23 persistent 100 rpm overage
+    SmartDashboard::PutNumber("FwAllowedErr", m_allowedError);
 
 //Enable to tune the flywheel constants
 // #define TUNE_FLYWHEEL
@@ -87,10 +86,9 @@ void FlywheelSubsystem::Periodic()
 
     SmartDashboard::PutNumber("D_F_RPM", m_flywheelencoder.GetVelocity());
     // SmartDashboard::PutNumber("T_F_At_Target", IsAtRPM());
-    frc::SmartDashboard::PutNumber("Flywheel error", 0.0);
 
-// double flywheelspeed = SmartDashboard::GetNumber("Flywheel RPM Command", 0.0);
-// SetRPM(flywheelspeed);
+    m_allowedError = SmartDashboard::GetNumber("FwAllowedErr", m_allowedError);
+    SmartDashboard::PutNumber("FwAllowedErrReflect", m_allowedError);
 
     CalculateRPM();
 }
@@ -110,39 +108,37 @@ void FlywheelSubsystem::SetRPM(double setpoint)
 bool FlywheelSubsystem::IsAtMaintainPID()
 {
     double rpm = m_flywheelencoder.GetVelocity();
+    m_error = rpm - m_setpoint;
     m_rpmMeasuredLog.Append(rpm);
-    return fabs(rpm - m_setpoint) <= kMaintainPIDError;
+    return fabs(m_error) <= kMaintainPIDError;
 }
 
 bool FlywheelSubsystem::IsAtRPM()
 {
     double rpm = m_flywheelencoder.GetVelocity();
+    m_error = rpm - m_setpoint;
     m_rpmMeasuredLog.Append(rpm);
-    double error = rpm - m_setpoint;
-    frc::SmartDashboard::PutNumber("Flywheel error", error);
-    return fabs(rpm - m_setpoint) <= kAllowedError;
+    frc::SmartDashboard::PutNumber("Flywheel error", m_error);
+    frc::SmartDashboard::PutNumber("Flywheel error abs", fabs(m_error));
+    return fabs(m_error) <= m_allowedError;
 }
 
 bool FlywheelSubsystem::IsAtRPMPositive()
 {
     double rpm = m_flywheelencoder.GetVelocity();
     m_rpmMeasuredLog.Append(rpm);
-
-    double error = rpm - m_setpoint;
-    frc::SmartDashboard::PutNumber("Flywheel error", error);
-
+    m_error = rpm - m_setpoint;
+    frc::SmartDashboard::PutNumber("Flywheel error", m_error);
+    frc::SmartDashboard::PutNumber("Flywheel error abs", fabs(m_error));
     // If error is negative, always return false
     // RPM must be greater than the error with variance of Allowed Error
-    return signbit(error) ? false : (error <= kAllowedError);
+    return signbit(m_error) ? false : (m_error <= m_allowedError);
 }
 
 void FlywheelSubsystem::CalculateRPM()
 {
-    // Ignore PIDF feedforward and substitute WPILib's SimpleMotorFeedforward class
-    //double FF = m_flywheelFF.Calculate(m_setpoint / kSecondsPerMinute * 1_mps).to<double>();
-    //m_flywheelPID.SetFF(0);
-
-    double FF = m_setpoint * 5.0 / 2400.0 + 0.317;
+    //double FF = m_setpoint * 5.0 / 2400.0 + 0.317;    // 5 / 2400 = 2.0833e-3
+    double FF = m_setpoint * 2.01e-3 + 0.302;
     constexpr int pidslot = 0;
     bool bSupressFlywheel = SmartDashboard::GetBoolean("SupressFlywheel", false);
 
@@ -152,8 +148,11 @@ void FlywheelSubsystem::CalculateRPM()
     }
 
     SmartDashboard::PutNumber("FeedForward", FF);
-// TO DO uncoment for flywheel
-   m_flywheelPID.SetReference(m_setpoint, CANSparkMax::ControlType::kVelocity, pidslot, FF);
+    //FF = SmartDashboard::GetNumber("FeedForward", FF);
+    m_flywheelPID.SetReference(m_setpoint, CANSparkMax::ControlType::kVelocity, pidslot, FF);
+    m_error = m_flywheelencoder.GetVelocity()  - m_setpoint;
+    frc::SmartDashboard::PutNumber("Flywheel error", m_error);
+    frc::SmartDashboard::PutNumber("Flywheel error abs", fabs(m_error));
 
 #ifdef COMMAND_TIMING
     auto endTime = m_timer.GetFPGATimestamp().to<double>();

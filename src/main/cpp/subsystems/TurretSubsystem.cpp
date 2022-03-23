@@ -79,16 +79,16 @@ void TurretSubsystem::Periodic()
     //double db = frc::SmartDashboard::GetNumber("TurretDeadbandPercent", kNeutralDeadband);
     //m_turretmotor.ConfigNeutralDeadband(db, kTimeout);
 
-    frc::SmartDashboard::PutNumber("TurretAbsEnc", m_absEnc.GetValue());
-    if (!m_setZero)
-    {
-        double CTREpos = (m_startingPos - kAbsEncoderZero) * kCtreTicksPerAbsEncTick;
-        printf("start abs %d cur abs %d abs delta %d ctre ticks %.3f ctre tick per abs tick %.3f\n", m_startingPos, m_absEnc.GetValue(), m_startingPos - kAbsEncoderZero, CTREpos, kCtreTicksPerAbsEncTick);
-        m_turretmotor.SetSelectedSensorPosition(CTREpos);
-        m_currentAngle = GetCurrentAngle();
-        m_setZero = true;
-        TurnTo(0.0);
-    }
+    // frc::SmartDashboard::PutNumber("TurretAbsEnc", m_absEnc.GetValue());
+    // if (!m_setZero)
+    // {
+    //     double CTREpos = (m_startingPos - kAbsEncoderZero) * kCtreTicksPerAbsEncTick;
+    //     printf("start abs %d cur abs %d abs delta %d ctre ticks %.3f ctre tick per abs tick %.3f\n", m_startingPos, m_absEnc.GetValue(), m_startingPos - kAbsEncoderZero, CTREpos, kCtreTicksPerAbsEncTick);
+    //     m_turretmotor.SetSelectedSensorPosition(CTREpos);
+    //     m_currentAngle = GetCurrentAngle();
+    //     m_setZero = true;
+    //     TurnTo(0.0);
+    // }
 
     frc::SmartDashboard::PutNumber("D_T_CAbsEncoder", m_absEnc.GetValue());
     frc::SmartDashboard::PutNumber("D_T_CTicks", m_turretmotor.GetSelectedSensorPosition());
@@ -162,10 +162,10 @@ void TurretSubsystem::Periodic()
 
 void TurretSubsystem::SetZeroAngle()
 {
-    //m_currentAngle = 0;
-    //m_turretmotor.SetSelectedSensorPosition(0.0);
-    m_setZero = false;
-    m_startingPos = m_absEnc.GetValue();
+    m_currentAngle = 0;
+    m_turretmotor.SetSelectedSensorPosition(0.0);
+    // m_setZero = false;
+    // m_startingPos = m_absEnc.GetValue();
 }
 
 void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)

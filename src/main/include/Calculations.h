@@ -24,7 +24,6 @@ using namespace units;
 /// Ballistics/Physics constants
 constexpr auto gravity = meters_per_second_squared_t(9.81);
 constexpr kilogram_t flywheelMass = pound_t(2.8);
-//constexpr kilogram_t flywheelMass = pound_t(3.0);
 
 constexpr meter_t flywheelRadius = 2.0_in;
 constexpr scalar_t flywheelRotInertiaFrac = 1.0 / 2.0;
@@ -42,10 +41,8 @@ constexpr degree_t maxAngle = degree_t(60.0);
 constexpr degree_t minAngle = degree_t(33.3);
 
 constexpr foot_t robotHeight = foot_t(3.0);
-//constexpr foot_t defaultTargetDist = foot_t(2.5);
-//constexpr foot_t defaultTargetHeight = inch_t(80.0);
-constexpr foot_t defaultTargetDist = foot_t(2.0);
-constexpr foot_t defaultTargetHeight = foot_t(8.67);
+constexpr foot_t defaultTargetDist = foot_t(2.5);
+constexpr foot_t defaultTargetHeight = foot_t(8.6);
 constexpr foot_t defaultHeightAboveHub = foot_t(9.2);
 
 class Calculations
@@ -90,9 +87,9 @@ class Calculations
   revolutions_per_minute_t m_rpmInit = revolutions_per_minute_t(0.0);
 
   nt::NetworkTableEntry m_heightAboveHubEntry;
-  nt::NetworkTableEntry m_heightRobotEntry;
+  //nt::NetworkTableEntry m_heightRobotEntry;
   nt::NetworkTableEntry m_heightTargetEntry;
-  nt::NetworkTableEntry m_xFloorDistanceEntry;
+  //nt::NetworkTableEntry m_xFloorDistanceEntry;
   nt::NetworkTableEntry m_xTargetDistanceEntry;
 
   nt::NetworkTableEntry m_initVelEntry;

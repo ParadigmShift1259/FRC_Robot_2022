@@ -9,6 +9,15 @@
 
 using namespace VisionConstants;
 
+const double hahLow = 9.2;
+const double hahHigh = 9.8; //10.0;
+
+const double nearDist = 4.0;
+const double farDist = 15.0;
+
+const double slope = (hahLow - hahHigh) / (farDist - nearDist);
+const double offset = hahHigh - slope * nearDist;
+
 class HoodSubsystem : public frc2::SubsystemBase
 {
 public:

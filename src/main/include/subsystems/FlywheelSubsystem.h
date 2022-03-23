@@ -52,6 +52,8 @@ private:
 
     /// Current desired setpoint of the flywheel in RPM
     double m_setpoint;
+    double m_error = 0.0;
+    double m_allowedError = FlywheelConstants::kAllowedError;
 
     Timer m_timer;  // Temp
     wpi::log::DoubleLogEntry m_rpmSetpointLog;

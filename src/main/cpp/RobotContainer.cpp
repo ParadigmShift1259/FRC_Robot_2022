@@ -34,8 +34,6 @@ RobotContainer::RobotContainer()
 
     SmartDashboard::PutNumber("servo override", 0.0);
 
-    SmartDashboard::PutNumber("fudge", 0.0);
-    SmartDashboard::PutBoolean("UseFudgeFactor", false);
     SmartDashboard::PutBoolean("SupressFlywheel", false);
 
     SmartDashboard::PutBoolean("LowSpeedDriveing", m_bLowSpeedDriving);
@@ -57,36 +55,16 @@ void RobotContainer::Periodic()
 
     m_drive.Periodic();
 
+    if (!m_firing && m_vision.GetValidTarget() && m_dbgContinousFlywheel)
+    {
+        // Update the flywheel continuously, with a cap for chasing balls past 17 ft
+        double flywheelprm = std::min(FlywheelConstants::kMaxFlyweelInPeriodic, m_hood.GetFlywheelSpeed());
+        m_flywheel.SetRPM(flywheelprm);
+    }
+
     // if (!m_compressor.GetPressureSwitchValue() && m_bRunningCompressor)
     // {
     //     m_compressor.Disable();
-    // }
-
-    // static int direction = 0;
-    // if(direction == 1)
-    // {
-    //     if(m_turret.GetCurrentAngle() > 48)
-    //     {
-    //         direction = -1;
-    //         m_turret.TurnTo(-50);
-    //         std::cout << "Reversing" << "\n";
-    //     }
-    // }
-    // else if (direction == -1)
-    // {
-    //     if(m_turret.GetCurrentAngle() < -48)
-    //     {
-    //         direction = 1;
-    //         m_turret.TurnTo(50);
-    //         std::cout << "Going Forward" << "\n";
-    //     }
-    // }
-    // else
-    // {
-    //     // first time only
-    //     direction = 1;
-    //     m_turret.TurnTo(60);
-    //     std::cout << "Initial" << "\n";
     // }
 }
 
@@ -125,7 +103,8 @@ void RobotContainer::SetDefaultCommands()
     m_flywheel.SetDefaultCommand(
         frc2::RunCommand(
             [this] {
-                m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
+                if (!m_dbgContinousFlywheel)
+                    m_flywheel.SetRPM(FlywheelConstants::kIdleRPM);
             }, {&m_flywheel}
         )
     );

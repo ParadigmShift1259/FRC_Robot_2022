@@ -1,5 +1,6 @@
 
 #include "commands/WaitForFlywheel.h"
+#include <frc/smartdashboard/SmartDashboard.h>
 
 #include "Constants.h"
 
@@ -13,5 +14,6 @@ WaitForFlywheel::WaitForFlywheel(FlywheelSubsystem* flywheel)
 
 bool WaitForFlywheel::IsFinished()
 {
+  SmartDashboard::PutBoolean("D_FIRE_AT_RPM", m_flywheel->IsAtRPM());
   return m_flywheel->IsAtRPM();
 }

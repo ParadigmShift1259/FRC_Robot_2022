@@ -273,7 +273,7 @@ namespace FlywheelConstants
 
     constexpr double kRampRate = 1.0;
     // Total error allowed for the flywheel, in RPM
-    constexpr double kAllowedError = 75.0; //100.0;
+    constexpr double kAllowedError = 50.0;
     constexpr double kMaintainPIDError = 300.0;
 
     // General multiplier added, adjusts for ball conditions and general firing
@@ -319,8 +319,7 @@ namespace FlywheelConstants
 
     /// Use MPSPerRPM to determine the ramp rates, current values are just placeholders
     constexpr double kIdleRPM = 3400;
-    /// The fixed RPM to fire at the trench given very heavy defense
-    constexpr double kTrenchRPM = 3400;
+    constexpr double kMaxFlyweelInPeriodic = 5000;
 }
 
 // Intake Subsystem constants
@@ -364,7 +363,7 @@ namespace TurretConstants
     constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
     // TO DO varies considerably based on battery voltage
-    constexpr int kAbsEncoderZero = 2860; // 2970; // 2680; // 2920; //2770; //2660; // 2092;
+    constexpr int kAbsEncoderZero = 2317;
     constexpr double kCtreTicksPerAbsEncTick = 9752.0 / 3023.0;
 
     // Empirically measured 9752 motor ticks for 120 degrees of turret swing

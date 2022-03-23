@@ -62,7 +62,7 @@ private:
     /// The starting position of the turret, in ticks
     int m_startingPos;
     
-    bool m_setZero = false;
+    bool m_setZero = true; //Disabled auto turret centering due to new abs encoder 3-23-22 AC
     /// Gyro to determine field relative angles, from @ref RobotContainer
     Team1259::Gyro *m_gyro;
 

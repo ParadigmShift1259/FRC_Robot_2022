@@ -14,79 +14,81 @@ Calculations::Calculations()
 {
     wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_10(3);
     wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_4(3);
-    wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_25(3);
+    //wpi::StringMap<std::shared_ptr<nt::Value>> propMap0_25(3);
 
     propMap0_10.insert(std::make_pair("Min", nt::Value::MakeDouble(0.0)));
     propMap0_10.insert(std::make_pair("Max", nt::Value::MakeDouble(16.0)));
-    propMap0_10.insert(std::make_pair("Block increment", nt::Value::MakeDouble(1.0 / 12.0)));
+    propMap0_10.insert(std::make_pair("Block increment", nt::Value::MakeDouble(1.0 / 100.0)));
 
     propMap0_4.insert(std::make_pair("Min", nt::Value::MakeDouble(0.0)));
     propMap0_4.insert(std::make_pair("Max", nt::Value::MakeDouble(4.0)));
-    propMap0_4.insert(std::make_pair("Block increment", nt::Value::MakeDouble(1.0 / 12.0)));
+    propMap0_4.insert(std::make_pair("Block increment", nt::Value::MakeDouble(1.0 / 10.0)));
 
-    propMap0_25.insert(std::make_pair("Min", nt::Value::MakeDouble(0.0)));
-    propMap0_25.insert(std::make_pair("Max", nt::Value::MakeDouble(25.0)));
-    propMap0_25.insert(std::make_pair("Block increment", nt::Value::MakeDouble(1.0)));
+    // propMap0_25.insert(std::make_pair("Min", nt::Value::MakeDouble(0.0)));
+    // propMap0_25.insert(std::make_pair("Max", nt::Value::MakeDouble(25.0)));
+    // propMap0_25.insert(std::make_pair("Block increment", nt::Value::MakeDouble(1.0)));
 
     frc::ShuffleboardTab& tab = frc::Shuffleboard::GetTab("Calculations");
     
-    m_heightAboveHubEntry = tab.Add("HeightAboveHub", defaultHeightAboveHub.to<double>())
-                              .WithWidget(frc::BuiltInWidgets::kNumberSlider)
-                              .WithSize(1, 1)
-                              .WithPosition(0, 0)
-                              .WithProperties(propMap0_10)
-                              .GetEntry();
+    int xPos = 0;
+    m_xTargetDistanceEntry = tab.Add("TargetDistance", defaultTargetDist.to<double>())
+                                .WithWidget(frc::BuiltInWidgets::kNumberSlider)
+                                .WithSize(1, 1)
+                                .WithPosition(xPos++, 0)
+                                .WithProperties(propMap0_4)
+                                .GetEntry();
 
     m_heightTargetEntry = tab.Add("TargetHeight", defaultTargetHeight.to<double>())
                             .WithWidget(frc::BuiltInWidgets::kNumberSlider)
                             .WithSize(1, 1)
-                            .WithPosition(1, 0)
+                            .WithPosition(xPos++, 0)
                             .WithProperties(propMap0_10)
                             .GetEntry();
 
-    m_heightRobotEntry = tab.Add("RobotHeight", robotHeight.to<double>())
-                            .WithWidget(frc::BuiltInWidgets::kNumberSlider)
-                            .WithSize(1, 1)
-                            .WithPosition(2, 0)
-                            .WithProperties(propMap0_10)
-                            .GetEntry();
-
-    m_xFloorDistanceEntry = tab.Add("FloorDistance", 6.0)
+    m_heightAboveHubEntry = tab.Add("HeightAboveHub", defaultHeightAboveHub.to<double>())
                               .WithWidget(frc::BuiltInWidgets::kNumberSlider)
                               .WithSize(1, 1)
-                              .WithPosition(3, 0)
-                              .WithProperties(propMap0_25)
+                              .WithPosition(xPos++, 0)
+                              .WithProperties(propMap0_10)
                               .GetEntry();
 
-    m_xTargetDistanceEntry = tab.Add("TargetDistance", defaultTargetDist.to<double>())
-                                .WithWidget(frc::BuiltInWidgets::kNumberSlider)
-                                .WithSize(1, 1)
-                                .WithPosition(4, 0)
-                                .WithProperties(propMap0_4)
-                                .GetEntry();
+    // m_heightRobotEntry = tab.Add("RobotHeight", robotHeight.to<double>())
+    //                         .WithWidget(frc::BuiltInWidgets::kNumberSlider)
+    //                         .WithSize(1, 1)
+    //                         .WithPosition(xPos++, 0)
+    //                         .WithProperties(propMap0_10)
+    //                         .GetEntry();
 
+    // m_xFloorDistanceEntry = tab.Add("FloorDistance", 6.0)
+    //                           .WithWidget(frc::BuiltInWidgets::kNumberSlider)
+    //                           .WithSize(1, 1)
+    //                           .WithPosition(xPos++, 0)
+    //                           .WithProperties(propMap0_25)
+    //                           .GetEntry();
+
+    xPos = 0;
     m_initVelEntry = tab.Add("Initial Velocity", 0.0)
                         .WithWidget(frc::BuiltInWidgets::kTextView)
                         .WithSize(1, 1)
-                        .WithPosition(0, 1)
+                        .WithPosition(xPos++, 1)
                         .GetEntry();
 
     m_initAngleEntry = tab.Add("Inital Angle", 0.0)
                           .WithWidget(frc::BuiltInWidgets::kTextView)
                           .WithSize(1, 1)
-                          .WithPosition(1, 1)
+                          .WithPosition(xPos++, 1)
                           .GetEntry();
 
     m_initRpmEntry = tab.Add("RPMs", 0.0)
                         .WithWidget(frc::BuiltInWidgets::kTextView)
                         .WithSize(1, 1)
-                        .WithPosition(2, 1)
+                        .WithPosition(xPos++, 1)
                         .GetEntry();
 
     m_setpointEntry = tab.Add("SetPoint", 0.0)
                         .WithWidget(frc::BuiltInWidgets::kTextView)
                         .WithSize(1, 1)
-                        .WithPosition(3, 1)
+                        .WithPosition(xPos++, 1)
                         .GetEntry();
 }
 
@@ -173,11 +175,12 @@ revolutions_per_minute_t Calculations::CalcInitRPMs(meter_t distance, meter_t ta
   m_heightTarget = targetHeight;
   m_heightAboveHub = heightAboveHub;
 
-//#define TRAJECTORY_TUNING
+#define TRAJECTORY_TUNING
 #ifdef TRAJECTORY_TUNING
     m_xTarget = foot_t(m_xTargetDistanceEntry.GetDouble(defaultTargetDist.to<double>()));
     m_heightTarget = foot_t(m_heightTargetEntry.GetDouble(defaultTargetHeight.to<double>()));
-    m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(defaultHeightAboveHub.to<double>()));
+    //m_heightAboveHub = foot_t(m_heightAboveHubEntry.GetDouble(defaultHeightAboveHub.to<double>()));
+    m_heightAboveHubEntry.SetDouble(m_heightAboveHub.convert<foot>().to<double>());
 #else
     m_xTargetDistanceEntry.SetDouble(m_xTarget.to<double>());
     m_heightTargetEntry.SetDouble(m_heightTarget.to<double>());

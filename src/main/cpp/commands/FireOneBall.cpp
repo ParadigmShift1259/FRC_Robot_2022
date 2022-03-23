@@ -17,13 +17,14 @@ void FireOneBall::Initialize()
 
 void FireOneBall::Execute()
 {    
-    m_transfer->SetFeeder(kFeederSpeedIntaking);
+    m_transfer->SetFeeder(kFeederSpeedFiring);
 }
 
 bool FireOneBall::IsFinished()
 {
-    //auto delay = frc::SmartDashboard::GetNumber("FireOnedelay", 1.500);
-    const auto delay = 0.400;
+    auto delay = frc::SmartDashboard::GetNumber("FireOnedelay", 0.300);
+    // Give time for the second ball transfer to the feeder
+    //const auto delay = 0.400;
     return m_timer.Get() > second_t(delay);
 }
 
