@@ -326,14 +326,10 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
         case kEx1:
             return GetIntakeAndFirePathCmd(ball1Traj, true);  // Save slot for move off the line
 
-        case kEx2:
-            return GetIntakeAndFirePathCmd(ball1Traj, true);  // 2 ball auto
-//            return GetAutoPathCmd("Ball3Short", true);
-
-        case kEx3:
+        case kEx2: // four-ball auto
             return new frc2::SequentialCommandGroup
             (
-                  std::move(*GetIntakeAndFirePathCmd(ball1Traj, true)) // (almost) 3 ball auto
+                std::move(*GetIntakeAndFirePathCmd(ball1Traj, true)) 
                 // , m_setOneBallFlag
                 , m_setOneBallFlag
                 , std::move(*GetIntakeAndFirePathCmd(ball2Traj, false))
@@ -344,10 +340,34 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
                 , std::move(*GetFirePathCmd(ball34ShootTraj, false))
             );
 
-        case kEx4:
+        case kEx3: // alt five-ball auto *** UNTESTED ***
             return new frc2::SequentialCommandGroup
             (
-                  std::move(*GetIntakeAndFirePathCmd(ball1Traj, true))
+                std::move(Fire( &m_flywheel
+                        , &m_turret
+                        , &m_hood
+                        , &m_transfer
+                        , m_vision
+                        , &m_turretready
+                        , &m_firing
+                        , &m_finished
+                        , [this]() { return GetYvelovity();} 
+                        , TransferConstants::kTimeLaunch))
+                , m_setOneBallFlag
+                , std::move(*GetIntakePathCmd(ball1Traj, true))
+                , std::move(*GetIntakeAndFirePathCmd(ball2Traj, false))
+                //, std::move(*GetAutoPathCmd("OneBallTest", true))
+                // , m_resetOneBallFlag
+                , m_resetOneBallFlag // wait for 4th ball bowled in from human player
+                , std::move(*GetIntakePathCmd(ball34PickupTraj, false))
+                , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})                
+                , std::move(*GetFirePathCmd(ball34ShootTraj, false))
+            );
+
+        case kEx4: // five-ball auto
+            return new frc2::SequentialCommandGroup
+            (
+                std::move(*GetIntakeAndFirePathCmd(ball1Traj, true))
                 // , m_setOneBallFlag
                 , m_setOneBallFlag
                 , std::move(*GetIntakeAndFirePathCmd(ball2Traj, false))
@@ -359,7 +379,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
                 , std::move(*GetFirePathCmd(ball34ShootTraj, false))
             );
 
-         case kEx5:  // *** UNTESTED ***
+         case kEx5:  // shoot two and steal two *** UNTESTED ***
              return new frc2::SequentialCommandGroup
              (
                 std::move(*GetIntakeAndFirePathCmd(BallStealHgTraj1, true)) 
@@ -368,7 +388,6 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
                 , m_setOneBallFlag
                 , std::move(*GetIntakePathCmd(BallStealHgTraj3, false))
                 , std::move(*GetFirePathCmd(BallStealHgTraj4, false))
-
              );
 
         default:
