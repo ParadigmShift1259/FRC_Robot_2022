@@ -21,6 +21,7 @@ VisionSubsystem::VisionSubsystem(Team1259::Gyro *gyro, TurretSubsystem& turret, 
 
     m_logFile = stderr; // fopen("/tmp/visionLog.txt", "w");
     m_targeting = kOdometry; // kPureVision;
+    m_enableVisionOdoCorrection = false;
 
     wpi::log::DataLog& log = DataLogManager::GetLog();
 
@@ -129,17 +130,19 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
 
                 UpdateFieldReleativeRobotAndCameraPoses(cameraToHub);
 
-                if(m_odometry.GetState(m_visionTimestamp).velocity < meters_per_second_t{.1})
-                    {
-//                    m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.01, 0.01, 0.01));
-//                    m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
-                    }
-                else
-                    {
-//                    m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.05, 0.05, 0.01));
-//                    m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
-                    }
-
+                if(m_enableVisionOdoCorrection)
+                {
+                    if(m_odometry.GetState(m_visionTimestamp).velocity < meters_per_second_t{.1})
+                        {
+                        m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.01, 0.01, 0.01));
+                        m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
+                        }
+                    else
+                        {
+                        m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.05, 0.05, 0.01));
+                        m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
+                        }
+                }
                 m_cameraToHub = CompensateForLatencyAndMotion();    // Use wheel odo to correct for movement since image was captured
 
                 // do Hub distance smoothing
@@ -505,3 +508,14 @@ VisionSubsystem::TargetingMode VisionSubsystem::GetTargetingMode(void)
 {
 return m_targeting;
 }
+
+void VisionSubsystem::EnableOdoCorrection()
+{
+m_enableVisionOdoCorrection = true;
+}
+
+void VisionSubsystem::DisableOdoCorrection()
+{
+m_enableVisionOdoCorrection = false;
+}
+

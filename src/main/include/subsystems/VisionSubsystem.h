@@ -76,6 +76,9 @@ public:
     void SetTargetingMode(TargetingMode mode);
 
     TargetingMode GetTargetingMode(void);
+    
+    void EnableOdoCorrection();
+    void DisableOdoCorrection();
 
 protected:
     /// Converts degrees to radians
@@ -112,6 +115,7 @@ private:
     IOdometry& m_odometry;
     FILE* m_logFile = nullptr;
     TargetingMode m_targeting;
+    bool m_enableVisionOdoCorrection;
 
     DebugFlag   m_dbgLogInvalid{"VisLogInvalid", true};
     DebugFlag   m_dbgLogTargetData{"VisLogTargetData", true};

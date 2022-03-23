@@ -46,6 +46,7 @@ void Robot::DisabledPeriodic() {}
  */
 void Robot::AutonomousInit()
 {
+  m_container.GetVision().DisableOdoCorrection();
   m_container.TurretSetZeroAngle();
   m_hasAutoRun = true;
 
@@ -75,6 +76,8 @@ void Robot::TeleopInit()
   {
     frc::DataLogManager::Start();
   }
+
+  m_container.GetVision().EnableOdoCorrection();
 
   //Shuffleboard::SetRecordingFileNameFormat("Team1259NetTblData${date}_${time}");
   //Shuffleboard::StartRecording();
