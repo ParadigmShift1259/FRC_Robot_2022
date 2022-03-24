@@ -8,8 +8,12 @@
 #include <frc/shuffleboard/Shuffleboard.h>
 #include <frc2/command/CommandScheduler.h>
 #include <frc/DriverStation.h>
+#include <cameraserver/cameraserver.h>
 
-void Robot::RobotInit() {}
+void Robot::RobotInit()
+{
+   CameraServer::GetInstance()->StartAutomaticCapture();
+}
 
 /**
  * This function is called every robot packet, no matter the mode. Use

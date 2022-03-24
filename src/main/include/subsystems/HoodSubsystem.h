@@ -30,6 +30,9 @@ public:
     /// \param position         Servo rotation, ranging from [0, 1]
     void SetServoPosition(double position);
 
+
+    double GetServoPosition();
+
     /// Set hood to certain position
     /// \param distHubCenter    Distance to center of hub
     void SetByDistance(double distHubCenter);

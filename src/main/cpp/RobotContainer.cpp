@@ -192,7 +192,7 @@ void RobotContainer::ConfigSecondaryButtonBindings()
                               , [this](){return m_onlyOneBall;})
     );
     JoystickButton(&secondary, xbox::kLeftBumper).WhenPressed(&m_turretToCenter);
-    //JoystickButton(&secondary, xbox::kBumperRight).WhenPressed(&m_setTurretZero);
+    JoystickButton(&secondary, xbox::kRightBumper).WhenPressed(&m_toggleVisionMode);
     JoystickButton(&secondary, xbox::kBack).WhenHeld(Unjam(&m_transfer, &m_intake));    
     JoystickButton(&secondary, xbox::kStart).WhenPressed(&m_runCompressor);
 }
@@ -231,19 +231,19 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     vector<Pose2d> ball34PickupWaypoints
     {
         frc::Pose2d(173_in, 90_in, frc::Rotation2d(224_deg)),
-        frc::Pose2d(35_in, 55_in, frc::Rotation2d(224_deg)) // perpendicular to corner wall
+        frc::Pose2d(45_in, 43_in, frc::Rotation2d(224_deg))  //35,55 // perpendicular to corner wall
     };
 
     vector<Pose2d> ball34ShootWaypoints
     {
-        frc::Pose2d(35_in, 55_in, frc::Rotation2d(210_deg)), // perpendicular to corner wall
+        frc::Pose2d(45_in, 43_in, frc::Rotation2d(210_deg)), // perpendicular to corner wall
         frc::Pose2d(3.0_m, 2.0_m, frc::Rotation2d(210_deg))
     };
 
-    vector<Pose2d> BallStealHgWaypoints1
+    vector<Pose2d> ball5PickupAndShootWaypoints
     {
-        frc::Pose2d(240_in, 202_in, frc::Rotation2d(150_deg)), // perpendicular to corner wall
-        frc::Pose2d(193_in, 246_in, frc::Rotation2d(150_deg))
+        frc::Pose2d(242_in, 202_in, frc::Rotation2d(142_deg)), // perpendicular to corner wall
+        frc::Pose2d(193_in, 240_in, frc::Rotation2d(142_deg))
     };
 
     vector<Pose2d> BallStealHgWaypoints2
@@ -294,7 +294,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     Trajectory ball34ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34ShootWaypoints[0], {}, ball34ShootWaypoints[1], config);
 
     config.SetReversed(false);
-    Trajectory BallStealHgTraj1 = frc::TrajectoryGenerator::GenerateTrajectory(BallStealHgWaypoints1, config);
+    Trajectory Ball5Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball5PickupAndShootWaypoints, config);
     Trajectory BallStealHgTraj2 = frc::TrajectoryGenerator::GenerateTrajectory(BallStealHgWaypoints2, config);
     Trajectory BallStealHgTraj3 = frc::TrajectoryGenerator::GenerateTrajectory(BallStealHgWaypoints3, config);
     Trajectory BallStealHgTraj4 = frc::TrajectoryGenerator::GenerateTrajectory(BallStealHgWaypoints4, config);
@@ -303,7 +303,8 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     switch (path)
     {
         case kEx1:
-            return GetIntakeAndFirePathCmd(ball1Traj, true);  // Save slot for move off the line
+//            return GetIntakeAndFirePathCmd(ball1Traj, true);  // ball 1 one ball auto
+            return GetIntakeAndFirePathCmd(Ball5Traj, true);    // ball 5 one ball auto
 
         case kEx2: // four-ball auto
             return new frc2::SequentialCommandGroup
@@ -361,7 +362,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
          case kEx5:  // shoot two and steal two *** UNTESTED ***
              return new frc2::SequentialCommandGroup
              (
-                std::move(*GetIntakeAndFirePathCmd(BallStealHgTraj1, true)) 
+                std::move(*GetIntakeAndFirePathCmd(Ball5Traj, true)) 
                 , m_setOneBallFlag
                 , std::move(*GetIntakePathCmd(BallStealHgTraj2, false))
                 , m_setOneBallFlag

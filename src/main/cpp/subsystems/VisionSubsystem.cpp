@@ -97,16 +97,16 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
 
         //printf("pitch-filtered targets: %d   ", targetVectors.size());
 
-        if (m_targeting == kOdometry && m_odometry.OdoValid())
-        {
-            FilterTargets(targetVectors, m_cameraToHub, kMaxTargetRadialSpreadOdo, kMaxTargetAngleSpreadOdo); 
-        }
-        else
-        {
-            // TO DO: use median instead of average and adjust radius
-            frc::Translation2d averageTarget = FindAverageOfTargets(targetVectors);
-            FilterTargets(targetVectors, averageTarget, kMaxTargetRadialSpreadPureVision, kMaxTargetAngleSpreadPureVision);
-        }
+        // if (m_targeting == kOdometry && m_odometry.OdoValid())
+        // {
+        //     FilterTargets(targetVectors, m_cameraToHub, kMaxTargetRadialSpreadOdo, kMaxTargetAngleSpreadOdo); 
+        // }
+        // else
+        // {
+        //     // TO DO: use median instead of average and adjust radius
+        //     frc::Translation2d averageTarget = FindAverageOfTargets(targetVectors);
+        //     FilterTargets(targetVectors, averageTarget, kMaxTargetRadialSpreadPureVision, kMaxTargetAngleSpreadPureVision);
+        // }
 
         m_logNumFilteredTargets.Append(targetVectors.size());
 
@@ -191,7 +191,10 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
     SmartDashboard::PutNumber("VisionDistance: ", GetHubDistance(false) * 39.37);
 
     if (m_targeting == TargetingMode::kOdometry && m_odometry.OdoValid())
+        {
         m_cameraToHub = Targeting();
+        m_validTarget = true;
+        }
 
     if (m_targeting != TargetingMode::kOff)
         SteerTurretAndAdjusthood();
@@ -501,6 +504,15 @@ VisionSubsystem::TargetingMode VisionSubsystem::GetTargetingMode(void)
     return m_targeting;
 }
 
+void VisionSubsystem::ToggleTargetingMode(void)
+{
+if (GetTargetingMode() == VisionSubsystem::TargetingMode::kOdometry)
+    SetTargetingMode(VisionSubsystem::TargetingMode::kPureVision);
+else if (GetTargetingMode() == VisionSubsystem::TargetingMode::kPureVision)
+    SetTargetingMode(VisionSubsystem::TargetingMode::kOdometry);
+SmartDashboard::PutBoolean("Using Odometry ", GetTargetingMode() == VisionSubsystem::TargetingMode::kOdometry);
+}
+
 void VisionSubsystem::EnableOdoCorrection()
 {
 m_enableVisionOdoCorrection = true;
@@ -511,3 +523,8 @@ void VisionSubsystem::DisableOdoCorrection()
 m_enableVisionOdoCorrection = false;
 }
 
+void VisionSubsystem::CamCapture(void)
+{
+camera.TakeInputSnapshot();
+camera.TakeOutputSnapshot();
+}

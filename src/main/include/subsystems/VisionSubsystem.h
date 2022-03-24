@@ -74,11 +74,13 @@ public:
     enum TargetingMode : int { kOff = 0, kPureVision = 1, kOdometry = 2 };
 
     void SetTargetingMode(TargetingMode mode);
-
     TargetingMode GetTargetingMode(void);
-    
+    void ToggleTargetingMode(void);
+
     void EnableOdoCorrection();
     void DisableOdoCorrection();
+
+    void CamCapture(void);
 
 protected:
     /// Converts degrees to radians

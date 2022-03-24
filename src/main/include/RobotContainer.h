@@ -160,6 +160,7 @@ private:
 #ifdef CLIMB_TEST_DO_NOT_USE_WITH_RACTHET
     frc2::InstantCommand m_windClimb{[this] { m_climber.Run(-1.0 * ClimberConstants::kMotorSpeed); }, {&m_climber} };
 #endif
+    frc2::InstantCommand m_toggleVisionMode{[this] { m_vision.ToggleTargetingMode(); }, {&m_vision} };
     frc2::InstantCommand m_turretToCenter{[this] { m_turret.TurnTo(0.0); }, {&m_turret} };
     frc2::InstantCommand m_turretToPosStop{[this] { m_turret.TurnTo(TurretConstants::kMaxAngle); }, {&m_turret} };
     frc2::InstantCommand m_turretToNegStop{[this] { m_turret.TurnTo(TurretConstants::kMinAngle); }, {&m_turret} };

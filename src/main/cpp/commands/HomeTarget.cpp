@@ -74,6 +74,15 @@ void HomeTarget::Execute()
     //if (m_flywheel->IsAtRPM() && m_turret->isAtSetpoint() && m_yVelocityCb() <= 1.1 * kSlowDriveSpeed.to<double>())
     {
         *m_turretready = true;
+m_vision.CamCapture();
+frc::DataLogManager::Log(fmt::format("Fireing: dist={}, hub angle={}, turret angle={}, RPM={}, hood pos.={}",
+                        m_vision.GetHubDistance(false) * 39.37, 
+                        m_vision.GetHubAngle() * 180/3.14, 
+                        m_turret->GetCurrentAngle(),
+                        m_flywheel->GetRPM(),
+                        m_hood->GetServoPosition()
+                        ));
+                        
     }
 
     frc::SmartDashboard::PutBoolean("TEST_READY_TO_FIRE", *m_turretready);

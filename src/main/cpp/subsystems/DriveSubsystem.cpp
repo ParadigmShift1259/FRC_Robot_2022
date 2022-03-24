@@ -401,7 +401,7 @@ double DriveSubsystem::PWMToPulseWidth(CANifier::PWMChannel pwmChannel)
 void DriveSubsystem::ResetOdometry(Pose2d pose)
 {
     m_odometry.ResetPosition(pose, m_gyro->GetHeadingAsRot2d());
-    m_StateHist.clear();
+    //m_StateHist.clear();
     m_odoValid = true;
 }
 

@@ -363,7 +363,7 @@ namespace TurretConstants
     constexpr int kMotorPort = 13;   //!< Turret CAN ID (TalonSRX)
 
     // TO DO varies considerably based on battery voltage
-    constexpr int kAbsEncoderZero = 2317;
+    constexpr int kAbsEncoderZero = 2000;
     constexpr double kCtreTicksPerAbsEncTick = 9752.0 / 3023.0;
 
     // Empirically measured 9752 motor ticks for 120 degrees of turret swing
@@ -378,7 +378,7 @@ namespace TurretConstants
     constexpr double kF = 0.3;
 
     constexpr double kIZone = 100; // ticks per 100ms
-    constexpr int kMotionSCurveStrength = 4; // use to limit jerk (e.g. internal slipping of abs encoder pot clutch)
+    constexpr int kMotionSCurveStrength = 1;
 
     constexpr double kNeutralDeadband = 0.06; // Deadband percentage
     // Max deg per sec is 225

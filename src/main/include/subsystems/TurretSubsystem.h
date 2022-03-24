@@ -54,6 +54,7 @@ protected:
     /// \param degrees      Number of degrees to be converted
     double DegreesToTicks(double degrees);
 
+    int GetAbsEncValue() { return 4096 - m_absEnc.GetValue();}
 private:
     /// 775 that rurns the shooting mechanism
     TalonSRX m_turretmotor;

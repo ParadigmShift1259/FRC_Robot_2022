@@ -30,6 +30,12 @@ void HoodSubsystem::SetServoPosition(double position)
     m_servo.Set(position);
 }
 
+double HoodSubsystem::GetServoPosition() 
+{
+    m_servo.Get();
+}
+
+
 void HoodSubsystem::SetByDistance(double distHubCenter)
 {
     double distance = distHubCenter - kHubOffsetRimToCenter.to<double>();

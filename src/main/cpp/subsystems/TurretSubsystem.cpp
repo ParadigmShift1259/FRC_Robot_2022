@@ -54,7 +54,7 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
 #endif
     //m_turretmotor.Set(ControlMode::PercentOutput, 0.1);
     m_currentAngle = kStartingPositionDegrees;
-    m_startingPos = m_absEnc.GetValue();
+    m_startingPos = GetAbsEncValue();
     frc::SmartDashboard::PutNumber("TurretStartingPos", m_startingPos);
 
 #ifdef TUNE_TURRET_PID
@@ -79,18 +79,17 @@ void TurretSubsystem::Periodic()
     //double db = frc::SmartDashboard::GetNumber("TurretDeadbandPercent", kNeutralDeadband);
     //m_turretmotor.ConfigNeutralDeadband(db, kTimeout);
 
-    // frc::SmartDashboard::PutNumber("TurretAbsEnc", m_absEnc.GetValue());
-    // if (!m_setZero)
-    // {
-    //     double CTREpos = (m_startingPos - kAbsEncoderZero) * kCtreTicksPerAbsEncTick;
-    //     printf("start abs %d cur abs %d abs delta %d ctre ticks %.3f ctre tick per abs tick %.3f\n", m_startingPos, m_absEnc.GetValue(), m_startingPos - kAbsEncoderZero, CTREpos, kCtreTicksPerAbsEncTick);
-    //     m_turretmotor.SetSelectedSensorPosition(CTREpos);
-    //     m_currentAngle = GetCurrentAngle();
-    //     m_setZero = true;
-    //     TurnTo(0.0);
-    // }
+    if (!m_setZero)
+    {
+        double CTREpos = (m_startingPos - kAbsEncoderZero) * kCtreTicksPerAbsEncTick;
+        printf("start abs %d cur abs %d abs delta %d ctre ticks %.3f ctre tick per abs tick %.3f\n", m_startingPos, GetAbsEncValue(), m_startingPos - kAbsEncoderZero, CTREpos, kCtreTicksPerAbsEncTick);
+        m_turretmotor.SetSelectedSensorPosition(CTREpos);
+        m_currentAngle = GetCurrentAngle();
+        m_setZero = true;
+        TurnTo(0.0);
+    }
 
-    frc::SmartDashboard::PutNumber("D_T_CAbsEncoder", m_absEnc.GetValue());
+    frc::SmartDashboard::PutNumber("D_T_CAbsEncoder", GetAbsEncValue());
     frc::SmartDashboard::PutNumber("D_T_CTicks", m_turretmotor.GetSelectedSensorPosition());
     frc::SmartDashboard::PutNumber("D_T_CAngle", TicksToDegrees(m_turretmotor.GetSelectedSensorPosition()));
     frc::SmartDashboard::PutNumber("D_T_CVelocity", m_turretmotor.GetSelectedSensorVelocity());
@@ -162,10 +161,10 @@ void TurretSubsystem::Periodic()
 
 void TurretSubsystem::SetZeroAngle()
 {
-    m_currentAngle = 0;
-    m_turretmotor.SetSelectedSensorPosition(0.0);
-    // m_setZero = false;
-    // m_startingPos = m_absEnc.GetValue();
+    //m_currentAngle = 0;
+    //m_turretmotor.SetSelectedSensorPosition(0.0);
+    m_setZero = false;
+    m_startingPos = GetAbsEncValue();
 }
 
 void TurretSubsystem::TurnTo(double angle, double minAngle, double maxAngle)
