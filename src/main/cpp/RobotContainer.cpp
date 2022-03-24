@@ -224,20 +224,35 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
 
     vector<Pose2d> ball2PickupAndShootWaypoints
     {
-        frc::Pose2d(297_in, 22_in, frc::Rotation2d(180_deg)),
-        frc::Pose2d(173_in, 90_in, frc::Rotation2d(180_deg))
+        frc::Pose2d(297_in, 22_in, frc::Rotation2d(151_deg)), //frc::Rotation2d(180_deg)),
+        frc::Pose2d(173_in, 90_in, frc::Rotation2d(151_deg)) //frc::Rotation2d(180_deg))
+// Alternate starighter path waypoints -- use GenerateTrajectory(straightLineWaypoints, config)
+// Pose2d(297.0080344_in, 22.0078859_in, 146.135509753461_deg),
+// Pose2d(271.595383048_in, 39.0616268731899_in, 146.135509753461_deg),
+// Pose2d(246.182731696_in, 56.1153678463797_in, 146.135509753461_deg),
+// Pose2d(220_in, 73.6858888490602_in, 163.06775487673_deg),
+// Pose2d(199.054578647225_in, 73.6858888490602_in, 180_deg)
     };
 
     vector<Pose2d> ball34PickupWaypoints
     {
-        frc::Pose2d(173_in, 90_in, frc::Rotation2d(224_deg)),
-        frc::Pose2d(35_in, 55_in, frc::Rotation2d(224_deg)) // perpendicular to corner wall
+        frc::Pose2d(173_in, 90_in, frc::Rotation2d(191.5_deg)), //frc::Rotation2d(224_deg)),
+        frc::Pose2d(35_in, 55_in, frc::Rotation2d(191.5_deg)) //frc::Rotation2d(224_deg)) // perpendicular to corner wall
+// Alternate starighter path waypoints -- use GenerateTrajectory(straightLineWaypoints, config)
+// Pose2d(199.054578647225_in, 73.6858888490602_in, -177.498925261889_deg),
+// Pose2d(158.239425748112_in, 71.9030937293026_in, -177.498925261889_deg),
+// Pose2d(117.424272848998_in, 70.1202986095449_in, -177.498925261889_deg),
+// Pose2d(75.3722971347607_in, 68.2834793952492_in, -156.249462630944_deg),
+// Pose2d(55.3722971347607_in, 48.2834793952492_in, -135_deg)
     };
 
     vector<Pose2d> ball34ShootWaypoints
     {
-        frc::Pose2d(35_in, 55_in, frc::Rotation2d(210_deg)), // perpendicular to corner wall
-        frc::Pose2d(3.0_m, 2.0_m, frc::Rotation2d(210_deg))
+        frc::Pose2d(35_in, 55_in, frc::Rotation2d(191.5_deg)), //frc::Rotation2d(210_deg)), // perpendicular to corner wall
+        frc::Pose2d(118_m, 79_m, frc::Rotation2d(191.5_deg)) //frc::Rotation2d(210_deg))
+// Alternate starighter path waypoints
+// Pose2d(55.3722971347607_in, 48.2834793952492_in, 39.5491127972104_deg),
+// Pose2d(118_in, 100_in, 39.5491127972104_deg)
     };
 
     vector<Pose2d> BallStealHgWaypoints1

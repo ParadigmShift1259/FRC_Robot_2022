@@ -511,3 +511,40 @@ void VisionSubsystem::DisableOdoCorrection()
 m_enableVisionOdoCorrection = false;
 }
 
+
+void GetHoodPosAndFlywheelRPM(meter_t distance, double &hoodPosCmd, double &flywheelRPM)
+{
+    struct ShooterLUTentry
+    {
+        meter_t distHubCenter;
+        double hoodPosCmd;
+        double flywheelRPM;
+    };
+
+    const vector<ShooterLUTentry> ShooterLUT
+    {
+    {0_in, 0.75, 1000}, // TO DO *** add more values for shorter distances *** 
+    {101_in, 0.75, 3350}, // from March 21 chacterization in PHS atrium 
+    {127_in, 0.65, 3450}, // from March 21 chacterization in PHS atrium 
+    {157_in, 0.65, 3850}, // from March 21 chacterization in PHS atrium 
+    {176_in, 0.55, 4100}, // from March 21 chacterization in PHS atrium 
+    {200_in, 0.45, 4375}, // from March 21 chacterization in PHS atrium 
+    // TO DO *** add more values for longer distances *** 
+    };
+
+    if (distance > 0_m && distance < 10_m)
+    {
+        size_t i;
+
+        for (i=0; i<ShooterLUT.size()-1; i++)
+            if (ShooterLUT[i].distHubCenter <= distance && ShooterLUT[i+1].distHubCenter >= distance)
+                break;
+        
+        // interpolate (or extrapolate if past end of LUT)...
+        double x = ((distance - ShooterLUT[i].distHubCenter) / (ShooterLUT[i+1].distHubCenter - ShooterLUT[i].distHubCenter)).to<double>();
+        hoodPosCmd = ShooterLUT[i].hoodPosCmd + x * (ShooterLUT[i+1].hoodPosCmd - ShooterLUT[i].hoodPosCmd);
+        flywheelRPM = ShooterLUT[i].flywheelRPM + x * (ShooterLUT[i+1].flywheelRPM - ShooterLUT[i].flywheelRPM);
+    }
+}
+
+
