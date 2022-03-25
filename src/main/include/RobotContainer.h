@@ -91,6 +91,7 @@ public:
     
     bool OnlyOneBall() override { return m_onlyOneBall; }
     void SetOneBallFlag() override {m_onlyOneBall = true;}
+    double GetFlywheelRpm() override { return m_flywheel.GetRPM(); }
 
     Pose2d GetPose() override { return m_drive.GetPose(); }
     Pose2d GetPose(units::time::second_t timestamp) const override { return m_drive.GetPose(timestamp); }
@@ -199,6 +200,7 @@ private:
     frc2::InstantCommand m_testServoIfFlagSet
     { [this]
         { 
+            m_hood.SetTestOverrideFlag(m_dbgSeroTest);
             if (m_dbgSeroTest)
             {
                 auto s = SmartDashboard::GetNumber("servo override", 0.0);

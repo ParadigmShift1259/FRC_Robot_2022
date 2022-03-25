@@ -20,11 +20,25 @@ Fire::Fire( FlywheelSubsystem* flywheel
   , m_firing(firing)
   , m_finished(finished)
 {
+//#define FIRE_WITH_TIMED_DELAY_TO_SECOND_BALL
   AddCommands(
+#ifdef FIRE_WITH_TIMED_DELAY_TO_SECOND_BALL
       HomeTarget(flywheel, turret, hood, vision, m_turretready, m_firing, m_finished, yVelocityCb)
+    , TransferFire(transfer, m_turretready, m_firing, m_finished, launchtime)
+#else
+      HomeTarget(flywheel, turret, hood, vision, m_turretready, m_firing, m_finished, yVelocityCb)
+#ifdef SAVE
     , FireOneBall(transfer)
+#else
+    , FireOneBall(subsystemAccess)
+#endif
     , TransferFirstBall(transfer)
     , WaitForFlywheel(flywheel)
+#ifdef SAVE
     , FireOneBall(transfer)
+#else
+    , FireOneBall(subsystemAccess)
+#endif
+#endif
   );
 }

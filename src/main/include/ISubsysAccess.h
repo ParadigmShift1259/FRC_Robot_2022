@@ -17,4 +17,5 @@ public:
 
     virtual bool OnlyOneBall() = 0;
     virtual void SetOneBallFlag() = 0;
+    virtual double GetFlywheelRpm() = 0;
 };

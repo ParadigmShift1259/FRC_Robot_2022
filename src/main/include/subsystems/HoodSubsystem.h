@@ -30,6 +30,7 @@ public:
     /// \param position         Servo rotation, ranging from [0, 1]
     void SetServoPosition(double position);
 
+    void SetTestOverrideFlag(bool bTestOverride) { m_bTestOverride = bTestOverride; }
 
     double GetServoPosition();
 
@@ -44,4 +45,5 @@ private:
     frc::Servo m_servo;
    	Calculations m_calculation;
     double m_flywheelSpeed;
+    bool m_bTestOverride = false;
 };

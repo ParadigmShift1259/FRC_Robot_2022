@@ -175,9 +175,9 @@ namespace AutoConstants
 
     //constexpr auto kMaxSpeed = meters_per_second_t(2.8);
     constexpr meters_per_second_t kMaxSpeed = meters_per_second_t(3.6); // feet_per_second_t(13.6);
-    constexpr auto kIntakeDriveSpeed = meters_per_second_t(0.5);
+    //constexpr auto kIntakeDriveSpeed = meters_per_second_t(0.5);
 
-    constexpr auto kMaxAcceleration = meters_per_second_squared_t(1.1);
+    constexpr auto kMaxAcceleration = meters_per_second_squared_t(1.175);
 
     // constexpr auto kMaxSpeed = meters_per_second_t(2.0);
     // constexpr auto kMaxAcceleration = meters_per_second_squared_t(3.0);
@@ -343,7 +343,7 @@ namespace TransferConstants
 
     constexpr double kFeederSpeedIntaking = 0.5;
     constexpr double kFeederSpeedFiring = 1.0;
-    constexpr double kTransferSpeedIntaking = 0.5; //0.7;
+    constexpr double kTransferSpeedIntaking = 0.7; //0.5; //0.7;
     constexpr double kTransferSpeedFiring = 0.8;
 
     // Time to go from 0 to full throttle

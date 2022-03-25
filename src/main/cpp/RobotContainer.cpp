@@ -178,7 +178,11 @@ void RobotContainer::ConfigSecondaryButtonBindings()
                                                                                     , &m_firing
                                                                                     , &m_finished
                                                                                     , [this]() { return GetYvelovity(); }))
+#ifdef SAVE
                                                                 , std::move(FireOneBall(&m_transfer)))
+#else
+                                                                , std::move(FireOneBall(*this)))
+#endif
                               , std::move(Fire( &m_flywheel
                                               , &m_turret
                                               , &m_hood
@@ -231,13 +235,14 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     vector<Pose2d> ball34PickupWaypoints
     {
         frc::Pose2d(173_in, 90_in, frc::Rotation2d(224_deg)),
-        frc::Pose2d(55_in, 55_in, frc::Rotation2d(224_deg))  //35,55 // perpendicular to corner wall
+        frc::Pose2d(52_in, 58_in, frc::Rotation2d(224_deg))  //35,55 // perpendicular to corner wall
     };
 
     vector<Pose2d> ball34ShootWaypoints
     {
-        frc::Pose2d(55_in, 55_in, frc::Rotation2d(201_deg)), // perpendicular to corner wall
-        frc::Pose2d(120_in, 80_in, frc::Rotation2d(201_deg))
+        frc::Pose2d(52_in, 58_in, frc::Rotation2d(202_deg)),
+        frc::Pose2d(150_in, 93_in, frc::Rotation2d(202_deg))
+//        frc::Pose2d(120_in, 80_in, frc::Rotation2d(201_deg))
     };
 
     vector<Pose2d> ball5PickupAndShootWaypoints
@@ -467,7 +472,11 @@ frc2::SequentialCommandGroup* RobotContainer::GetIntakeAndFirePathCmd(Trajectory
                                                                                     , &m_firing
                                                                                     , &m_finished
                                                                                     , [this]() { return GetYvelovity(); }))
-                                                              , std::move(FireOneBall(&m_transfer)))
+#ifdef SAVE
+                                                                    , std::move(FireOneBall(&m_transfer)))
+#else
+                                                                    , std::move(FireOneBall(*this)))
+#endif
                                  , std::move(Fire( &m_flywheel
                                                  , &m_turret
                                                  , &m_hood

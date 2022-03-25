@@ -10,9 +10,16 @@
 #include <frc/DriverStation.h>
 #include <cameraserver/cameraserver.h>
 
+wpi::log::DoubleLogEntry logMatchTime;
+
 void Robot::RobotInit()
 {
-   CameraServer::GetInstance()->StartAutomaticCapture();
+  auto CS = CameraServer::GetInstance();
+  CS->StartAutomaticCapture();
+  CS->SetSize(CameraServer::kSize160x120);
+
+  wpi::log::DataLog& log = DataLogManager::GetLog();
+  logMatchTime = wpi::log::DoubleLogEntry(log, "/robot/matchTime");
 }
 
 /**
@@ -73,6 +80,7 @@ void Robot::AutonomousInit()
 void Robot::AutonomousPeriodic()
 {
   m_container.GetDrive().m_enabled = true;
+  logMatchTime.Append(frc::DriverStation::GetMatchTime());
 }
 
 void Robot::TeleopInit()
@@ -123,6 +131,7 @@ void Robot::TeleopInit()
 void Robot::TeleopPeriodic()
 {
   m_container.GetDrive().m_enabled = true;
+  logMatchTime.Append(frc::DriverStation::GetMatchTime());
 }
 
 /**

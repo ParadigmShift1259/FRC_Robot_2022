@@ -16,13 +16,6 @@ HoodSubsystem::HoodSubsystem() : m_servo(kPWMPort)
 void HoodSubsystem::Periodic()
 {
     SmartDashboard::PutNumber("Hood Servo Pos", m_servo.Get());
-
-// #define HOOD_TUNING
-#ifdef HOOD_TUNING
-    double hoodangle = SmartDashboard::GetNumber("Hood Servo Pos Command", 0.9);
-    hoodangle = std::clamp(hoodangle, HoodConstants::kMin, HoodConstants::kMax);
-    SetServoPosition(hoodangle);
-#endif
 }
 
 void HoodSubsystem::SetServoPosition(double position) 
@@ -35,9 +28,14 @@ double HoodSubsystem::GetServoPosition()
     m_servo.Get();
 }
 
-
 void HoodSubsystem::SetByDistance(double distHubCenter)
 {
+    if (m_bTestOverride)
+    {
+        printf("Hood servo test override supressing automatic hood adjustment\n");
+        return;
+    }
+
     double distance = distHubCenter - kHubOffsetRimToCenter.to<double>();
 
     if (distance != distance)
