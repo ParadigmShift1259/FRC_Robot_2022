@@ -329,7 +329,7 @@ namespace IntakeConstants
     constexpr int kMotorReverseConstant = 1;
     constexpr int kSolenoidPort = 15;
 
-    constexpr double kIngestSpeed = 0.80;
+    constexpr double kIngestSpeed = 1.0;
     constexpr double kReleaseSpeed = -0.80;
 }
 

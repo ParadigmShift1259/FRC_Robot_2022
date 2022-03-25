@@ -231,13 +231,13 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     vector<Pose2d> ball34PickupWaypoints
     {
         frc::Pose2d(173_in, 90_in, frc::Rotation2d(224_deg)),
-        frc::Pose2d(45_in, 43_in, frc::Rotation2d(224_deg))  //35,55 // perpendicular to corner wall
+        frc::Pose2d(55_in, 55_in, frc::Rotation2d(224_deg))  //35,55 // perpendicular to corner wall
     };
 
     vector<Pose2d> ball34ShootWaypoints
     {
-        frc::Pose2d(45_in, 43_in, frc::Rotation2d(210_deg)), // perpendicular to corner wall
-        frc::Pose2d(3.0_m, 2.0_m, frc::Rotation2d(210_deg))
+        frc::Pose2d(55_in, 55_in, frc::Rotation2d(201_deg)), // perpendicular to corner wall
+        frc::Pose2d(120_in, 80_in, frc::Rotation2d(201_deg))
     };
 
     vector<Pose2d> ball5PickupAndShootWaypoints
@@ -349,6 +349,7 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
             (
                 std::move(*GetIntakeAndFirePathCmd(ball1Traj, true))
                 // , m_setOneBallFlag
+                // , m_toggleVisionMode
                 , m_setOneBallFlag
                 , std::move(*GetIntakeAndFirePathCmd(ball2Traj, false))
                 //, std::move(*GetAutoPathCmd("OneBallTest", true))
@@ -378,9 +379,9 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
 
 
 
-frc2::ParallelCommandGroup* RobotContainer::GetIntakePathCmd(Trajectory trajectory, bool primaryPath)
+frc2::ParallelRaceGroup* RobotContainer::GetIntakePathCmd(Trajectory trajectory, bool primaryPath)
 {
-    return new frc2::ParallelCommandGroup
+    return new frc2::ParallelRaceGroup
         (
               std::move(IntakeTransfer(*this, false))
             , frc2::SequentialCommandGroup
@@ -391,7 +392,7 @@ frc2::ParallelCommandGroup* RobotContainer::GetIntakePathCmd(Trajectory trajecto
                       printf("x=%.3f, y=%.3f, theta=%.1f\n", m_drive.GetPose().X().to<double>(), m_drive.GetPose().Y().to<double>(), m_drive.GetPose().Rotation().Degrees().to<double>());
                       }, {})
                 , std::move(GetSwerveCommandPath(trajectory, primaryPath))
-                //, frc2::WaitCommand(0.2_s)
+                , frc2::WaitCommand(0.5_s)
                 //, frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})
                 ,  frc2::InstantCommand([this]() { 
                       Timer timer;

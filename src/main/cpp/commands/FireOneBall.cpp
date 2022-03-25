@@ -31,6 +31,6 @@ bool FireOneBall::IsFinished()
 void FireOneBall::End(bool interrupted)
 {
     m_transfer->SetFeeder(0.0);
-    m_transfer->SetTransfer(0.0);
+    // m_transfer->SetTransfer(0.0);
     m_timer.Stop();
 }

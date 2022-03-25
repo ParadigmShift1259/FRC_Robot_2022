@@ -25,6 +25,7 @@
 #include <frc2/command/SequentialCommandGroup.h>
 #include <frc2/command/ParallelCommandGroup.h>
 #include <frc2/command/SwerveControllerCommand.h>
+#include <frc2/command/ParallelRaceGroup.h>
 
 #include <frc/geometry/Translation2d.h>
 
@@ -115,7 +116,7 @@ private:
     void ConfigPrimaryButtonBindings();
     void ConfigSecondaryButtonBindings();
     frc2::SequentialCommandGroup* GetIntakeAndFirePathCmd(Trajectory trajectory, bool primaryPath);
-    frc2::ParallelCommandGroup* GetIntakePathCmd(Trajectory trajectory, bool primaryPath);
+    frc2::ParallelRaceGroup* GetIntakePathCmd(Trajectory trajectory, bool primaryPath);
     frc2::SequentialCommandGroup* GetFirePathCmd(Trajectory trajectory, bool primaryPath);
     SwerveCtrlCmd GetSwerveCommandPath(Trajectory trajectory, bool primaryPath);
     frc::Trajectory convertPathToTrajectory(PathPlannerTrajectory path);
