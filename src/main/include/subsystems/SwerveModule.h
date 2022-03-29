@@ -71,6 +71,8 @@ public:
     /// Resync the relative NEO turn encoder to the absolute encoder
     void ResetRelativeToAbsolute();
 
+TalonFX m_driveMotor; // made public just to allow trial change of current limit from Robot teleopinit
+ 
 private:
     /// Calculate the absolute angle, in radians, based on the pulse widths from @ref m_pulseWidthCallback
     double CalcAbsoluteAngle();
@@ -88,7 +90,7 @@ private:
     string m_name;
 
     /// Falon 500 that drives the pod
-    TalonFX m_driveMotor;
+//    TalonFX m_driveMotor;
     /// \name NEO that turns the pod, controls angle with relative encoder and PID
     ///@{
     CANSparkMax m_turningMotor;

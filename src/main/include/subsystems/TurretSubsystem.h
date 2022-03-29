@@ -15,6 +15,8 @@ using namespace ctre::phoenix::motorcontrol::can;
 #include "common/DebugFlag.h"
 #include "Gyro.h"
 
+#include "frc/DataLogManager.h"
+
 class TurretSubsystem : public frc2::SubsystemBase
 {
 public:
@@ -70,4 +72,12 @@ private:
     frc::AnalogInput m_absEnc;
 
     DebugFlag   m_dbgLogTurns{"TurretLogTurn", false};
+
+    wpi::log::DoubleLogEntry m_logAbsEnc;
+    wpi::log::DoubleLogEntry m_logAngle;
+    wpi::log::DoubleLogEntry m_logVelocity;
+    wpi::log::DoubleLogEntry m_logOutput; 
+    wpi::log::DoubleLogEntry m_logError; 
+ //   wpi::log::DoubleLogEntry m_logFaults;
+
 };

@@ -154,6 +154,7 @@ private:
     //frc2::InstantCommand m_setTurretZero{[this] { m_turret.SetZeroAngle(); }, {&m_turret} };
     frc2::InstantCommand m_climb{[this]
     {
+        m_vision.SetTargetingMode(VisionSubsystem::kOff);
         m_vision.SetLED(false);
         m_turret.TurnTo(0.0);
         m_climber.Run(ClimberConstants::kMotorSpeed); }, {&m_climber}

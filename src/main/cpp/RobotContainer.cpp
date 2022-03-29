@@ -238,11 +238,25 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
         frc::Pose2d(52_in, 58_in, frc::Rotation2d(224_deg))  //35,55 // perpendicular to corner wall
     };
 
+//***************************************************************************************
+    vector<Pose2d> skipBall3PickupWaypoints // Anti-defense against leaf blower bot
+    {
+        frc::Pose2d(173_in, 90_in, frc::Rotation2d(167_deg)),
+        frc::Pose2d(52_in, 58_in, frc::Rotation2d(224_deg))  //*************change here if miss************************
+    };
+//***************************************************************************************
+
     vector<Pose2d> ball34ShootWaypoints
     {
         frc::Pose2d(52_in, 58_in, frc::Rotation2d(202_deg)),
-        frc::Pose2d(150_in, 93_in, frc::Rotation2d(202_deg))
+        frc::Pose2d(155_in, 95_in, frc::Rotation2d(202_deg))
 //        frc::Pose2d(120_in, 80_in, frc::Rotation2d(201_deg))
+    };
+
+    vector<Pose2d> ball34ShootCloserWaypoints
+    {
+        frc::Pose2d(52_in, 58_in, frc::Rotation2d(202_deg)),
+        frc::Pose2d(175_in, 102_in, frc::Rotation2d(202_deg))
     };
 
     vector<Pose2d> ball5PickupAndShootWaypoints
@@ -294,9 +308,16 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
     // config.SetEndVelocity(units::velocity::meters_per_second_t{0});
     Trajectory ball34PickupTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34PickupWaypoints[0], {}, ball34PickupWaypoints[1], config);
 
+    Trajectory skipBall3PickupTraj = frc::TrajectoryGenerator::GenerateTrajectory(skipBall3PickupWaypoints[0], 
+    {
+          Translation2d(90_in, 70_in)
+        , Translation2d(85_in, 65_in)
+    }, skipBall3PickupWaypoints[1], config);
+
     config.SetReversed(true);
     // config = TrajectoryConfig{units::velocity::meters_per_second_t{3.5}, AutoConstants::kMaxAcceleration};
     Trajectory ball34ShootTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34ShootWaypoints[0], {}, ball34ShootWaypoints[1], config);
+    Trajectory ball34ShootCloserTraj = frc::TrajectoryGenerator::GenerateTrajectory(ball34ShootCloserWaypoints[0], {}, ball34ShootCloserWaypoints[1], config);
 
     config.SetReversed(false);
     Trajectory Ball5Traj = frc::TrajectoryGenerator::GenerateTrajectory(ball5PickupAndShootWaypoints, config);
@@ -325,28 +346,13 @@ frc2::Command* RobotContainer::GetAutonomousCommand(EAutoPath path)
                 , std::move(*GetFirePathCmd(ball34ShootTraj, false))
             );
 
-        case kEx3: // alt five-ball auto *** UNTESTED ***
+        case kEx3: // four-ball auto anti-defense against leaf blower bot *** UNTESTED ***
             return new frc2::SequentialCommandGroup
             (
-                std::move(Fire( &m_flywheel
-                        , &m_turret
-                        , &m_hood
-                        , &m_transfer
-                        , m_vision
-                        , &m_turretready
-                        , &m_firing
-                        , &m_finished
-                        , [this]() { return GetYvelovity();} 
-                        , TransferConstants::kTimeLaunch))
-                , m_setOneBallFlag
-                , std::move(*GetIntakePathCmd(ball1Traj, true))
-                , std::move(*GetIntakeAndFirePathCmd(ball2Traj, false))
-                //, std::move(*GetAutoPathCmd("OneBallTest", true))
-                // , m_resetOneBallFlag
-                , m_resetOneBallFlag // wait for 4th ball bowled in from human player
-                , std::move(*GetIntakePathCmd(ball34PickupTraj, false))
+                  std::move(*GetIntakeAndFirePathCmd(ball1Traj, true))
+                , std::move(*GetIntakePathCmd(skipBall3PickupTraj, false))
                 , frc2::InstantCommand([this]() { ZeroDrive(); }, {&m_drive})                
-                , std::move(*GetFirePathCmd(ball34ShootTraj, false))
+                , std::move(*GetFirePathCmd(ball34ShootCloserTraj, false))
             );
 
         case kEx4: // five-ball auto

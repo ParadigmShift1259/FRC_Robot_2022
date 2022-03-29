@@ -98,7 +98,7 @@ namespace DriveConstants
     #else
     // Offsets updated on 2022 Feb 21 after Sussex
     constexpr double kFrontLeftOffset   = 1795.0; //1791; 
-    constexpr double kFrontRightOffset  = 2543.0; ///2509.0;
+    constexpr double kFrontRightOffset  = 1688.0;
     constexpr double kRearRightOffset   = 2030.0; //904.0;
     constexpr double kRearLeftOffset    = 2652.0; // 2649.0;
     #endif
@@ -177,7 +177,7 @@ namespace AutoConstants
     constexpr meters_per_second_t kMaxSpeed = meters_per_second_t(3.6); // feet_per_second_t(13.6);
     //constexpr auto kIntakeDriveSpeed = meters_per_second_t(0.5);
 
-    constexpr auto kMaxAcceleration = meters_per_second_squared_t(1.175);
+    constexpr auto kMaxAcceleration = meters_per_second_squared_t(1.18);
 
     // constexpr auto kMaxSpeed = meters_per_second_t(2.0);
     // constexpr auto kMaxAcceleration = meters_per_second_squared_t(3.0);

@@ -69,6 +69,15 @@ TurretSubsystem::TurretSubsystem(Team1259::Gyro *gyro)
     frc::SmartDashboard::PutNumber("TurretScurve", 1.0);
 #endif
 
+    wpi::log::DataLog& log = frc::DataLogManager::GetLog();
+    
+    m_logAbsEnc = wpi::log::DoubleLogEntry(log, "/turret/AbsEnc");
+    m_logAngle = wpi::log::DoubleLogEntry(log, "/turret/Angle");
+    m_logVelocity = wpi::log::DoubleLogEntry(log, "/turret/Vel");
+    m_logOutput = wpi::log::DoubleLogEntry(log, "/turret/Output");
+    m_logError = wpi::log::DoubleLogEntry(log, "/turret/Err");
+    // m_logFaults = wpi::log::IntegerLogEntry(log, "/turret/Faults");
+
     //frc::SmartDashboard::PutNumber("TurretDeadbandPercent", kNeutralDeadband);
 }
 
@@ -97,9 +106,18 @@ void TurretSubsystem::Periodic()
     frc::SmartDashboard::PutNumber("D_T_COutput", m_turretmotor.GetMotorOutputPercent());
     frc::SmartDashboard::PutNumber("D_T_CClosedLoopError", m_turretmotor.GetClosedLoopError());
     frc::SmartDashboard::PutNumber("D_T_CIntegralAccumulator", m_turretmotor.GetIntegralAccumulator());
+    // frc::SmartDashboard::PutNumber("D_T_CfaultFlags", m_turretmotor.GetFaults());
     // frc::SmartDashboard::PutNumber("D_T_DAngle", TicksToDegrees(m_turretmotor.GetClosedLoopTarget()));
     // frc::SmartDashboard::PutNumber("D_T_Error", TicksToDegrees(m_turretmotor.GetClosedLoopError(0)));
     // frc::SmartDashboard::PutNumber("D_T_Output", m_turretmotor.GetMotorOutputPercent());
+
+    m_logAbsEnc.Append(GetAbsEncValue());
+    m_logAngle.Append(TicksToDegrees(m_turretmotor.GetSelectedSensorPosition()));
+    m_logVelocity.Append(m_turretmotor.GetSelectedSensorVelocity());
+    m_logOutput.Append(m_turretmotor.GetMotorOutputPercent());
+    m_logError.Append(m_turretmotor.GetClosedLoopError());
+    // m_logFaults.append(m_turretmotor.GetFaults());
+
 #ifdef TUNE_TURRET_PID
     
     static double lastF;

@@ -160,6 +160,12 @@ public:
 
     bool OdoValid();
 
+// made public just to allow trial change of current limit from Robot teleopinit
+SwerveModule m_frontLeft;
+SwerveModule m_frontRight;
+SwerveModule m_rearRight;
+SwerveModule m_rearLeft;
+
 private:    
     /// Get all 4 swerve module wheel speed to update the odometry with
     SwerveModuleStates getCurrentWheelSpeeds()
@@ -176,10 +182,10 @@ private:
     /// \name Swerve Modules
     /// The drive subsystem owns all 4 swerve modules
     ///@{
-    SwerveModule m_frontLeft;
-    SwerveModule m_frontRight;
-    SwerveModule m_rearRight;
-    SwerveModule m_rearLeft;
+// SwerveModule m_frontLeft;
+// SwerveModule m_frontRight;
+// SwerveModule m_rearRight;
+// SwerveModule m_rearLeft;
     ///@}
 
     /// Reads the absolute encoder pulse widths

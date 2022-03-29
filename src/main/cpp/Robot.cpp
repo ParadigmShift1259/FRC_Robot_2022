@@ -90,6 +90,12 @@ void Robot::TeleopInit()
     frc::DataLogManager::Start();
   }
 
+// try higher current limit for Falcons...
+// StatorCurrentLimitConfiguration statorLimit { true, kMotorCurrentLimit, kMotorCurrentLimit, 2 };
+// m_container.GetDrive().m_frontLeft.m_driveMotor.ConfigStatorCurrentLimit(statorLimit);
+// SupplyCurrentLimitConfiguration supplyLimit { true, kMotorCurrentLimit, kMotorCurrentLimit, 2 };
+// m_container.GetDrive().m_frontLeft.m_driveMotor.ConfigSupplyCurrentLimit(supplyLimit);
+
   m_container.GetVision().SetTargetingMode(VisionSubsystem::TargetingMode::kOdometry);
   m_container.GetVision().EnableOdoCorrection();
 
