@@ -97,10 +97,10 @@ namespace DriveConstants
     //===============================================================================
     #else
     // Offsets updated on 2022 Feb 21 after Sussex
-    constexpr double kFrontLeftOffset   = 1795.0; //1791; 
-    constexpr double kFrontRightOffset  = 1688.0;
-    constexpr double kRearRightOffset   = 2030.0; //904.0;
-    constexpr double kRearLeftOffset    = 2652.0; // 2649.0;
+    constexpr double kFrontLeftOffset   = 1783.0; //1791; 
+    constexpr double kFrontRightOffset  = 1665.0;
+    constexpr double kRearRightOffset   = 2002.0; //904.0;
+    constexpr double kRearLeftOffset    = 2677.0; // 2649.0;
     #endif
 
     // Pulse Width per rotation is not equal for all encoders. Some are 0 - 3865, some are 0 - 4096
