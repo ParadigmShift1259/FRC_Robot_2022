@@ -126,18 +126,35 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
 
                 UpdateFieldReleativeRobotAndCameraPoses(cameraToHub);
 
-                if(m_enableVisionOdoCorrection)
+                if(m_enableVisionOdoCorrection &&
+                (m_robotvisionPose.X() >= -1_m && m_robotvisionPose.X() <= VisionConstants::kFieldLength + 1_m) &&
+                (m_robotvisionPose.Y() >= -1_m && m_robotvisionPose.Y() <= VisionConstants::kFieldWidth + 1_m))
                 {
                     if(m_odometry.GetState(m_visionTimestamp).velocity < meters_per_second_t{.1})
-                        {
+                        { // robot moving slowly so can use more agressive constants
                         m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.01, 0.01, 0.01));
                         m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
                         }
                     else
-                        {
+                        { // less agressive constants for noisy vision / higher speed
                         m_odometry.SetVisionMeasurementStdDevs(wpi::array<double, 3>(0.05, 0.05, 0.01));
                         m_odometry.AddVisionMeasurement(m_robotvisionPose, m_visionTimestamp);
                         }
+                    // check for reasonableness becuase sometimes SwerveDrivePoseEstimator diverges, explodes or becomes NaN
+                    if (!m_odometry.OdoValid())
+                    {   
+                        // This assumes gyro was properly zeroed previously and is still valid, otherwise odometry coordinates will have arbitrary rotation w.r.t. true field!
+                        if (m_dbgLogTargetData)
+                        {
+                            printf("Odometry Invalid: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
+                        }
+                        m_odometry.ResetOdometry(m_robotvisionPose);
+                        if (m_dbgLogTargetData)
+                        {
+                            printf("Resetting Odometry from Vision: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
+                        }
+                        frc::DataLogManager::Log(fmt::format("Resetting Odometry from Vision: x={}, y={}, heading={}", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>()));
+                    }                        
                 }
                 m_cameraToHub = CompensateForLatencyAndMotion();    // Use wheel odo to correct for movement since image was captured
 
@@ -171,21 +188,6 @@ void VisionSubsystem::Work(units::time::second_t timestamp)
             m_validTarget = false;
             m_smoothedRange = 0;
         }
-    }
-
-    if (!m_odometry.OdoValid())
-    {   
-        // This assumes gyro was properly zeroed previously and is still valid, otherwise odometry coordinates will have arbitrary rotation w.r.t. true field!
-        if (m_dbgLogTargetData)
-        {
-        printf("Odometry Invalid: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
-        }
-        m_odometry.ResetOdometry(m_robotvisionPose);
-        if (m_dbgLogTargetData)
-        {
-            printf("Resetting Odometry from Vision: x=%.3f, y=%.3f, heading =%.1f\n", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>());
-        }
-        frc::DataLogManager::Log(fmt::format("Resetting Odometry from Vision: x={}, y={}, heading={}", m_odometry.GetPose().X().to<double>(), m_odometry.GetPose().Y().to<double>(), m_odometry.GetPose().Rotation().Degrees().to<double>()));
     }
 
     SmartDashboard::PutNumber("VisionDistance: ", GetHubDistance(false) * 39.37);

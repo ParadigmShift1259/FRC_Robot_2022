@@ -7,6 +7,7 @@
 
 #include "subsystems/DriveSubsystem.h"
 #include "frc/StateSpaceUtil.h"
+#include <fmt/core.h>
 #include <iostream>
 
 using namespace DriveConstants;
@@ -122,6 +123,9 @@ void DriveSubsystem::Periodic()
     m_frontRight.Periodic();
     m_rearRight.Periodic();
     m_rearLeft.Periodic();
+    #ifdef USE_SWERVE_POSE_ESTIMATOR
+        frc::Pose2d PriorPose = m_odometry.GetEstimatedPosition();
+    #endif
     m_odometry.Update(m_gyro->GetHeadingAsRot2d()
                 , m_frontLeft.GetState()
                 , m_frontRight.GetState()
@@ -134,7 +138,11 @@ void DriveSubsystem::Periodic()
 
 #ifdef USE_SWERVE_POSE_ESTIMATOR
     frc::Pose2d pose = m_odometry.GetEstimatedPosition();
-    OdoValid(); // (checks for resonableness and clears m_odoValid if necessary) 
+    if(!OdoValid()) // Check whether odometry got coruppted
+        {
+        ResetOdometry(PriorPose); // Restore Prior Pose
+        frc::DataLogManager::Log(fmt::format("Odometry currupted. Resetting to prior pose: x={}, y={}, heading={}", PriorPose.X().to<double>(), PriorPose.Y().to<double>(), PriorPose.Rotation().Degrees().to<double>()));
+        }
 #else
     frc::Pose2d pose = m_odometry.GetPose();
 #endif
@@ -298,8 +306,8 @@ void DriveSubsystem::ResetEncoders()
 bool DriveSubsystem::OdoValid()
 {
     // check for reasonableness becuase sometimes SwerveDrivePoseEstimator diverges, explodes or becomes NaN
-    if (! (GetPose().X() >= 0_m && GetPose().X() <= VisionConstants::kFieldLength
-        && GetPose().Y() >= 0_m && GetPose().Y() <= VisionConstants::kFieldWidth))
+    if (! (GetPose().X() >= -1_m && GetPose().X() <= VisionConstants::kFieldLength + 1_m)
+        && GetPose().Y() >= -1_m && GetPose().Y() <= VisionConstants::kFieldWidth + 1_m)
         m_odoValid = false;
 
     return m_odoValid;
