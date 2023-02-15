@@ -87,7 +87,7 @@ void HomeTarget::Execute()
     SmartDashboard::PutNumber("Hood Angle:", hoodangle);
 
     // if running manual trench fire
-    // if (m_controller->GetBumper(GenericHID::JoystickHand::kRightHand))
+    //if (m_controller->GetBumper(GenericHID::JoystickHand::kRightHand))
     // {
     //     // if call to launch
     //     if (m_controller->GetYButtonPressed())
@@ -97,7 +97,7 @@ void HomeTarget::Execute()
     // }
     // // if at position, set turret ready to true
     // else 
-    if (m_flywheel->IsAtRPMPositive())
+    //if (m_flywheel->IsAtRPMPositive())
     {
         *m_turretready = true;
     }
