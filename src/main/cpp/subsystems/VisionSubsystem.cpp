@@ -94,7 +94,7 @@ void VisionSubsystem::Periodic()
     // frc::Transform2d CamToTarget = photonlib::PhotonUtils::EstimateCameraToTarget(m_cameraToHub, TargetPose, m_gyro->GetHeadingAsRot2d());
     // frc::Transform2d CamToRobot = Transform2d();
     // frc::Pose2d robotPose = photonlib::PhotonUtils::EstimateFieldToRobot(CamToTarget, TargetPose, CamToRobot);
-    if(willPrint)
+/*    if(willPrint)
         {
         if (!m_validTarget)
             std::cout << "PhotonCam Has No Targets!" << std::endl;
@@ -107,7 +107,7 @@ void VisionSubsystem::Periodic()
                 }
                 std::cout << std::endl;
             }
-        }
+        }*/
  
     SmartDashboard::PutNumber("D_V_Active", m_validTarget);
     // SmartDashboard::PutNumber("D_V_Distance", distance);
